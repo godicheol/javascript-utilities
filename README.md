@@ -1,23 +1,46 @@
 # On developing...
 
 ## Lists
-+ 1
-+ 2
-+ 3
-1. 1
-2. 2
-3. 3
-
-## Code
-
-```
-Code here...
-```
-
-``` js
-// JS here...
-```
-
-## Links
-
-[link text](https://github.com/)
+1. getType(arg)
+1. isBoolean(bool)
+1. toBoolean(bool)
+1. isNumeric(num)
+1. toNumber(num)
+1. isString(str)
+1. toString(str)
+1. isObject(obj)
+1. isArray(arr)
+1. isNode(node)
+1. isNodeList(node)
+1. isDOMElement(elem)
+1. isMimeType(str)
+1. isColor(str)
+1. toCapital(str)
+1. toSafeUrl(str, char)
+1. getOs()
+1. getBrowser()
+1. getBrowserVersion()
+1. isCookieEnabled()
+1. getScreenSize()
+1. getViewportSize()
+1. getMimeType(str)
+1. getExtension(str)
+1. getFileName(str)
+1. calcCoveredSize(sw, sh, dw, dh)
+1. calcContainedSize(sw, sh, dw, dh)
+1. calcOptimumSize(sw, sh, mxw, mxh, mnw, mnh)
+1. toHumanizedFileSize(bytes, dot)
+1. convFileSize(bytes, format, dot)
+1. copyObject(obj)
+1. copyArray(arr)
+1. genError(title, message)
+1. genHash(str)
+1. genMd5(str)
+1. genUuid4()
+1. genCharset(charset, len)
+1. genShortId()
+1. getCookie(key)
+1. setCookie(key, val)
+1. removeCookie(key)
+1. openUrl(url, target)
+1. queryObject(dataObject, queryObject) **developing...**

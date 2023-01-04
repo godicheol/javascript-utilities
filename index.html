@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>index.html</title>
+</head>
+
+<body>
+    <!-- html -->
+    <div id="container"></div>
+
+    <!-- js -->
+    <script src="dist/index.js"></script>
+    <script>
+        var container = document.getElementById("container");
+
+        var obj = {
+            id: 1,
+            attr: {
+                width: 5,
+                height: 10,
+                deep: {
+                    width: 10,
+                    height: 20
+                }
+            }
+        }
+
+        utils.queryObject(obj, {
+            $or: [{
+                id: 1,
+                $and: [{
+                    attr: {
+                        width: 2,
+                    },
+                }, {
+                    attr: {
+                        width: 4,
+                        height: 4,
+                    },
+                }]
+            }, {
+                id: 2,
+                attr: {
+                    $and: [{
+                        attr: {
+                            width: 5,
+                        },
+                    }, {
+                        attr: {
+                            width: {
+                                $gt: 1,
+                                $lt: 5
+                            },
+                            height: [1,2,3],
+                            length: null,
+                        },
+                    }],
+                    has: {
+                        $and: [{
+                            test:1
+                        }, {
+                            test:2
+                        }]
+                    }
+                }
+                
+            }]
+        })
+    </script>
+</body>
+
+</html>

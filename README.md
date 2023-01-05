@@ -19,7 +19,7 @@
 15. toCapital()
 16. toSafeUrl()
 17. getOs()
-18. getBrowser()
+18. getBrowserName()
 19. getBrowserVersion()
 20. getScreenSize()
 21. getViewportSize()
@@ -44,12 +44,12 @@
 40. padLeft()
 41. padRight()
 42. joinString()
-43. parseString()
-44. updateString()
-45. queryObject() **Use MongoDB operatorsS**
+43. parseString() **On developing...**
+44. updateString() **On developing...**
+45. queryObject() **Use MongoDB operators**
 46. calcCoveredSize()
 47. calcContainedSize()
 48. calcOptimumSize()
-49. calcRectanglePoint()
-50. calcRotatedPoint()
-51. calcRotatedSize()
+49. calcRectanglePoint() **On developing...**
+50. calcRotatedPoint() **On developing...**
+51. calcRotatedSize() **On developing...**

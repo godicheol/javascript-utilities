@@ -146,7 +146,7 @@
             return undefined;
         },
 
-        getBrowser: function() {
+        getBrowserName: function() {
             var alias = {"Opera": "Opera","OPR": "Opera","Edge": "Microsoft Legacy Edge","Edg": "Microsoft Edge","MSIE": "Microsoft Internet Explorer","Chrome": "Chrome","Safari": "Safari","Firefox": "Firefox","Trident/": "Microsoft Internet Explorer"}
             var res = /Opera|OPR|Edge|Edg|MSIE|Chrome|Firefox|Trident\//.exec(navigator.userAgent);
             if (!res || !res[0]) {
@@ -496,14 +496,6 @@
             // split and join
         },
 
-        /* 
-            queryObject({ id: 1 }, {
-                id: {
-                    $gt: 0,
-                    $lt: 2
-                }
-            })
-        */
         queryObject: function(dataObject, queryObject) {
             var isOperator = function(str) {
                 return /^(\$and|\$or|\$nor|\$not|\$eq|\$ne|\$in|\$nin|\$gt|\$gte|\$lt|\$lte|\$exists)$/i.test(str);

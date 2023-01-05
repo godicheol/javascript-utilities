@@ -1,7 +1,7 @@
 # On developing...
 
 ## Lists
-1. getType(arg)
+1. getType(any)
 1. isBoolean(bool)
 1. toBoolean(bool)
 1. isNumeric(num)
@@ -43,4 +43,7 @@
 1. setCookie(key, val)
 1. removeCookie(key)
 1. openUrl(url, target)
-1. queryObject(dataObject, queryObject) **developing...**
+1. queryObject(dataObject, queryObject) **Use MongoDB operatorsS**
+1. padLeft(pad, str)
+1. padRight(pad, str)
+1. joinString(stringArray, header, footer)

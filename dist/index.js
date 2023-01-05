@@ -1,21 +1,19 @@
 (function() {
     'use strict';
 
-    // is,to,get,set,gen,init,conv,culc,chk
-
     var mainObject = {
 
-        getType: function(arg) {
-            if (typeof(arg) === "object") {
-                if (Object.prototype.toString.call(arg) === '[object Array]') {
+        getType: function(any) {
+            if (typeof(any) === "object") {
+                if (Object.prototype.toString.call(any) === '[object Array]') {
                     return "array";
-                } else if (arg === null) {
+                } else if (any === null) {
                     return "null";
                 } else {
                     return "object";
                 }
             } else {
-                return typeof(arg);
+                return typeof(any);
             }
         },
 
@@ -181,24 +179,6 @@
             return version;
         },
 
-        isCookieEnabled: function() {
-            if (typeof(navigator.cookieEnabled) !== "undefined") {
-                if (navigator.cookieEnabled) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                document.cookie = 'testCookieEndabled=;';
-                if (document.cookie.indexOf('testCookieEndabled') > -1) {
-                    document.cookie = 'testCookieEndabled=; Max-Age=-99999999;';
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        },
-
         getScreenSize: function() {
             return {
                 width: window.screen.width * window.devicePixelRatio,
@@ -319,90 +299,18 @@
             return str.replace(/^.*[\\\/]/, '');
         },
 
-        calcCoveredSize: function(sw, sh, dw, dh) {
-            var aspectRatio = sw / sh;
-            if (dh * aspectRatio < dw) {
-                return {
-                    width: dw,
-                    height: dw / aspectRatio
-                }
-            } else {
-                return {
-                    width: dh * aspectRatio,
-                    height: dh
-                }
-            }
-        },
-
-        calcContainedSize: function(sw, sh, dw, dh) {
-            var aspectRatio = sw / sh;
-            if (dh * aspectRatio < dw) {
-                return {
-                    width: dh * aspectRatio,
-                    height: dh
-                }
-            } else {
-                return {
-                    width: dw,
-                    height: dw / aspectRatio
-                }
-            }
-        },
-
-        calcOptimumSize: function(sw, sh, mxw, mxh, mnw, mnh) {
-            var aspectRatio = sw / sh;
-            var maxWidth;
-            var maxHeight;
-            var minWidth;
-            var minHeight;
-            if (!mnw) {
-                mnw = 0;
-            }
-            if (!mnh) {
-                mnh = 0;
-            }
-            if (mxh * aspectRatio < mxw) {
-                maxWidth = mxh * aspectRatio;
-                maxHeight = mxh;
-            } else {
-                maxWidth = mxw;
-                maxHeight = mxw / aspectRatio;
-            }
-            if (mnh * aspectRatio < mnw) {
-                minWidth = mnw;
-                minHeight = mnw / aspectRatio;
-            } else {
-                minWidth = mnh * aspectRatio;
-                minHeight = mnh;
-            }
-            return {
-                width: Math.min(maxWidth, Math.max(minWidth, sw)),
-                height: Math.min(maxHeight, Math.max(minHeight, sh))
-            }
-        },
-
         toHumanizedFileSize: function(bytes, dot) {
-            if (typeof(bytes) !== "number" || typeof(dot) !== "number") {
-                var err = new Error('Invalid argument type');
-                err.name = "TypeError";
-                throw err;
-            }
             if (bytes === 0) {
                 return "0 bytes";
             }
             var k = 1024;
-            var dotPoint = dot < 0 ? 0 : dot;
+            var dp = dot < 0 ? 0 : dot;
             var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
             var i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(dotPoint)) + ' ' + sizes[i];
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dp)) + ' ' + sizes[i];
         },
 
         convFileSize: function(bytes, format, dot) {
-            if (typeof(bytes) !== "number" || typeof(format) !== "string" || typeof(dot) !== "number") {
-                var err = new Error('Invalid argument type');
-                err.name = "TypeError";
-                throw err;
-            }
             var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
             var alias = {"b": "Bytes","byte": "Bytes","bytes": "Bytes","kb": "KB","killobyte": "KB","killobytes": "KB",'mb': "MB",'megabyte': "MB",'megabytes': "MB",'gb': "GB",'gigabyte': "GB",'gigabytes': "GB",'tb': "TB",'terrabyte': "TB",'terrabytes': "TB",'pb': "PB",'petabyte': "PB",'petabytes': "PB",'eb': "EB",'exabyte': "EB",'exabytes': "EB",'zb': "ZB",'zettabyte': "ZB",'zettabytes': "ZB",'yb': "YB",'yottabyte': "YB",'yottabytes': "YB"}
             var f = (format && alias[format.toLowerCase()]) ? alias[format.toLowerCase()] : "Bytes";
@@ -519,6 +427,24 @@
 			return f + s;
         },
 
+        isCookieEndabled: function() {
+            if (typeof(navigator.cookieEnabled) !== "undefined") {
+                if (navigator.cookieEnabled) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                document.cookie = 'testCookieEndabled=;';
+                if (document.cookie.indexOf('testCookieEndabled') > -1) {
+                    document.cookie = 'testCookieEndabled=; Max-Age=-99999999;';
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        },
+
         getCookie: function(key) {
             var cookies = document.cookie.split(';');
             var cookie = cookies.find(function(e) {
@@ -539,12 +465,51 @@
             window.open(url, target);
         },
 
+        padLeft: function(pad, str) {
+            if (!str) {
+                return pad;
+            }
+            return (pad + str).slice(-pad.length);
+        },
+
+        padRight: function(pad, str) {
+            if (!str) {
+                return pad;
+            }
+            return (str + pad).substring(0, pad.length);
+        },
+
+        joinString: function(arr, header, footer) {
+            return arr.map(function(e) {
+                return (header ? header : "") + e + (footer ? footer : "");
+            }).join("");
+        },
+
+        parseString: function(str) {
+            // All chars
+            // sort by length
+
+            // 1. length , 2. counts
+        },
+
+        updateString: function(str, obj) {
+            // split and join
+        },
+
+        /* 
+            queryObject({ id: 1 }, {
+                id: {
+                    $gt: 0,
+                    $lt: 2
+                }
+            })
+        */
         queryObject: function(dataObject, queryObject) {
             var isOperator = function(str) {
-                return /^(\$and(\$[0-9]+)?|\$or(\$[0-9]+)?|\$nor(\$[0-9]+)?|\$not|\$eq|\$ne|\$in|\$nin|\$gt|\$gte|\$lt|\$lte|\$exists)$/i.test(str);
+                return /^(\$and|\$or|\$nor|\$not|\$eq|\$ne|\$in|\$nin|\$gt|\$gte|\$lt|\$lte|\$exists)$/i.test(str);
             }
             var isLogicalOperator = function(str) {
-                return /^(\$and(\$[0-9]+)?|\$or(\$[0-9]+)?|\$nor(\$[0-9]+)?|\$not)$/i.test(str);
+                return /^(\$and|\$or|\$nor|\$not)$/i.test(str);
             }
             var isComparisonOperator = function(str) {
                 return /^(\$eq|\$ne|\$in|\$nin|\$gt|\$gte|\$lt|\$lte)$/i.test(str);
@@ -555,166 +520,257 @@
             var isArrayOperator = function(str) {
                 return /^(\$in|\$nin)$/i.test(str);
             }
+            var isMatchOperator = function(str) {
+                return /^(\$eq|\$ne)$/i.test(str);
+            }
             var isNumberOperator = function(str) {
                 return /^(\$gt|\$gte|\$lt|\$lte)$/i.test(str);
             }
             var isLoopOperator = function(str) {
-                return /^(\$and(\$[0-9]+)?|\$or(\$[0-9]+)?|\$nor(\$[0-9]+)?)$/i.test(str);
-            }
-            var isIndexedLoopOperator = function(str) {
-                return /^(\$and\$[0-9]+|\$or\$[0-9]+|\$nor\$[0-9]+)$/i.test(str);
-            }
-            var isUnindexedLoopOperator = function(str) {
                 return /^(\$and|\$or|\$nor)$/i.test(str);
             }
-            var getType = function(arg) {
-                if (typeof(arg) === "object") {
-                    if (Object.prototype.toString.call(arg) === '[object Array]') {
+            var isNotOperator = function(str) {
+                return /^(\$not)$/i.test(str);
+            }
+            var isNorOperator = function(str) {
+                return /^(\$nor)$/i.test(str);
+            }
+            var getType = function(any) {
+                if (typeof(any) === "object") {
+                    if (Object.prototype.toString.call(any) === '[object Array]') {
                         return "array";
-                    } else if (arg === null) {
+                    } else if (any === null) {
                         return "null";
                     } else {
                         return "object";
                     }
                 } else {
-                    return typeof(arg);
+                    return typeof(any);
                 }
             }
-            var chkValueType = function(key, value) {
+            var chkType = function(k, v) {
+                var t = getType(v);
                 var i;
-                if (isUnindexedLoopOperator(key)) {
-                    /* Object Array */
-                    if (getType(value) !== "array") {
+                if (isLoopOperator(k)) {
+                    /* Object array */
+                    if (t === "array") {
+                        for (i = 0; i < v.length; i++) {
+                            if (getType(v[i]) !== "object") {
+                                return false;
+                            }
+                        }
+                    }
+                } else if (isMatchOperator(k)) {
+                    /* Not object, Not array */
+                    if (t === "object" || t === "array") {
                         return false;
                     }
-                    for (i = 0; i < value.length; i++) {
-                        if (getType(value[i]) !== "object") {
+                } else if (isNumberOperator(k)) {
+                    /* Number */
+                    if (t !== "number") {
+                        return false;
+                    }
+                } else if (isArrayOperator(k)) {
+                    /* Array */
+                    if (t !== "array") {
+                        return false;
+                    }
+                } else if (isNotOperator(k)) {
+                    /* Object */
+                    if (t !== "object") {
+                        return false;
+                    }
+                } else if (isElementOperator(k)) {
+                    /* Boolean */
+                    if (t !== "boolean" && v !== 1 && v !== 0 && v !== "true" && v !== "false" && v !== "1" && v !== "0") {
+                        return false;
+                    }
+                }
+                if (t === "function") {
+                    return false;
+                }
+                return true;
+            }
+            var matchValue = function(o, dv, qv) {
+                var qvt = getType(qv);
+                var dvt = getType(dv);
+                var i;
+                switch(o) {
+                    case "$eq":
+                        return dvt === qvt && dv === qv;
+                    case "$ne":
+                        return dvt !== qvt || dv !== qv;
+                    case "$in":
+                        if (dvt === "array" || dvt === "object") {
                             return false;
                         }
-                    }
-                    return true;
-                } if (isIndexedLoopOperator(key)) {
-                    /* Array */
-                    if (getType(value) !== "object") {
-                        return false;
-                    }
-                    return true;
-                } else if (isArrayOperator(key)) {
-                    /* Array */
-                    if (getType(value) !== "array") {
-                        return false;
-                    }
-                    return true;
-                } else if (isNumberOperator(key)) {
-                    /* Number */
-                    if (getType(value) !== "number") {
-                        return false;
-                    }
-                    return true;
-                } else if (isElementOperator(key)) {
-                    /* Boolean */
-                    if (getType(value) !== "boolean" && value !== 1 && value !== 0 && value !== "true" && value !== "false" && value !== "1" && value !== "0") {
-                        return false;
-                    }
-                    return true;
-                } else {
-                    /* Is not operator */
-                    return true;
+                        return qv.indexOf(dv) > -1;
+                    case "$nin":
+                        if (dvt === "array" || dvt === "object") {
+                            return false;
+                        }
+                        return qv.indexOf(dv) < 1;
+                    case "$gt":
+                        return dvt === qvt && dv > qv;
+                    case "$gte":
+                        return dvt === qvt && dv >= qv;
+                    case "$lt":
+                        return dvt === qvt && dv < qv;
+                    case "$lte":
+                        return dvt === qvt && dv <= qv;
+                    case "$exists":
+                        return dvt !== "undefined" || dvt !== "null";
+                    default:
+                        if (dvt !== qvt) {
+                            return false;
+                        }
+                        if (dvt === "array") {
+                            if (dv.length !== qv.length) {
+                                return false;
+                            }
+                            for (i = 0; i < dv.length; i++) {
+                                if (!matchValue(null, dv[i], qv[i])) {
+                                    return false;
+                                }
+                            }
+                            return true;
+                        }
+                        if (dvt === "object") {
+                            return JSON.stringify(dv) === JSON.stringify(qv);
+                        }
+                        return dv === qv;
                 }
             }
-            var parseQuery = function(__queryObject) {
-                var results = [];
-                var recursiveFunc = function(prev, curr) {
-                    var i;
-                    var keys;
-                    var key;
-                    var value;
-                    var prevKey = prev.split("\.").pop();
-                    if (!chkValueType(prevKey, curr)) {
-                        var err = new Error('Invalid argument type');
-                        err.name = "TypeError";
-                        throw err;
-                    } else if (isUnindexedLoopOperator(prevKey)) {
-                        /* Array */
-                        for (i = 0; i < curr.length; i++) {
-                            value = curr[i];
-                            recursiveFunc(prev+"\$"+i, value);
-                        }
-                    } else if (getType(curr) === "object") {
-                        /* Object */
-                        keys = Object.keys(curr);
-                        for (i = 0; i < keys.length; i++) {
-                            key = keys[i];
-                            value = curr[key];
-                            recursiveFunc(prev+"\."+key, value);
-                        }
-                    } else {
-                        /* Save */
-                        if (getType(curr) === "array") {
-                            value = JSON.stringify(curr);
-                        } else {
-                            value = curr;
-                        }
-                        results.push(prev+"\.\$"+getType(curr)+"\$"+value);
-                    }
-                    return true;
-                }
-                recursiveFunc("", __queryObject);
-                return results;
-            }
-            var matchQuery = function(__dataObject, __queryArray) {
-                var isMatch = false;
+            var matchQuery = function(k, d, q) {
                 var i;
-                var j;
-                var data = __dataObject;
-                var query;
-                var value;
-                var key;
-
-                var getValue = function(__query, __value) {
-                    var index = __query.length;
-                    var count = 0;
-                    if (index > count) {
-                        if (/^\$.*\$.*$/i.test(__value)) {
-                            return __value;
-                        } else {
-                            __value = __query.pop() + "." + __value;
-                            return getValue(__query, __value);
-                        }
-                    } else {
-                        var err = new Error('Invalid argument type');
-                        err.name = "TypeError";
-                        throw err;
-                    }      
+                var qt = getType(q);
+                var qv;
+                var dv;
+                var kv;
+                var keys;
+                var res = true;
+                if (k && !chkType(k, q)) {
+                    var err = new Error('Invalid argument type');
+                    err.name = "TypeError";
+                    throw err;
                 }
-                var calcOperator = function(key, value) {
-                    if (isLoopOperator(key)) {
-
-                    }
-                }
-
-                for (i = 0; i < __queryArray.length; i++) {
-                    query = __queryArray[i].split("\.").splice(1);
-                    value = getValue(query, query.pop());
-                    console.log(query, value);
-
-                    for (j = 0; j < query.length; j++) {
-                        key = query[i];
-                        
-                        if (isOperator(key)) {
-
-                        } else {
-
+                if (isLoopOperator(k)) {
+                    /* Logical operators */
+                    kv = k;
+                    dv = d;
+                    keys = q;
+                    res = (kv === "$and");
+                    for (i = 0; i < keys.length; i++) {
+                        qv = keys[i];
+                        if (kv === "$and") {
+                            res = res && matchQuery(null, dv, qv);
+                        } else if (kv === "$or") {
+                            res = res || matchQuery(null, dv, qv);
+                        } else if (kv === "$nor") {
+                            res = res || matchQuery(null, dv, qv);
                         }
                     }
+                    if (isNorOperator(kv)) {
+                        res = !res;
+                    }
+                } else if (qt === "object") {
+                    /* Object, Operators */
+                    keys = Object.keys(q);
+                    for (i = 0; i < keys.length; i++) {
+                        kv = keys[i];
+                        dv = isOperator(kv) ? d : d[kv]; 
+                        qv = q[kv];
+                        if (isNotOperator(kv)) {
+                            res = res && !matchQuery(kv, dv, qv);
+                        } else {
+                            res = res && matchQuery(kv, dv, qv);
+                        }
+                    }
+                } else {
+                    /* String, Number, Array, Comparison operators */
+                    kv = k;
+                    dv = d;
+                    qv = q;
+                    res = res && matchValue(kv, dv, qv);
                 }
+                return res;
             }
-            
-            var parsedQuery = parseQuery(queryObject);
-            var res = matchQuery(dataObject, parsedQuery);
-            // console.log(parsedQuery);
+            return matchQuery(null, dataObject, queryObject);
         },
 
+        calcCoveredSize: function(sw, sh, dw, dh) {
+            var aspectRatio = sw / sh;
+            if (dh * aspectRatio < dw) {
+                return {
+                    width: dw,
+                    height: dw / aspectRatio
+                }
+            } else {
+                return {
+                    width: dh * aspectRatio,
+                    height: dh
+                }
+            }
+        },
+
+        calcContainedSize: function(sw, sh, dw, dh) {
+            var aspectRatio = sw / sh;
+            if (dh * aspectRatio < dw) {
+                return {
+                    width: dh * aspectRatio,
+                    height: dh
+                }
+            } else {
+                return {
+                    width: dw,
+                    height: dw / aspectRatio
+                }
+            }
+        },
+
+        calcOptimumSize: function(sw, sh, mxw, mxh, mnw, mnh) {
+            var aspectRatio = sw / sh;
+            var maxWidth;
+            var maxHeight;
+            var minWidth;
+            var minHeight;
+            if (!mnw) {
+                mnw = 0;
+            }
+            if (!mnh) {
+                mnh = 0;
+            }
+            if (mxh * aspectRatio < mxw) {
+                maxWidth = mxh * aspectRatio;
+                maxHeight = mxh;
+            } else {
+                maxWidth = mxw;
+                maxHeight = mxw / aspectRatio;
+            }
+            if (mnh * aspectRatio < mnw) {
+                minWidth = mnw;
+                minHeight = mnw / aspectRatio;
+            } else {
+                minWidth = mnh * aspectRatio;
+                minHeight = mnh;
+            }
+            return {
+                width: Math.min(maxWidth, Math.max(minWidth, sw)),
+                height: Math.min(maxHeight, Math.max(minHeight, sh))
+            }
+        },
+
+        calcRectanglePoint: function() {
+
+        },
+
+        calcRotatedPoint: function() {
+
+        },
+
+        calcRotatedSize: function() {
+
+        }
     }
 
     

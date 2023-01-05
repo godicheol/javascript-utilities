@@ -19,9 +19,9 @@
         var container = document.getElementById("container");
         var list = Object.keys(utils);
         container.innerHTML += "\<ul\>";
-        list.forEach(function(e) {
-            container.innerHTML += "\<li\>" + e + "()\<\/li\>";
-        })
+        list.forEach(function(e, idx) {
+            container.innerHTML += "\<li\>"+ (idx+1) + "\. " + e + "()\<\/li\>";
+        });
         container.innerHTML += "\<\/ul\>";
     </script>
 </body>

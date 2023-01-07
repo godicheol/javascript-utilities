@@ -3,7 +3,13 @@
 
     var mainObject = {
 
-        /* Variable type */
+        /* Math */
+
+        mod: function(n, m) {
+            return ((n % m) + m) % m;
+        },
+
+        /* Type */
 
         isBoolean: function(bool) {
             return (typeof(bool) === "boolean") || (typeof(bool) === "number" && (bool === 1 || bool === 0)) || (typeof(bool) === "string" && (bool === "true" || bool === "false" || bool === "1" || bool === "0"))
@@ -53,7 +59,7 @@
             return /^[a-zA-Z0-9-._~()'!*:@,?\/#+&=]+$/.test(str);
         },
 
-        /* Change variable type */
+        /* Change type */
 
         toBoolean: function(bool) {
             if (typeof(bool) === "boolean") {
@@ -539,7 +545,24 @@
 
         /* Object */
 
-        ObjectSchema: function(object) {
+        /* 
+            var schema = new MySchema({
+                name: String,
+                weight: Number,
+            })
+            var human = {
+                name: "James",
+                weight: "5"
+            }
+            var isMatch = schema.test(human);
+
+            console.log(isMatch); // true
+
+            var newHuman = schema.get(human);
+
+            console.log(newHuman); // { name: "James", weight: 5 }
+        */
+        MySchema: function(object) {
             var Schema = this;
             /* Constructor */
             this.Types = {
@@ -752,8 +775,6 @@
                     }
                 }
             };
-            this.set = Schema.init;
-            this.add = Schema.init;
             this.get = function(obj) {
                 var keys = Object.keys(obj);
                 var key;
@@ -767,8 +788,6 @@
                 }
                 return res;
             };
-            this.save = Schema.get;
-            this.convert = Schema.get;
             this.test = function(obj) {
                 var keys = Object.keys(obj);
                 var key;
@@ -783,8 +802,6 @@
                 }
                 return true;
             };
-            this.confirm = Schema.test;
-            this.validate = Schema.test;
             this.isValidType = function(__construtor) {
                 try {
                     return typeof(Schema.Types[__construtor.name]) === "object";
@@ -809,11 +826,31 @@
             this.getValidValue = function(key, val) {
                 return Schema.types[key].set(val);
             };
-
+            /* Alias */
+            this.set = Schema.init;
+            this.add = Schema.init;
+            this.save = Schema.get;
+            this.convert = Schema.get;
+            this.confirm = Schema.test;
+            this.validate = Schema.test;
             /* Initialize this.types */
             this.init(object);
         },
-
+        /* 
+            var data = {id:1,attr:{width:5,height:6}}
+            queryObject(data, {
+                $and: [{
+                    id:1
+                }, {
+                    attr: {
+                        width: {
+                            $gt: 1,
+                            $lt: 6
+                        }
+                    }
+                }]
+            })
+        */
         queryObject: function(dataObject, queryObject) {
             var isOperator = function(str) {
                 return /^(\$and|\$or|\$nor|\$not|\$eq|\$ne|\$in|\$nin|\$gt|\$gte|\$lt|\$lte|\$exists)$/i.test(str);
@@ -1034,7 +1071,69 @@
 
         /* Rectangle */
 
-        calcCoveredSize: function(sw, sh, dw, dh) {
+        getRectangle: function(rect, updates) {
+            var getRotatedSize = function(_w, _h, _d) {
+                var radians = _d * Math.PI / 180;
+                var sinFraction = Math.sin(radians);
+                var cosFraction = Math.cos(radians);
+                if (sinFraction < 0) {
+                    sinFraction = -sinFraction;
+                }
+                if (cosFraction < 0) {
+                    cosFraction = -cosFraction;
+                }
+                return {
+                    width: (_w * cosFraction) + (_h * sinFraction),
+                    height: (_w * sinFraction) + (_h * cosFraction)
+                }
+            };
+            var getVertex = function(_px, _py, _cx, _cy, _d) {
+                var radians = _d * Math.PI / 180;
+                var sinFraction = Math.sin(radians);
+                var cosFraction = Math.cos(radians);
+                return {
+                    x: ((_px-_cx)*cosFraction)-((_py-_cy)*sinFraction)+_cx,
+                    y: ((_px-_cx)*sinFraction)+((_py-_cy)*cosFraction)+_cy
+                }
+            };
+
+            /*
+                pivot
+                [0, 1, 2]
+                [3, 4, 5]
+                [6, 7, 8]
+            */
+            var pivot = rect.pivot || 4;
+            var x = rect.x;
+            var y = rect.y;
+            var w = rect.width;
+            var h = rect.height;
+            var d = rect.degree || rect.deg || rect.rotate;
+            var fx = rect.flipX || rect.scaleX;
+            var fy = rect.flipY || rect.scaleY;
+            var cx;
+            var cy;
+            var ux = updates.x;
+            var uy = updates.y;
+            var uw = updates.width;
+            var uh = updates.height;
+            var ud = updates.degree || updates.deg || updates.rotate;
+            var ufx = updates.flipX || updates.scaleX;
+            var ufy = updates.flipY || updates.scaleY;
+            switch(pivot) {
+                case 0: break;
+                case 1: break;
+                case 2: break;
+                case 3: break;
+                case 4: break;
+                case 5: break;
+                case 6: break;
+                case 7: break;
+                case 8: break;
+                default: break;
+            }
+        },
+        getCoveredSize: function(sw, sh, dw, dh) {
             var aspectRatio = sw / sh;
             if (dh * aspectRatio < dw) {
                 return {
@@ -1048,7 +1147,7 @@
                 }
             }
         },
-        calcContainedSize: function(sw, sh, dw, dh) {
+        getContainedSize: function(sw, sh, dw, dh) {
             var aspectRatio = sw / sh;
             if (dh * aspectRatio < dw) {
                 return {
@@ -1062,7 +1161,7 @@
                 }
             }
         },
-        calcOptimumSize: function(sw, sh, mxw, mxh, mnw, mnh) {
+        getOptimumSize: function(sw, sh, mxw, mxh, mnw, mnh) {
             var aspectRatio = sw / sh;
             var maxWidth;
             var maxHeight;
@@ -1093,14 +1192,30 @@
                 height: Math.min(maxHeight, Math.max(minHeight, sh))
             }
         },
-        calcRotatedSize: function() {
-
+        getRotatedSize: function(w, h, d) {
+            var radians = d * Math.PI / 180;
+            var sinFraction = Math.sin(radians);
+            var cosFraction = Math.cos(radians);
+            if (sinFraction < 0) {
+                sinFraction = -sinFraction;
+            }
+            if (cosFraction < 0) {
+                cosFraction = -cosFraction;
+            }
+            return {
+                width: (w * cosFraction) + (h * sinFraction),
+                height: (w * sinFraction) + (h * cosFraction)
+            }
         },
-        calcPoint: function() {
-
-        },
-        calcRotatedPoint: function() {
-
+        getVertex: function(cx, cy, x, y, d) {
+            /* center, current, degree  */
+            var radians = d * Math.PI / 180;
+            var sinFraction = Math.sin(radians);
+            var cosFraction = Math.cos(radians);
+            return {
+                x: cx+((x-cx)*cosFraction)-((x-cy)*sinFraction),
+                y: cy+((y-cx)*sinFraction)+((y-cy)*cosFraction)
+            }
         },
 
         /* Function */
@@ -1122,11 +1237,158 @@
             }
             return promises();
         },
+        /* 
+            var a = new MyAnimation(function() {
+                // Code
+            }, 1000);
+
+            a.start();
+            a.pause();
+            a.stop();
+        */
+        MyAnimation: function(func, delay) {
+            this.function = null;
+            this.isStarted = false;
+            this.count = 0;
+            this.set = function(f, d) {
+                this.count = 0;
+                this.isStarted = false;
+                this.function = setInterval(function() {
+                    if (this.isStarted) {
+                        this.count++;
+                        f();
+                    }
+                }.bind(this), d);
+                return true;
+            };
+            this.start = function() {
+                this.isStarted = true;
+                return true;
+            };
+            this.pause = function() {
+                this.isStarted = false;
+                return true;
+            };
+            this.stop = function() {
+                if (this.function) {
+                    clearInterval(this.function);
+                }
+                this.function = null;
+                this.isStarted = false;
+                this.count = 0;
+                return true;
+            };
+            /* alias */
+            this.go = this.start;
+            this.end = this.stop;
+            /* Initialize */
+            if (func && delay) {
+                this.set(func, delay);
+            }
+        },
 
         /* Canvas api */
-        genCanvas: function(src) {
 
-        }
+        hasCanvas: function() {
+            var element = document.createElement('canvas');
+            return !!(element.getContext && element.getContext('2d'));
+        },
+        MyCanvas: function MyCanvas() {
+            var canvas = document.createElement('canvas');
+            var ctx = canvas && canvas.getContext('2d')
+            this.canvas = canvas;
+            this.ctx = ctx;
+            this.get = function() {
+                return this.canvas;
+            };
+            this.drawStroke = function(sx, sy, dx, dy) {
+                ctx.beginPath();
+                ctx.moveTo(sx + 1, sy + 1);
+                ctx.lineTo(dx + 1, dy + 1);
+                ctx.stroke();
+                ctx.closePath();
+            };
+            this.drawText = function(str, x, y) {
+                ctx.fillText(str, x, y);
+            };
+            this.getVertex = function(cx, cy, x, y, d) {
+                var radians = d * Math.PI / 180;
+                var sinFraction = Math.sin(radians);
+                var cosFraction = Math.cos(radians);
+                return {
+                    x: cx+((x-cx)*cosFraction)-((y-cy)*sinFraction),
+                    y: cy+((x-cx)*sinFraction)+((y-cy)*cosFraction)
+                }
+            };
+            this.clear = function() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            };
+            this.save = function() {
+                ctx.save();
+            };
+            this.restore = function() {
+                ctx.restore();
+            };
+            this.setFont = function(str) {
+                ctx.font = str; 
+            };
+          
+            /* Initialize */
+            ctx.fillStyle = "#000000";
+            ctx.strokeStyle = "#000000";
+            ctx.lineWidth = 0.5;
+            this.setFont("10px serif");
+            this.save();
+        },
+        getMaxCanvasSize: function() {
+            var w = [8388607, 4194303, 65535, 32767, 16384, 8192, 4096, 1];
+            var h = [8388607, 4194303, 65535, 32767, 16384, 8192, 4096, 1];
+            var a = [65535, 32767, 16384, 14188, 11402, 11180, 10836, 8192, 4096, 1];
+            var mxw;
+            var mxh;
+            var mxa;
+            var i;
+            var testCanvas = function(_w, _h) {
+                var drawCanvas = document.createElement("canvas");
+                var drawCtx = drawCanvas.getContext("2d");
+                var testCanvas = document.createElement("canvas");
+                var testCtx = testCanvas.getContext("2d");
+                drawCanvas.width = _w;
+                drawCanvas.height = _h;
+                testCanvas.width = 1;
+                testCanvas.height = 1;
+                drawCtx.fillStyle = "#123123";
+                drawCtx.fillRect(_w - 1, _h - 1, 1, 1);
+                testCtx.drawImage(drawCanvas, _w - 1, _h - 1, 1, 1, 0, 0, 1, 1);
+                return testCtx.getImageData(0, 0, 1, 1).data[3] !== 0;
+            }
+            for (i = 0; i < w.length; i++) {
+                if (testCanvas(w[i], 1)) {
+                    mxw = w[i];
+                    break;
+                }
+            }
+            for (i = 0; i < h.length; i++) {
+                if (testCanvas(1, h[i])) {
+                    mxh = h[i];
+                    break;
+                }
+            }
+            for (i = 0; i < a.length; i++) {
+                if (testCanvas(a[i], a[i])) {
+                    mxa = a[i];
+                    break;
+                }
+            }
+            return {
+                width: mxw,
+                height: mxw,
+                area: {
+                    width: mxa,
+                    height: mxa
+                }
+            }
+        },
     }
 
     if (typeof(window.utils) === "undefined") {

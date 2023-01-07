@@ -3,23 +3,57 @@
 
     var mainObject = {
 
-        getType: function(any) {
-            if (typeof(any) === "object") {
-                if (Object.prototype.toString.call(any) === '[object Array]') {
-                    return "array";
-                } else if (any === null) {
-                    return "null";
-                } else {
-                    return "object";
-                }
-            } else {
-                return typeof(any);
-            }
-        },
+        /* Variable type */
 
         isBoolean: function(bool) {
             return (typeof(bool) === "boolean") || (typeof(bool) === "number" && (bool === 1 || bool === 0)) || (typeof(bool) === "string" && (bool === "true" || bool === "false" || bool === "1" || bool === "0"))
         },
+        isNumeric: function(num) {
+            return typeof(num) === "number" || (typeof(num) === "string" && !isNaN(parseFloat(num)) && isFinite(num));
+        },
+        isString: function(str) {
+            return typeof(str) === "string";
+        },
+        isObject: function(obj) {
+            return typeof(obj) === "object" && obj !== null && Object.prototype.toString.call(obj) !== '[object Array]';
+        },
+        isArray: function(arr) {
+            return typeof(arr) === "object" && Object.prototype.toString.call(arr) === '[object Array]';
+        },
+        isDate: function(date) {
+            return date instanceof Date && !isNaN(date.valueOf());
+        },
+        isNode: function(node) {
+            return (typeof(Node) === "object" ? node instanceof Node : node) && typeof(node) === "object" && typeof(node.nodeType) === "number" && typeof(node.nodeName) === "string";
+        },
+        isNodeList: function(node) {
+            return typeof(node) === "object" && /^\[object (HTMLCollection|NodeList|Object)\]$/.test(Object.prototype.toString.call(node)) && typeof(node.length) === "number" && (node.length === 0 || (typeof(node[0]) === "object" && node[0].nodeType > 0));
+        },
+        isDOMElement: function(elem) {
+            return (typeof(HTMLElement) === "object" ? elem instanceof HTMLElement : elem) && typeof(elem) === "object" && elem !== null && elem.nodeType === 1 && typeof(elem.nodeName) === "string";
+        },
+        isMimeType: function(str) {
+			var pattern = new RegExp("(application|audio|font|example|image|message|model|multipart|text|video|x-(?:[0-9A-Za-z!#$%&'*+.^_`|~-]+))/([0-9A-Za-z!#$%&'*+.^_`|~-]+)((?:[ \t]*;[ \t]*[0-9A-Za-z!#$%&'*+.^_`|~-]+=(?:[0-9A-Za-z!#$%&'*+.^_`|~-]+|\"(?:[^\"\\\\]|\\.)*\"))*)");
+			return pattern.test(str);
+		},
+        isColor: function(str) {
+            var pattern = new RegExp("^(?:#(?:[A-Fa-f0-9]{3}){1,2}|(?:rgb[(](?:\s*0*(?:\d\d?(?:\.\d+)?(?:\s*%)?|\.\d+\s*%|100(?:\.0*)?\s*%|(?:1\d\d|2[0-4]\d|25[0-5])(?:\.\d+)?)\s*(?:,(?![)])|(?=[)]))){3}|hsl[(]\s*0*(?:[12]?\d{1,2}|3(?:[0-5]\d|60))\s*(?:\s*,\s*0*(?:\d\d?(?:\.\d+)?\s*%|\.\d+\s*%|100(?:\.0*)?\s*%)){2}\s*|(?:rgba[(](?:\s*0*(?:\d\d?(?:\.\d+)?(?:\s*%)?|\.\d+\s*%|100(?:\.0*)?\s*%|(?:1\d\d|2[0-4]\d|25[0-5])(?:\.\d+)?)\s*,){3}|hsla[(]\s*0*(?:[12]?\d{1,2}|3(?:[0-5]\d|60))\s*(?:\s*,\s*0*(?:\d\d?(?:\.\d+)?\s*%|\.\d+\s*%|100(?:\.0*)?\s*%)){2}\s*,)\s*0*(?:\.\d+|1(?:\.0*)?)\s*)[)])$");
+            return pattern.test(str);
+        },
+        isRegexp: function(regexp) {
+            return (typeof(regexp) === "object" && regexp instanceof RegExp) || (typeof(regexp) === "string" && /^\/.*\/[gi]{0,1}$/.test(regexp));
+        },
+        isCapital: function(str) {
+            return str.charAt(0) === str.charAt(0).toUpperCase();
+        },
+        isUrl: function(str) {
+            return /^(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})$/.test(str);
+        },
+        isSafeUrl: function(str) {
+            return /^[a-zA-Z0-9-._~()'!*:@,?\/#+&=]+$/.test(str);
+        },
+
+        /* Change variable type */
 
         toBoolean: function(bool) {
             if (typeof(bool) === "boolean") {
@@ -36,11 +70,6 @@
                 throw err;
             }
         },
-
-        isNumeric: function(num) {
-            return typeof(num) === "number" || (typeof(num) === "string" && !isNaN(parseFloat(num)) && isFinite(num));
-        },
-
         toNumber: function(num) {
             if (typeof(num) === "number") {
                 return num;
@@ -52,11 +81,6 @@
                 throw err;
             }
         },
-
-        isString: function(str) {
-            return typeof(str) === "string";
-        },
-
         toString: function(str) {
             if (typeof(str) === "string") {
                 return str;
@@ -68,46 +92,72 @@
                 throw err;
             }
         },
-
-        isObject: function(obj) {
-            return typeof(obj) === "object" && obj !== null && Object.prototype.toString.call(obj) !== '[object Array]';
+        toObject: function(arr) {
+            /* arr = [[key, value], [key, value]] */
+            return arr.reduce(function(prev, curr) {
+                prev[curr[0]] = curr[1];
+                return prev;
+            }, {});
         },
-
-        isArray: function(arr) {
-            return typeof(arr) === "object" && Object.prototype.toString.call(arr) === '[object Array]';
+        toArray: function(any) {
+            if (typeof(any) === "object" && any !== null && Object.prototype.toString.call(any) !== '[object Array]') {
+                return Object.entries(any); /* Object */
+            } else if (typeof(any) === "object" && any !== null && Object.prototype.toString.call(any) === '[object Array]') {
+                return any; /* Array */
+            } else if (typeof(any) === "string") {
+                return any.split(''); /* String */
+            } else {
+                var err = new Error('Invalid argument type');
+                err.name = "TypeError";
+                throw err;
+            }
         },
-
-        isNode: function(node) {
-            return (typeof(Node) === "object" ? node instanceof Node : node) && typeof(node) === "object" && typeof(node.nodeType) === "number" && typeof(node.nodeName) === "string";
+        toDate: function(date) {
+            if (typeof(date) === "object" && date instanceof Date && !isNaN(date.valueOf())) {
+                return date;
+            } else if (typeof(date) === "number") {
+                return new Date(date);
+            } else if (typeof(date) === "string") {
+                return new Date(date);
+            } else {
+                var err = new Error('Invalid argument type');
+                err.name = "TypeError";
+                throw err;
+            }
         },
-
-        isNodeList: function(node) {
-            return typeof(node) === "object" && /^\[object (HTMLCollection|NodeList|Object)\]$/.test(Object.prototype.toString.call(node)) && typeof(node.length) === "number" && (node.length === 0 || (typeof(node[0]) === "object" && node[0].nodeType > 0));
+        toRegexp: function(regexp) {
+            if (typeof(regexp) === "object" && regexp instanceof RegExp) {
+                return regexp;
+            } else if (typeof(regexp) === "string" && /^\/.*\/[gi]{0,1}$/.test(regexp)) {
+                return new RegExp(regexp);
+            } else {
+                var err = new Error('Invalid argument type');
+                err.name = "TypeError";
+                throw err;
+            }
         },
-
-        isDOMElement: function(elem) {
-            return (typeof(HTMLElement) === "object" ? elem instanceof HTMLElement : elem) && typeof(elem) === "object" && elem !== null && elem.nodeType === 1 && typeof(elem.nodeName) === "string";
-        },
-
-        isMimeType: function(str) {
-			var pattern = new RegExp("(application|audio|font|example|image|message|model|multipart|text|video|x-(?:[0-9A-Za-z!#$%&'*+.^_`|~-]+))/([0-9A-Za-z!#$%&'*+.^_`|~-]+)((?:[ \t]*;[ \t]*[0-9A-Za-z!#$%&'*+.^_`|~-]+=(?:[0-9A-Za-z!#$%&'*+.^_`|~-]+|\"(?:[^\"\\\\]|\\.)*\"))*)");
-			return str.match(pattern);
-		},
-
-        isColor: function(str) {
-            var pattern = new RegExp("^(?:#(?:[A-Fa-f0-9]{3}){1,2}|(?:rgb[(](?:\s*0*(?:\d\d?(?:\.\d+)?(?:\s*%)?|\.\d+\s*%|100(?:\.0*)?\s*%|(?:1\d\d|2[0-4]\d|25[0-5])(?:\.\d+)?)\s*(?:,(?![)])|(?=[)]))){3}|hsl[(]\s*0*(?:[12]?\d{1,2}|3(?:[0-5]\d|60))\s*(?:\s*,\s*0*(?:\d\d?(?:\.\d+)?\s*%|\.\d+\s*%|100(?:\.0*)?\s*%)){2}\s*|(?:rgba[(](?:\s*0*(?:\d\d?(?:\.\d+)?(?:\s*%)?|\.\d+\s*%|100(?:\.0*)?\s*%|(?:1\d\d|2[0-4]\d|25[0-5])(?:\.\d+)?)\s*,){3}|hsla[(]\s*0*(?:[12]?\d{1,2}|3(?:[0-5]\d|60))\s*(?:\s*,\s*0*(?:\d\d?(?:\.\d+)?\s*%|\.\d+\s*%|100(?:\.0*)?\s*%)){2}\s*,)\s*0*(?:\.\d+|1(?:\.0*)?)\s*)[)])$");
-            return str.match(pattern);
-        },
-        
         toCapital: function(str) {
             return str.charAt(0).toUpperCase() + str.slice(1);
         },
-
         toSafeUrl: function(str, char) {
-            var pattern = /[\{\}\[\].,;:|\)*~`!^<>@\$%\\\(\'\"\s]/g; // allow ?/#+&=
-            return str.replace(pattern, char || "_");
+            return str.replace(/[\{\}\[\].,;:|\)*~`!^<>@\$%\\\(\'\"\s]/g, char || "_");
         },
 
+        /* Get */
+
+        getType: function(any) {
+            if (typeof(any) === "object") {
+                if (Object.prototype.toString.call(any) === '[object Array]') {
+                    return "array";
+                } else if (any === null) {
+                    return "null";
+                } else {
+                    return "object";
+                }
+            } else {
+                return typeof(any);
+            }
+        },
         getOs: function() {
             var clients = [
                 {system:'Windows 10', pattern:/(Windows 10.0|Windows NT 10.0)/},
@@ -145,7 +195,6 @@
             }
             return undefined;
         },
-
         getBrowserName: function() {
             var alias = {"Opera": "Opera","OPR": "Opera","Edge": "Microsoft Legacy Edge","Edg": "Microsoft Edge","MSIE": "Microsoft Internet Explorer","Chrome": "Chrome","Safari": "Safari","Firefox": "Firefox","Trident/": "Microsoft Internet Explorer"}
             var res = /Opera|OPR|Edge|Edg|MSIE|Chrome|Firefox|Trident\//.exec(navigator.userAgent);
@@ -154,7 +203,6 @@
             }
             return alias[res[0]]
         },
-
         getBrowserVersion: function() {
             var alias = {"Opera": "Opera","OPR": "Opera","Edge": "Microsoft Legacy Edge","Edg": "Microsoft Edge","MSIE": "Microsoft Internet Explorer","Chrome": "Chrome","Safari": "Safari","Firefox": "Firefox","Trident/": "Microsoft Internet Explorer"}
             var res = /Opera|OPR|Edge|Edg|MSIE|Chrome|Firefox|Trident\//.exec(navigator.userAgent);
@@ -178,21 +226,18 @@
             }
             return version;
         },
-
         getScreenSize: function() {
             return {
                 width: window.screen.width * window.devicePixelRatio,
                 height: window.screen.height * window.devicePixelRatio
             }
         },
-
         getViewportSize: function() {
             return {
                 width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
                 height: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight,
             }
         },
-
         getMimeType: function(str) {
             switch(str) {
                 case "html":
@@ -290,55 +335,36 @@
                 default: return undefined;
             }
         },
-
         getExtension: function(str) {
             return str.split('.').pop();
         },
-
         getFileName: function(str) {
             return str.replace(/^.*[\\\/]/, '');
         },
-
-        toHumanizedFileSize: function(bytes, dot) {
-            if (bytes === 0) {
-                return "0 bytes";
-            }
-            var k = 1024;
-            var dp = dot < 0 ? 0 : dot;
-            var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-            var i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(dp)) + ' ' + sizes[i];
+        getCookie: function(key) {
+            var cookies = document.cookie.split(';');
+            var cookie = cookies.find(function(e) {
+                return e.split("=")[0] === key;
+            });
+            return cookie.split("=")[1];
         },
 
-        convFileSize: function(bytes, format, dot) {
-            var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-            var alias = {"b": "Bytes","byte": "Bytes","bytes": "Bytes","kb": "KB","killobyte": "KB","killobytes": "KB",'mb': "MB",'megabyte': "MB",'megabytes': "MB",'gb': "GB",'gigabyte': "GB",'gigabytes': "GB",'tb': "TB",'terrabyte': "TB",'terrabytes': "TB",'pb': "PB",'petabyte': "PB",'petabytes': "PB",'eb': "EB",'exabyte': "EB",'exabytes': "EB",'zb': "ZB",'zettabyte': "ZB",'zettabytes': "ZB",'yb': "YB",'yottabyte': "YB",'yottabytes': "YB"}
-            var f = (format && alias[format.toLowerCase()]) ? alias[format.toLowerCase()] : "Bytes";
-            if (bytes === 0) {
-                return '0 ' + f;
-            }
-            var k = 1024;
-            var dp = dot < 0 ? 0 : dot;
-            var i = sizes.indexOf(f);
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(dp)) + ' ' + sizes[i];
-        },
+        /* Deep copy */
 
-        /* deep copy */
         copyObject: function(obj) {
             return JSON.parse(JSON.stringify(obj));
         },
-
-        /* deep copy */
         copyArray: function(arr) {
             return JSON.parse(JSON.stringify(arr));
         },
+
+        /* Generate */
 
         genError: function(title, message) {
             var err = new Error(message);
             err.name = title;
             return err;
         },
-
         genHash: function(str) {
             var hash = 0;
             var i;
@@ -350,7 +376,6 @@
             }
             return hash;
         },
-
         genMd5: function(str) {
             function M(d) {
                 for (var _, m = "0123456789ABCDEF", f = "", r = 0; r < d.length; r++) _ = d.charCodeAt(r), f += m.charAt(_ >>> 4 & 15) + m.charAt(15 & _);
@@ -401,7 +426,6 @@
             var r = M(V(Y(X(str), 8 * str.length)));
             return r.toLowerCase()
         },
-
         genUuid4: function() {
             return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
                 var r = Math.random() * 16 | 0,
@@ -409,8 +433,8 @@
                 return v.toString(16);
             });
         },
-
         genCharset: function(charset, len) {
+            /* charset = "abcdefg" */
             var res = "";
             var i;
             for (i = 0; i < len; i++) {
@@ -418,7 +442,6 @@
             }
             return res;
         },
-
         genShortId: function() {
             var f = (Math.random() * 46656) | 0;
 			var s = (Math.random() * 46656) | 0;
@@ -426,6 +449,33 @@
 			s = ("000" + s.toString(36)).slice(-3);
 			return f + s;
         },
+
+         /* File Size */
+        
+         convFileSize: function(bytes, format, dot) {
+            var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+            var alias = {"b": "Bytes","byte": "Bytes","bytes": "Bytes","kb": "KB","killobyte": "KB","killobytes": "KB",'mb': "MB",'megabyte': "MB",'megabytes': "MB",'gb': "GB",'gigabyte': "GB",'gigabytes': "GB",'tb': "TB",'terrabyte': "TB",'terrabytes': "TB",'pb': "PB",'petabyte': "PB",'petabytes': "PB",'eb': "EB",'exabyte': "EB",'exabytes': "EB",'zb': "ZB",'zettabyte': "ZB",'zettabytes': "ZB",'yb': "YB",'yottabyte': "YB",'yottabytes': "YB"}
+            var f = (format && alias[format.toLowerCase()]) ? alias[format.toLowerCase()] : "Bytes";
+            if (bytes === 0) {
+                return '0 ' + f;
+            }
+            var k = 1024;
+            var dp = dot < 0 ? 0 : dot;
+            var i = sizes.indexOf(f);
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dp)) + ' ' + sizes[i];
+        },
+        humanlizeFileSize: function(bytes, dot) {
+            if (bytes === 0) {
+                return "0 bytes";
+            }
+            var k = 1024;
+            var dp = dot < 0 ? 0 : dot;
+            var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+            var i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dp)) + ' ' + sizes[i];
+        },
+        
+        /* Cookie */
 
         isCookieEndabled: function() {
             if (typeof(navigator.cookieEnabled) !== "undefined") {
@@ -444,56 +494,324 @@
                 }
             }
         },
-
-        getCookie: function(key) {
-            var cookies = document.cookie.split(';');
-            var cookie = cookies.find(function(e) {
-                return e.split("=")[0] === key;
-            });
-            return cookie.split("=")[1];
-        },
-
         setCookie: function(key, val) {
             document.cookie = key + '=' + val;
         },
-
         removeCookie: function(key) {
             document.cookie = key + '=; Max-Age=-99999999;';
         },
+
+        /* Browser */
 
         openUrl: function(url, target) {
             window.open(url, target);
         },
 
+        /* String */
+
         padLeft: function(pad, str) {
+            /* pad = "0000" */
             if (!str) {
                 return pad;
             }
             return (pad + str).slice(-pad.length);
         },
-
         padRight: function(pad, str) {
+            /* pad = "0000" */
             if (!str) {
                 return pad;
             }
             return (str + pad).substring(0, pad.length);
         },
-
         joinString: function(arr, header, footer) {
             return arr.map(function(e) {
                 return (header ? header : "") + e + (footer ? footer : "");
             }).join("");
         },
-
-        parseString: function(str) {
-            // All chars
-            // sort by length
-
-            // 1. length , 2. counts
+        getCommonString: function(stringArray) {
+             
+        },
+        parseString: function(str, locale) {
+        },
+        replaceString: function(str, from, to) {
+            return str.split(from).join(to);
         },
 
-        updateString: function(str, obj) {
-            // split and join
+        /* Object */
+
+        ObjectSchema: function(object) {
+            var Schema = this;
+            /* Constructor */
+            this.Types = {
+                Boolean: {
+                    get: function(v) {
+                        if (typeof(v) === "boolean") {
+                            return true;
+                        } else if (typeof(v) === "number" && (v === 1 || v === 0)) {
+                            return true;
+                        } else if (typeof(v) === "string" && (v === "true" || v === "false")) {
+                            return true;
+                        } else if (typeof(v) === "string" && (v === "1" || v === "0")) {
+                            return true;
+                        } else if (v === null) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    },
+                    set: function(v) {
+                        if (typeof(v) === "boolean") {
+                            return v;
+                        } else if (typeof(v) === "number" && (v === 1 || v === 0)) {
+                            return v === 1;
+                        } else if (typeof(v) === "string" && (v === "true" || v === "false")) {
+                            return v === "true";
+                        } else if (typeof(v) === "string" && (v === "1" || v === "0")) {
+                            return v === "1";
+                        } else if (v === null) {
+                            return null;
+                        } else {
+                            var err = new Error('Invalid argument type');
+                            err.name = "TypeError";
+                            throw err;
+                        }
+                    }
+                },
+                Number: {
+                    get: function(v) {
+                        if (typeof(v) === "number") {
+                            return true;
+                        } else if (typeof(v) === "string" && !isNaN(parseFloat(v)) && isFinite(v)) {
+                            return true;
+                        } else if (v === null) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    },
+                    set: function(v) {
+                        if (typeof(v) === "number") {
+                            return v;
+                        } else if (typeof(v) === "string" && !isNaN(parseFloat(v)) && isFinite(v)) {
+                            return parseFloat(v);
+                        } else if (v === null) {
+                            return null;
+                        } else {
+                            var err = new Error('Invalid argument type');
+                            err.name = "TypeError";
+                            throw err;
+                        }
+                    },
+                },
+                String: {
+                    get: function(v) {
+                        if (typeof(v) === "string") {
+                            return true;
+                        } else if (typeof(v) === "number") {
+                            return true;
+                        } else if (v === null) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    },
+                    set: function(v) {
+                        if (typeof(v) === "string") {
+                            return v;
+                        } else if (typeof(v) === "number") {
+                            return v.toString(10);
+                        } else if (v === null) {
+                            return null;
+                        } else {
+                            var err = new Error('Invalid argument type');
+                            err.name = "TypeError";
+                            throw err;
+                        }
+                    }
+                },
+                Array: {
+                    get: function(v) {
+                        if (typeof(v) === "object" && v !== null && Object.prototype.toString.call(v) === '[object Array]') {
+                            return true;
+                        } else if (v === null) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    },
+                    set: function(v) {
+                        if (typeof(v) === "object" && v !== null && Object.prototype.toString.call(v) === '[object Array]') {
+                            return v;
+                        } else if (v === null) {
+                            return null;
+                        } else {
+                            var err = new Error('Invalid argument type');
+                            err.name = "TypeError";
+                            throw err;
+                        }
+                    }
+                },
+                Object: {
+                    get: function(v) {
+                        if (typeof(v) === "object" && v !== null && Object.prototype.toString.call(v) !== '[object Array]') {
+                            return true;
+                        } else if (v === null) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    },
+                    set: function(v) {
+                        if (typeof(v) === "object" && v !== null && Object.prototype.toString.call(v) !== '[object Array]') {
+                            return v;
+                        } else if (v === null) {
+                            return null;
+                        } else {
+                            var err = new Error('Invalid argument type');
+                            err.name = "TypeError";
+                            throw err;
+                        }
+                    }
+                },
+                Date: {
+                    get: function(v) {
+                        if (typeof(v) === "object" && v instanceof Date && !isNaN(v.valueOf())) {
+                            return true;
+                        } else if (typeof(v) === "number") {
+                            return true;
+                        } else if (typeof(v) === "string") {
+                            return true;
+                        } else if (v === null) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    },
+                    set: function(v) {
+                        if (typeof(v) === "object" && v instanceof Date && !isNaN(v.valueOf())) {
+                            return v;
+                        } else if (typeof(v) === "number") {
+                            return new Date(v);
+                        } else if (typeof(v) === "string") {
+                            return new Date(v);
+                        } else if (v === null) {
+                            return null;
+                        } else {
+                            var err = new Error('Invalid argument type');
+                            err.name = "TypeError";
+                            throw err;
+                        }
+                    }
+                },
+                RegExp: {
+                    get: function(v) {
+                        if (typeof(v) === "object" && v instanceof RegExp) {
+                            return true;
+                        } else if (typeof(v) === "string" && /^\/.*\/[gi]{0,1}$/.test(v)) {
+                            return true;
+                        } else if (v === null) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    },
+                    set: function(v) {
+                        if (typeof(v) === "object" && v instanceof RegExp) {
+                            return v;
+                        } else if (typeof(v) === "string" && /^\/.*\/[gi]{0,1}$/.test(v)) {
+                            return new RegExp(v);
+                        } else if (v === null) {
+                            return null;
+                        } else {
+                            var err = new Error('Invalid argument type');
+                            err.name = "TypeError";
+                            throw err;
+                        }
+                    }
+                }
+            };
+            this.types = {};
+            this.init = function(obj) {
+                var keys = Object.keys(obj);
+                var key;
+                var val;
+                var type;
+                var i;
+                for (i = 0; i < keys.length; i++) {
+                    key = keys[i];
+                    val = obj[key];
+                    type = Schema.getValidType(val.type);
+                    if (type) {
+                        Schema.types[key] = {
+                            get: type.get,
+                            set: type.set,
+                            default: val.default,
+                            unique: val.unique,
+                            capital: val.capital,
+                        }
+                    }
+                }
+            };
+            this.set = Schema.init;
+            this.add = Schema.init;
+            this.get = function(obj) {
+                var keys = Object.keys(obj);
+                var key;
+                var val;
+                var i;
+                var res = {};
+                for (i = 0; i < keys.length; i++) {
+                    key = keys[i];
+                    val = obj[key];
+                    res[key] = Schema.getValidValue(key, val);
+                }
+                return res;
+            };
+            this.save = Schema.get;
+            this.convert = Schema.get;
+            this.test = function(obj) {
+                var keys = Object.keys(obj);
+                var key;
+                var val;
+                var i;
+                for (i = 0; i < keys.length; i++) {
+                    key = keys[i];
+                    val = obj[key];
+                    if (!Schema.isValidValue(key, val)) {
+                        return false;
+                    }
+                }
+                return true;
+            };
+            this.confirm = Schema.test;
+            this.validate = Schema.test;
+            this.isValidType = function(__construtor) {
+                try {
+                    return typeof(Schema.Types[__construtor.name]) === "object";
+                } catch(err) {
+                    return false;
+                }
+            };
+            this.getValidType = function(__construtor) {
+                try {
+                    return Schema.Types[__construtor.name];
+                } catch(err) {
+                    return undefined;
+                }
+            };
+            this.isValidValue = function(key, val) {
+                try {
+                    return Schema.types[key].get(val);
+                } catch(err) {
+                    return false;
+                }
+            };
+            this.getValidValue = function(key, val) {
+                return Schema.types[key].set(val);
+            };
+
+            /* Initialize this.types */
+            this.init(object);
         },
 
         queryObject: function(dataObject, queryObject) {
@@ -690,6 +1008,32 @@
             return matchQuery(null, dataObject, queryObject);
         },
 
+        /* Array */
+
+        concatInArray: function(arr) {
+            return arr.reduce(function(prev, curr) {
+                return prev.concat(curr);
+            }, []);
+        },
+        removeDuplicatesInArray: function(arr) {
+            return arr.reduce(function(prev, curr) {
+                if (prev.indexOf(curr) < 0) {
+                    prev.push(curr);
+                }
+                return prev;
+            }, []);
+        },
+
+        /* Regular expression */
+
+        combineRegexp: function(regexpArray, flags) {
+            return new RegExp(regexpArray.map(function(e) {
+                return e.source;
+            }).join("\|"), flags);
+        },
+
+        /* Rectangle */
+
         calcCoveredSize: function(sw, sh, dw, dh) {
             var aspectRatio = sw / sh;
             if (dh * aspectRatio < dw) {
@@ -704,7 +1048,6 @@
                 }
             }
         },
-
         calcContainedSize: function(sw, sh, dw, dh) {
             var aspectRatio = sw / sh;
             if (dh * aspectRatio < dw) {
@@ -719,7 +1062,6 @@
                 }
             }
         },
-
         calcOptimumSize: function(sw, sh, mxw, mxh, mnw, mnh) {
             var aspectRatio = sw / sh;
             var maxWidth;
@@ -751,21 +1093,41 @@
                 height: Math.min(maxHeight, Math.max(minHeight, sh))
             }
         },
-
-        calcRectanglePoint: function() {
+        calcRotatedSize: function() {
 
         },
+        calcPoint: function() {
 
+        },
         calcRotatedPoint: function() {
 
         },
 
-        calcRotatedSize: function() {
+        /* Function */
+
+        /* 
+            var res = await utils.execPromises(arr, function(prev, curr, index) {
+                return new Promise(function(resolve, reject) {
+                    resolve(prev ? prev + curr : curr);
+                })
+            })
+        */
+        execPromises: function(dataArray, promiseFunc) {
+            var promises = function() {
+                return dataArray.reduce(function(prev, curr, index) {
+                    return prev.then(function(res) {
+                        return promiseFunc(res, curr, index);
+                    });
+                }, Promise.resolve());
+            }
+            return promises();
+        },
+
+        /* Canvas api */
+        genCanvas: function(src) {
 
         }
     }
-
-    
 
     if (typeof(window.utils) === "undefined") {
         window.utils = mainObject;

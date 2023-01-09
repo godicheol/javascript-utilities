@@ -1213,8 +1213,8 @@
             var sinFraction = Math.sin(radians);
             var cosFraction = Math.cos(radians);
             return {
-                x: cx+((x-cx)*cosFraction)-((x-cy)*sinFraction),
-                y: cy+((y-cx)*sinFraction)+((y-cy)*cosFraction)
+                x: cx+((x-cx)*cosFraction)-((y-cy)*sinFraction),
+                y: cy+((x-cx)*sinFraction)+((y-cy)*cosFraction)
             }
         },
 
@@ -1278,7 +1278,7 @@
                 this.count = 0;
                 return true;
             };
-            /* alias */
+            /* Alias */
             this.go = this.start;
             this.end = this.stop;
             /* Initialize */
@@ -1293,32 +1293,73 @@
             var element = document.createElement('canvas');
             return !!(element.getContext && element.getContext('2d'));
         },
-        MyCanvas: function MyCanvas() {
+        MyCanvas: function MyCanvas(width, height) {
             var canvas = document.createElement('canvas');
             var ctx = canvas && canvas.getContext('2d')
             this.canvas = canvas;
             this.ctx = ctx;
+            this.width = canvas.width;
+            this.height = canvas.height;
             this.get = function() {
-                return this.canvas;
+                return canvas;
             };
-            this.drawStroke = function(sx, sy, dx, dy) {
+            this.set = function(w, h) {
+                canvas.width = w;
+                canvas.height = h;
+                this.width = canvas.width;
+                this.height = canvas.height;
+            };
+            this.setStyle = function(styles) {
+                if (!styles) {
+                    return false;
+                }
+                if (styles.color) {
+                    ctx.strokeStyle = styles.color;
+                    ctx.fillStyle = styles.color;
+                }
+                if (styles.width) {
+                    ctx.lineWidth = styles.width;
+                }
+                return true;
+            }
+            this.drawDot = function(x, y, options) {
+                this.setStyle(options);
+                ctx.fillRect(x, y, 1, 1);
+                ctx.restore();
+            };
+            this.drawLine = function(sx, sy, dx, dy, options) {
+                this.setStyle(options);
                 ctx.beginPath();
-                ctx.moveTo(sx + 1, sy + 1);
-                ctx.lineTo(dx + 1, dy + 1);
+                ctx.moveTo(sx+0.5, sy+0.5); /* fix starting half pixel */
+                ctx.lineTo(dx+0.5, dy+0.5); /* fix starting half pixel */
                 ctx.stroke();
                 ctx.closePath();
+                ctx.restore();
+            };
+            this.drawRect = function(x, y, w, h, options) {
+                this.setStyle(options);
+                if (options && options.fill) {
+                    ctx.fillRect(x, y, w+1, h+1); /* fix starting half pixel */
+                } else {
+                    ctx.strokeRect(x+0.5, y+0.5, w, h); /* fix starting half pixel */
+                }
+                ctx.restore();
+            };
+            this.drawCircle = function(x, y, r, options) {
+                this.setStyle(options);
+                ctx.beginPath();
+                if (options && options.fill) {
+                    ctx.arc(x+r+0.5, y+r+0.5, r+0.5, 0, (options.angle || 2) * Math.PI); /* fix starting half pixel */
+                    ctx.fill();
+                } else {
+                    ctx.arc(x+r+0.5, y+r+0.5, r, 0, (options.angle || 2) * Math.PI); /* fix starting half pixel */
+                    ctx.stroke();
+                }
+                ctx.closePath();
+                ctx.restore();
             };
             this.drawText = function(str, x, y) {
                 ctx.fillText(str, x, y);
-            };
-            this.getVertex = function(cx, cy, x, y, d) {
-                var radians = d * Math.PI / 180;
-                var sinFraction = Math.sin(radians);
-                var cosFraction = Math.cos(radians);
-                return {
-                    x: cx+((x-cx)*cosFraction)-((y-cy)*sinFraction),
-                    y: cy+((x-cx)*sinFraction)+((y-cy)*cosFraction)
-                }
             };
             this.clear = function() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1334,11 +1375,14 @@
             };
           
             /* Initialize */
+            this.set(width, height);
             ctx.fillStyle = "#000000";
             ctx.strokeStyle = "#000000";
             ctx.lineWidth = 0.5;
+            // ctx.translate(0.5, 0.5); /* fix stroke start in harf pixel */
             this.setFont("10px serif");
             this.save();
+            
         },
         getMaxCanvasSize: function() {
             var w = [8388607, 4194303, 65535, 32767, 16384, 8192, 4096, 1];

@@ -49,28 +49,52 @@
 
 
         var canv = new utils.MyCanvas();
-        document.getElementById("canv").appendChild(canv.get())
+        document.getElementById("canv").appendChild(canv.get());
 
+        canv.set(524, 524);
+        
+        (function() {
+            for (var i = 12; i < 524; i += 50) {
+                canv.drawLine(i, 0, i, 524);
+                canv.drawLine(0, i, 524, i);
+            }
+        })();
+
+        var center = {x: 0.5*canv.width, y: 0.5*canv.height}
+
+        canv.drawRect(center.x, center.y, 10, 10, { color: "red", fill: true})
+        canv.drawDot(center.x+50, center.y+50,  { color: "blue" })
+        canv.drawCircle(center.x, center.y, 25, { color: "blue", fill: true })
+
+        var i = 0;
+        var j = 1;
+        var rect = {
+            x: 75,
+            y: 75,
+            w: 100,
+            h: 100,
+        }
+        var acc = 0.02;
         var animation = new utils.MyAnimation(function() {
+            
             canv.clear();
 
             var deg = Math.floor(i)
-            var p1 = canv.getVertex(x, y, x-0.5*w, y-0.5*h, deg);
-            var p2 = canv.getVertex(x, y, x+0.5*w, y-0.5*h, deg);
-            var p3 = canv.getVertex(x, y, x-0.5*w, y+0.5*h, deg);
-            var p4 = canv.getVertex(x, y, x+0.5*w, y+0.5*h, deg);
+            var p1 = utils.getVertex(rect.x, rect.y, rect.x-0.5*rect.w, rect.y-0.5*rect.h, deg);
+            var p2 = utils.getVertex(rect.x, rect.y, rect.x+0.5*rect.w, rect.y-0.5*rect.h, deg);
+            var p3 = utils.getVertex(rect.x, rect.y, rect.x-0.5*rect.w, rect.y+0.5*rect.h, deg);
+            var p4 = utils.getVertex(rect.x, rect.y, rect.x+0.5*rect.w, rect.y+0.5*rect.h, deg);
 
             canv.drawText("p1", p1.x, p1.y);
             canv.drawText("p2", p2.x, p2.y);
             canv.drawText("p3", p3.x, p3.y);
             canv.drawText("p4", p4.x, p4.y);
-
             canv.drawText(deg, (p1.x + p4.x) * 0.5, (p1.y + p4.y) * 0.5);
 
-            var top = canv.drawStroke(p1.x, p1.y, p2.x, p2.y);
-            var bottom = canv.drawStroke(p3.x, p3.y, p4.x, p4.y);
-            var left = canv.drawStroke(p1.x, p1.y, p3.x, p3.y);
-            var right = canv.drawStroke(p2.x, p2.y, p4.x, p4.y);
+            canv.drawLine(p1.x, p1.y, p2.x, p2.y); // top
+            canv.drawLine(p3.x, p3.y, p4.x, p4.y); // bottom
+            canv.drawLine(p1.x, p1.y, p3.x, p3.y); // left
+            canv.drawLine(p2.x, p2.y, p4.x, p4.y); // right
 
             if (i > 180) {
                 j = -1;
@@ -81,13 +105,7 @@
             j = j + j * acc;
             i += j;
         }, 10);
-        var i = 0;
-        var j = 1;
-        var x = 75;
-        var y = 75;
-        var w = 100;
-        var h = 100;
-        var acc = 0.02;
+
         function startAnimation() {
             animation.start();
         }
@@ -98,20 +116,20 @@
             animation.stop();
         }
 
-        startAnimation();
+        // startAnimation();
 
-        setTimeout(function() {
-            pauseAnimetion();
-        }, 1000);
+        // setTimeout(function() {
+        //     pauseAnimetion();
+        // }, 1000);
 
-        setTimeout(function() {
-            startAnimation();
-        }, 2000);
+        // setTimeout(function() {
+        //     startAnimation();
+        // }, 2000);
 
-        setTimeout(function() {
-            stopAnimetion();
-            console.log(animation)
-        }, 3000);
+        // setTimeout(function() {
+        //     stopAnimetion();
+        //     console.log(animation)
+        // }, 3000);
         
 
     </script>

@@ -49,9 +49,9 @@
 
 
         var canv = new utils.MyCanvas();
-        document.getElementById("canv").appendChild(canv.get());
+        document.getElementById("canv").appendChild(canv.getCanvas());
 
-        canv.set(524, 524);
+        canv.setCanvas(524, 524);
         
         var drawLines = function() {
             for (var i = 12; i < 524; i += 50) {
@@ -91,7 +91,7 @@
             var p4 = utils.getVertex(rect.x, rect.y, rect.x+0.5*rect.w, rect.y+0.5*rect.h, deg);
 
             canv.drawCircle(rect.x-2, rect.y-2, 2, { color: "red", fill: true})
-            canv.drawText(rect.x+","+rect.y, rect.x+4, rect.y-4);
+            canv.drawText(Math.floor((rect.x-cx))+","+Math.floor((rect.y-cy)), rect.x+4, rect.y-4);
 
             canv.drawText(
                 Math.floor((p1.x-cx))+","+Math.floor(-(p1.y-cy)), 
@@ -114,10 +114,12 @@
                 p4.y-3
             );
 
-            canv.drawLine(p1.x, p1.y, p2.x, p2.y); // top
-            canv.drawLine(p3.x, p3.y, p4.x, p4.y); // bottom
-            canv.drawLine(p1.x, p1.y, p3.x, p3.y); // left
-            canv.drawLine(p2.x, p2.y, p4.x, p4.y); // right
+            // canv.drawLine(p1.x, p1.y, p2.x, p2.y); // top
+            // canv.drawLine(p3.x, p3.y, p4.x, p4.y); // bottom
+            // canv.drawLine(p1.x, p1.y, p3.x, p3.y); // left
+            // canv.drawLine(p2.x, p2.y, p4.x, p4.y); // right
+            
+            canv.drawRect(rect.x-rect.w*0.5, rect.y-rect.h*0.5, rect.w, rect.h, { rotate: deg });
 
             i += j;
         }, 128);

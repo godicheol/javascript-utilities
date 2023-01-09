@@ -1300,60 +1300,65 @@
             this.context = ctx;
             this.width = canvas.width;
             this.height = canvas.height;
-            
-            this.get = function() {
+
+            this.getCanvas = function() {
                 return canvas;
             };
-            this.set = function(w, h) {
+            this.setCanvas = function(w, h) {
                 canvas.width = w;
                 canvas.height = h;
                 this.width = canvas.width;
                 this.height = canvas.height;
             };
-            this.setStyle = function(styles) {
-                ctx.save();
-
-                if (!styles) {
-                    return;
+            this.setStyle = function(obj) {
+                if (!obj) {
+                    return false;
                 }
-                if (styles.color) {
-                    ctx.strokeStyle = styles.color;
-                    ctx.fillStyle = styles.color;
+                if (obj.color) {
+                    ctx.strokeStyle = obj.color;
+                    ctx.fillStyle = obj.color;
                 }
-                if (styles.width) {
-                    ctx.width = styles.width;
+                if (obj.width) {
+                    ctx.width = obj.width;
                 }
-                if (styles.font) {
-                    ctx.font = styles.font;
+                if (obj.font) {
+                    ctx.font = obj.font;
                 }
-            };
-            this.unsetStyle = function() {
-                ctx.restore();
+                return true;
             };
             this.drawDot = function(x, y, options) {
+                ctx.save();
                 this.setStyle(options);
                 ctx.fillRect(x, y, 1, 1);
-                this.unsetStyle();
+                ctx.restore();
             };
             this.drawLine = function(sx, sy, dx, dy, options) {
+                ctx.save();
                 this.setStyle(options);
                 ctx.beginPath();
                 ctx.moveTo(sx+0.5, sy+0.5); /* fix starting half pixel */
                 ctx.lineTo(dx+0.5, dy+0.5); /* fix starting half pixel */
                 ctx.stroke();
                 ctx.closePath();
-                this.unsetStyle();
+                ctx.restore();
             };
             this.drawRect = function(x, y, w, h, options) {
+                ctx.save();
                 this.setStyle(options);
+                if (options && options.rotate) {
+                    ctx.translate(x+0.5*w, y+0.5*h);
+                    ctx.rotate(options.rotate * Math.PI / 180);
+                    ctx.translate(-(x+0.5*w), -(y+0.5*h));
+                }
                 if (options && options.fill) {
                     ctx.fillRect(x, y, w+1, h+1); /* fix starting half pixel */
                 } else {
                     ctx.strokeRect(x+0.5, y+0.5, w, h); /* fix starting half pixel */
                 }
-                this.unsetStyle();
+                ctx.restore();
             };
             this.drawCircle = function(x, y, r, options) {
+                ctx.save();
                 this.setStyle(options);
                 ctx.beginPath();
                 if (options && options.fill) {
@@ -1364,22 +1369,20 @@
                     ctx.stroke();
                 }
                 ctx.closePath();
-                this.unsetStyle();
+                ctx.restore();
             };
             this.drawText = function(str, x, y, options) {
+                ctx.save();
                 this.setStyle(options);
                 ctx.fillText(str, x, y);
-                this.unsetStyle();
+                ctx.restore();
             };
             this.clear = function() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
             };
-            this.setFont = function(str) {
-                ctx.font = str; 
-            };
           
             /* Initialize */
-            this.set(width, height);
+            this.setCanvas(width, height);
             ctx.strokeStyle = "#000000";
             ctx.fillStyle = "#000000";
             ctx.width = 1;

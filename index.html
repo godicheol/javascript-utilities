@@ -52,15 +52,6 @@
         document.getElementById("canv").appendChild(canv.getCanvas());
 
         canv.setCanvas(524, 524);
-        
-        var drawLines = function() {
-            for (var i = 12; i < 524; i += 50) {
-                canv.drawLine(i, 0, i, 524);
-                canv.drawLine(0, i, 524, i);
-            }
-            canv.drawCircle(cx-2, cy-2, 2, { color: "black", fill: true})
-            canv.drawText("0,0", center.x+2, center.y-2);
-        }
 
         var center = {x: 0.5*canv.width, y: 0.5*canv.height}
         var cx = center.x;
@@ -80,49 +71,102 @@
         }
         var acc = 0.03;
         var animation = new utils.MyAnimation(function() {
-            
-            canv.clear();
-            drawLines();
-
             var deg = Math.floor(i);
-            var p1 = utils.getVertex(rect.x, rect.y, rect.x-0.5*rect.w, rect.y-0.5*rect.h, deg);
-            var p2 = utils.getVertex(rect.x, rect.y, rect.x+0.5*rect.w, rect.y-0.5*rect.h, deg);
-            var p3 = utils.getVertex(rect.x, rect.y, rect.x-0.5*rect.w, rect.y+0.5*rect.h, deg);
-            var p4 = utils.getVertex(rect.x, rect.y, rect.x+0.5*rect.w, rect.y+0.5*rect.h, deg);
+            var rotated = [
+                utils.getVertex(rect.x, rect.y, rect.x-0.5*rect.w, rect.y-0.5*rect.h, deg),
+                utils.getVertex(rect.x, rect.y, rect.x+0.5*rect.w, rect.y-0.5*rect.h, deg),
+                utils.getVertex(rect.x, rect.y, rect.x-0.5*rect.w, rect.y+0.5*rect.h, deg),
+                utils.getVertex(rect.x, rect.y, rect.x+0.5*rect.w, rect.y+0.5*rect.h, deg)
+            ];
 
+            canv.clear();
+
+            for (var k = 12; k < 524; k += 50) {
+                canv.drawLine(k, 0, k, 524);
+                canv.drawLine(0, k, 524, k);
+            }
+
+            canv.drawCircle(cx-2, cy-2, 2, { color: "black", fill: true})
             canv.drawCircle(rect.x-2, rect.y-2, 2, { color: "red", fill: true})
-            canv.drawText(Math.floor((rect.x-cx))+","+Math.floor((rect.y-cy)), rect.x+4, rect.y-4);
 
             canv.drawText(
-                Math.floor((p1.x-cx))+","+Math.floor(-(p1.y-cy)), 
-                p1.x+3, 
-                p1.y-3
+                "0,0",
+                center.x+2,
+                center.y-2
             );
             canv.drawText(
-                Math.floor((p2.x-cx))+","+Math.floor(-(p2.y-cy)), 
-                p2.x+3, 
-                p2.y-3
+                Math.floor((rect.x-cx))+","+Math.floor((rect.y-cy)),
+                rect.x,
+                rect.y,
+                { 
+                    rotate: {
+                        x: rect.x,
+                        y: rect.y,
+                        degree: deg
+                    } 
+                }
             );
             canv.drawText(
-                Math.floor((p3.x-cx))+","+Math.floor(-(p3.y-cy)), 
-                p3.x+3, 
-                p3.y-3
+                Math.floor((rotated[0].x-cx))+","+Math.floor(-(rotated[0].y-cy)), 
+                rotated[0].x+3, 
+                rotated[0].y-3
             );
             canv.drawText(
-                Math.floor((p4.x-cx))+","+Math.floor(-(p4.y-cy)), 
-                p4.x+3, 
-                p4.y-3
+                Math.floor((rotated[1].x-cx))+","+Math.floor(-(rotated[1].y-cy)), 
+                rotated[1].x+3, 
+                rotated[1].y-3
+            );
+            canv.drawText(
+                Math.floor((rotated[2].x-cx))+","+Math.floor(-(rotated[2].y-cy)), 
+                rotated[2].x+3, 
+                rotated[2].y-3
+            );
+            canv.drawText(
+                Math.floor((rotated[3].x-cx))+","+Math.floor(-(rotated[3].y-cy)), 
+                rotated[3].x+3, 
+                rotated[3].y-3
             );
 
-            // canv.drawLine(p1.x, p1.y, p2.x, p2.y); // top
-            // canv.drawLine(p3.x, p3.y, p4.x, p4.y); // bottom
-            // canv.drawLine(p1.x, p1.y, p3.x, p3.y); // left
-            // canv.drawLine(p2.x, p2.y, p4.x, p4.y); // right
+            // canv.drawLine(rotated[0].x, rotated[0].y, rotated[1].x, rotated[1].y); // top
+            // canv.drawLine(rotated[2].x, rotated[2].y, rotated[3].x, rotated[3].y); // bottom
+            // canv.drawLine(rotated[0].x, rotated[0].y, rotated[2].x, rotated[2].y); // left
+            // canv.drawLine(
+            //     rotated[1].x,
+            //     rotated[1].y,
+            //     rotated[3].x,
+            //     rotated[3].y
+            // );
+            canv.drawLine(
+                rect.x-rect.w*0.5,
+                rect.y-rect.h*0.5,
+                rect.x+rect.w-rect.w*0.5,
+                rect.y-rect.h*0.5,
+                { color: "red", width: 2, rotate: { degree: deg } }
+            );
+            canv.drawCircle(
+                rect.x+50-2,
+                rect.y-2,
+                2,
+                { color: "green", fill: true,  rotate: {x: center.x+25, y: center.y-25, degree: deg }
+            });
+
+            canv.drawCircle(
+                rotated[1].x-2,
+                rotated[1].y-2,
+                2,
+                { color: "blue", fill: true, rotate: { degree: deg } }
+            )
             
-            canv.drawRect(rect.x-rect.w*0.5, rect.y-rect.h*0.5, rect.w, rect.h, { rotate: deg });
+            canv.drawRect(
+                rect.x-rect.w*0.5,
+                rect.y-rect.h*0.5,
+                rect.w,
+                rect.h,
+                { color: "green", rotate: deg }
+            );
 
             i += j;
-        }, 128);
+        }, 12);
 
         function startAnimation() {
             animation.start();

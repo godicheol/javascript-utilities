@@ -1293,14 +1293,88 @@
             var element = document.createElement('canvas');
             return !!(element.getContext && element.getContext('2d'));
         },
+        getTextWidth: function(text, size, font) {
+            var canvas = document.createElement("canvas");
+            var ctx = canvas.getContext("2d");
+            ctx.font = size+" "+font;
+            var metrics = ctx.measureText(text);
+            return metrics.width;
+        },
+        /**
+         * 
+         * @param {Number} width 
+         * @param {Number} height 
+         */
         MyCanvas: function MyCanvas(width, height) {
             var canvas = document.createElement('canvas');
             var ctx = canvas && canvas.getContext('2d');
+            var setRotate = function(x, y, deg) {
+                ctx.translate(x, y);
+                ctx.rotate(deg * Math.PI / 180);
+                ctx.translate(-x, -y);
+            };
+            var saveStyle = function() {
+                ctx.save();
+            };
+            var unsetStyle = function() {
+                ctx.restore();
+            };
+            var setStyle = function(options) {
+                if (!options) {
+                    return;
+                }
+                if (options.color) {
+                    ctx.fillStyle = options.color;
+                    ctx.strokeStyle = options.color;
+                }
+                if (options.width) {
+                    ctx.lineWidth = options.width;
+                }
+                if (options.textAlign){
+                    ctx.textAlign = options.textAlign;
+                }
+                if (options.textBaseline){
+                    ctx.textBaseline = options.textBaseline;
+                }
+                if (options.font) {
+                    ctx.font = options.font; // e.g. 10px serif
+                }
+                if (options.fontDirection) {
+                    if (options.fontDirection > 0) {
+                        ctx.direction = "ltr";
+                    } else if (options.fontDirection < 0) {
+                        ctx.direction = "rtl";
+                    } else {
+                        ctx.direction = "inherit";
+                    }
+                }
+            }
+            var setRotate = function(options, cx, cy) {
+                if (!options || !options.rotate) {
+                    return;
+                }
+                if (typeof(options.rotate) === "object") {
+                    ctx.translate(options.rotate.x || cx, options.rotate.y || cy);
+                    ctx.rotate((options.rotate.degree || options.rotate.deg) * Math.PI / 180);
+                    ctx.translate(-(options.rotate.x || cx), -(options.rotate.y || cy)); 
+                }
+                if (typeof(options.rotate) === "number") {
+                    ctx.translate(cx, cy);
+                    ctx.rotate(options.rotate * Math.PI / 180);
+                    ctx.translate(-cx, -cy); 
+                }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+
+            /* Constructor */
             this.canvas = canvas;
             this.context = ctx;
             this.width = canvas.width;
             this.height = canvas.height;
 
+            /* Methods */
             this.getCanvas = function() {
                 return canvas;
             };
@@ -1310,83 +1384,78 @@
                 this.width = canvas.width;
                 this.height = canvas.height;
             };
-            this.setStyle = function(obj) {
-                if (!obj) {
-                    return false;
-                }
-                if (obj.color) {
-                    ctx.strokeStyle = obj.color;
-                    ctx.fillStyle = obj.color;
-                }
-                if (obj.width) {
-                    ctx.width = obj.width;
-                }
-                if (obj.font) {
-                    ctx.font = obj.font;
-                }
-                return true;
-            };
             this.drawDot = function(x, y, options) {
-                ctx.save();
-                this.setStyle(options);
+                saveStyle();
+                setStyle(options);
+                setRotate(options, x, y);
                 ctx.fillRect(x, y, 1, 1);
-                ctx.restore();
+                unsetStyle();
             };
             this.drawLine = function(sx, sy, dx, dy, options) {
-                ctx.save();
-                this.setStyle(options);
+                saveStyle();
+                setStyle(options);
+                setRotate(options, (sx+dx)*0.5, (sy+dy)*0.5);
                 ctx.beginPath();
                 ctx.moveTo(sx+0.5, sy+0.5); /* fix starting half pixel */
                 ctx.lineTo(dx+0.5, dy+0.5); /* fix starting half pixel */
                 ctx.stroke();
                 ctx.closePath();
-                ctx.restore();
+                unsetStyle();
             };
             this.drawRect = function(x, y, w, h, options) {
-                ctx.save();
-                this.setStyle(options);
-                if (options && options.rotate) {
-                    ctx.translate(x+0.5*w, y+0.5*h);
-                    ctx.rotate(options.rotate * Math.PI / 180);
-                    ctx.translate(-(x+0.5*w), -(y+0.5*h));
-                }
+                saveStyle();
+                setStyle(options);
+                setRotate(options, x+w*0.5, y+h*0.5);
                 if (options && options.fill) {
                     ctx.fillRect(x, y, w+1, h+1); /* fix starting half pixel */
                 } else {
                     ctx.strokeRect(x+0.5, y+0.5, w, h); /* fix starting half pixel */
                 }
-                ctx.restore();
+                unsetStyle();
             };
-            this.drawCircle = function(x, y, r, options) {
-                ctx.save();
-                this.setStyle(options);
+            this.drawCircle = function(x, y, rad, options) {
+                saveStyle();
+                setStyle(options);
+                setRotate(options, x+rad, y+rad);
                 ctx.beginPath();
                 if (options && options.fill) {
-                    ctx.arc(x+r+0.5, y+r+0.5, r+0.5, 0, (options.angle || 2) * Math.PI); /* fix starting half pixel */
+                    ctx.arc(x+rad+0.5, y+rad+0.5, rad+0.5, 0, 2*Math.PI); /* fix starting half pixel */
                     ctx.fill();
                 } else {
-                    ctx.arc(x+r+0.5, y+r+0.5, r, 0, (options.angle || 2) * Math.PI); /* fix starting half pixel */
+                    ctx.arc(x+rad+0.5, y+rad+0.5, rad, 0, 2*Math.PI); /* fix starting half pixel */
                     ctx.stroke();
                 }
                 ctx.closePath();
-                ctx.restore();
+                unsetStyle();
             };
-            this.drawText = function(str, x, y, options) {
-                ctx.save();
-                this.setStyle(options);
-                ctx.fillText(str, x, y);
-                ctx.restore();
+            this.drawText = function(text, x, y, options) {
+                var res;
+                var w;
+                var h;
+                saveStyle();
+                setStyle(options);
+                res =  ctx.measureText(text);
+                w = res.width;
+                h = parseInt(ctx.font.match(/\d+/), 10);
+                setRotate(options, x, y);
+                ctx.fillText(text, x-w*0.5, y+h*0.5);
+                unsetStyle();
+            };
+            this.drawImage = function(src, x, y, w, h, options) {
+                saveStyle();
+                unsetStyle();
             };
             this.clear = function() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
             };
           
             /* Initialize */
-            this.setCanvas(width, height);
             ctx.strokeStyle = "#000000";
             ctx.fillStyle = "#000000";
             ctx.width = 1;
             ctx.font = "10px serif";
+            ctx.textAlign = "left";
+            ctx.textBaseline = "alphabetic";
             ctx.save();
         },
         getMaxCanvasSize: function() {

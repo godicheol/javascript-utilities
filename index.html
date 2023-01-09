@@ -53,58 +53,74 @@
 
         canv.set(524, 524);
         
-        (function() {
+        var drawLines = function() {
             for (var i = 12; i < 524; i += 50) {
                 canv.drawLine(i, 0, i, 524);
                 canv.drawLine(0, i, 524, i);
             }
-        })();
+            canv.drawCircle(cx-2, cy-2, 2, { color: "black", fill: true})
+            canv.drawText("0,0", center.x+2, center.y-2);
+        }
 
         var center = {x: 0.5*canv.width, y: 0.5*canv.height}
+        var cx = center.x;
+        var cy = center.y;
 
-        canv.drawRect(center.x, center.y, 10, 10, { color: "red", fill: true})
-        canv.drawDot(center.x+50, center.y+50,  { color: "blue" })
-        canv.drawCircle(center.x, center.y, 25, { color: "blue", fill: true })
+        // canv.drawRect(center.x, center.y, 10, 10, { color: "red", fill: true})
+        // canv.drawDot(center.x+50, center.y+50,  { color: "blue" })
+        // canv.drawCircle(center.x, center.y, 25, { color: "blue", fill: true })
 
         var i = 0;
         var j = 1;
         var rect = {
-            x: 75,
-            y: 75,
+            x: cx+25,
+            y: cy-25,
             w: 100,
             h: 100,
         }
-        var acc = 0.02;
+        var acc = 0.03;
         var animation = new utils.MyAnimation(function() {
             
             canv.clear();
+            drawLines();
 
-            var deg = Math.floor(i)
+            var deg = Math.floor(i);
             var p1 = utils.getVertex(rect.x, rect.y, rect.x-0.5*rect.w, rect.y-0.5*rect.h, deg);
             var p2 = utils.getVertex(rect.x, rect.y, rect.x+0.5*rect.w, rect.y-0.5*rect.h, deg);
             var p3 = utils.getVertex(rect.x, rect.y, rect.x-0.5*rect.w, rect.y+0.5*rect.h, deg);
             var p4 = utils.getVertex(rect.x, rect.y, rect.x+0.5*rect.w, rect.y+0.5*rect.h, deg);
 
-            canv.drawText("p1", p1.x, p1.y);
-            canv.drawText("p2", p2.x, p2.y);
-            canv.drawText("p3", p3.x, p3.y);
-            canv.drawText("p4", p4.x, p4.y);
-            canv.drawText(deg, (p1.x + p4.x) * 0.5, (p1.y + p4.y) * 0.5);
+            canv.drawCircle(rect.x-2, rect.y-2, 2, { color: "red", fill: true})
+            canv.drawText(rect.x+","+rect.y, rect.x+4, rect.y-4);
+
+            canv.drawText(
+                Math.floor((p1.x-cx))+","+Math.floor(-(p1.y-cy)), 
+                p1.x+3, 
+                p1.y-3
+            );
+            canv.drawText(
+                Math.floor((p2.x-cx))+","+Math.floor(-(p2.y-cy)), 
+                p2.x+3, 
+                p2.y-3
+            );
+            canv.drawText(
+                Math.floor((p3.x-cx))+","+Math.floor(-(p3.y-cy)), 
+                p3.x+3, 
+                p3.y-3
+            );
+            canv.drawText(
+                Math.floor((p4.x-cx))+","+Math.floor(-(p4.y-cy)), 
+                p4.x+3, 
+                p4.y-3
+            );
 
             canv.drawLine(p1.x, p1.y, p2.x, p2.y); // top
             canv.drawLine(p3.x, p3.y, p4.x, p4.y); // bottom
             canv.drawLine(p1.x, p1.y, p3.x, p3.y); // left
             canv.drawLine(p2.x, p2.y, p4.x, p4.y); // right
 
-            if (i > 180) {
-                j = -1;
-            }
-            if (i < -180) {
-                j = 1;
-            }
-            j = j + j * acc;
             i += j;
-        }, 10);
+        }, 128);
 
         function startAnimation() {
             animation.start();
@@ -116,7 +132,7 @@
             animation.stop();
         }
 
-        // startAnimation();
+        startAnimation();
 
         // setTimeout(function() {
         //     pauseAnimetion();

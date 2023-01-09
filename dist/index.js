@@ -1295,11 +1295,12 @@
         },
         MyCanvas: function MyCanvas(width, height) {
             var canvas = document.createElement('canvas');
-            var ctx = canvas && canvas.getContext('2d')
+            var ctx = canvas && canvas.getContext('2d');
             this.canvas = canvas;
-            this.ctx = ctx;
+            this.context = ctx;
             this.width = canvas.width;
             this.height = canvas.height;
+            
             this.get = function() {
                 return canvas;
             };
@@ -1310,22 +1311,29 @@
                 this.height = canvas.height;
             };
             this.setStyle = function(styles) {
+                ctx.save();
+
                 if (!styles) {
-                    return false;
+                    return;
                 }
                 if (styles.color) {
                     ctx.strokeStyle = styles.color;
                     ctx.fillStyle = styles.color;
                 }
                 if (styles.width) {
-                    ctx.lineWidth = styles.width;
+                    ctx.width = styles.width;
                 }
-                return true;
-            }
+                if (styles.font) {
+                    ctx.font = styles.font;
+                }
+            };
+            this.unsetStyle = function() {
+                ctx.restore();
+            };
             this.drawDot = function(x, y, options) {
                 this.setStyle(options);
                 ctx.fillRect(x, y, 1, 1);
-                ctx.restore();
+                this.unsetStyle();
             };
             this.drawLine = function(sx, sy, dx, dy, options) {
                 this.setStyle(options);
@@ -1334,7 +1342,7 @@
                 ctx.lineTo(dx+0.5, dy+0.5); /* fix starting half pixel */
                 ctx.stroke();
                 ctx.closePath();
-                ctx.restore();
+                this.unsetStyle();
             };
             this.drawRect = function(x, y, w, h, options) {
                 this.setStyle(options);
@@ -1343,7 +1351,7 @@
                 } else {
                     ctx.strokeRect(x+0.5, y+0.5, w, h); /* fix starting half pixel */
                 }
-                ctx.restore();
+                this.unsetStyle();
             };
             this.drawCircle = function(x, y, r, options) {
                 this.setStyle(options);
@@ -1356,19 +1364,15 @@
                     ctx.stroke();
                 }
                 ctx.closePath();
-                ctx.restore();
+                this.unsetStyle();
             };
-            this.drawText = function(str, x, y) {
+            this.drawText = function(str, x, y, options) {
+                this.setStyle(options);
                 ctx.fillText(str, x, y);
+                this.unsetStyle();
             };
             this.clear = function() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-            };
-            this.save = function() {
-                ctx.save();
-            };
-            this.restore = function() {
-                ctx.restore();
             };
             this.setFont = function(str) {
                 ctx.font = str; 
@@ -1376,13 +1380,11 @@
           
             /* Initialize */
             this.set(width, height);
-            ctx.fillStyle = "#000000";
             ctx.strokeStyle = "#000000";
-            ctx.lineWidth = 0.5;
-            // ctx.translate(0.5, 0.5); /* fix stroke start in harf pixel */
-            this.setFont("10px serif");
-            this.save();
-            
+            ctx.fillStyle = "#000000";
+            ctx.width = 1;
+            ctx.font = "10px serif";
+            ctx.save();
         },
         getMaxCanvasSize: function() {
             var w = [8388607, 4194303, 65535, 32767, 16384, 8192, 4096, 1];

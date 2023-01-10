@@ -1312,28 +1312,49 @@
                 if (!options || typeof(options.rotateX) === "undefined") {
                     return;
                 }
-                var deg = typeof(options.rotateX) === "object" ? options.rotateX.value : options.rotateX;
-                var val = Math.sin((deg+90)*Math.PI/180);
-                ctx.translate(x, y);
+                var deg;
+                var val;
+                var cx;
+                var cy;
+                if (typeof(options.rotateX) === "object") {
+                    deg = options.rotateX.value || options.rotateX;
+                    val = Math.sin((deg+90)*Math.PI/180);
+                    cx = options.rotateX.x || x;
+                    cy = options.rotateX.y || y;
+                }
+                if (typeof(options.rotateX) === "number") {
+                    deg = options.rotateX;
+                    val = Math.sin((deg+90)*Math.PI/180);
+                    cx = x;
+                    cy = y;
+                }
+                ctx.translate(cx, cy);
                 ctx.scale(val, 1);
-                ctx.translate(-x, -y); 
+                ctx.translate(-cx, -cy); 
             }
             var setRotateY = function(x, y, options) {
                 if (!options || typeof(options.rotateY) === "undefined") {
                     return;
                 }
-                var deg = typeof(options.rotateY) === "object" ? options.rotateY.value : options.rotateY;
-                var val = Math.sin((deg+90)*Math.PI/180);
+                var deg;
+                var val;
+                var cx;
+                var cy;
                 if (typeof(options.rotateY) === "object") {
-                    ctx.translate(x, y);
-                    ctx.scale(1, val);
-                    ctx.translate(-x, -y); 
+                    deg = options.rotateY.value || options.rotateY;
+                    val = Math.sin((deg+90)*Math.PI/180);
+                    cx = options.rotateY.x || x;
+                    cy = options.rotateY.y || y;
                 }
                 if (typeof(options.rotateY) === "number") {
-                    ctx.translate(x, y);
-                    ctx.scale(1, val);
-                    ctx.translate(-x, -y); 
+                    deg = options.rotateY;
+                    val = Math.sin((deg+90)*Math.PI/180);
+                    cx = x;
+                    cy = y;
                 }
+                ctx.translate(cx, cy);
+                ctx.scale(1, val);
+                ctx.translate(-cx, -cy); 
             }
 
             canvas.width = width;
@@ -1344,6 +1365,7 @@
             this.context = ctx;
             this.width = canvas.width;
             this.height = canvas.height;
+            this.promise = {};
 
             /* Methods */
             this.getCanvas = function() {
@@ -1426,9 +1448,42 @@
                 ctx.fillText(text, cx, cy);
                 unsetStyle();
             };
-            this.drawImage = function(src, x, y, w, h, options, cb) {
+            this.drawImage = function(img, x, y, w, h, options) {
+                var cx = x+w*0.5;
+                var cy = y+h*0.5;
+                var dx = x;
+                var dy = y;
+                var dw = w || img.naturalWidth || img.width;
+                var dh = h || img.naturalHeihgt || img.height;
                 saveStyle();
+                setStyle(options);
+                setRotate(cx, cy, options);
+                setRotateX(cx, cy, options);
+                setRotateY(cx, cy, options);
+                ctx.drawImage(img, dx, dy, dw, dh);
                 unsetStyle();
+            };
+            this.loadImage = function(src, cb) {
+                var img = new Image();
+                img.onload = function() {
+                    return cb(null, img);
+                }
+                img.onerror = function(err) {
+                    return cb(err);
+                }
+                img.src = src;
+            };
+            this.promise.loadImage = function(src) {
+                return new Promise(function(resolve, reject) {
+                    var img = new Image();
+                    img.onload = function() {
+                        resolve(img);
+                    }
+                    img.onerror = function(err) {
+                        reject(err);
+                    }
+                    img.src = src;
+                });
             };
             this.clear = function() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);

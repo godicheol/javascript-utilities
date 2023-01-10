@@ -36,179 +36,201 @@
             container.innerHTML += html;
         })();
 
+        (async function() {
+            var text1 = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.";
+            var text2 = "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).";
+            var text3 = "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of \"de Finibus Bonorum et Malorum\" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, \"Lorem ipsum dolor sit amet..\", comes from a line in section 1.10.32.";
+            var test4 = "You can take this test to know what is your approximate level of grammar in English. Alternatively, you can also take a few of our Use of English tests. If your grade for a Use of English test is 65% or higher, it means that your approximate grammar level in English is the same as that test. For example, if you take a couple of A2 tests and your grades are 65% or higher, it means that your approximate level of grammar is A2, and that you can start working on B1 grammar."
+            var test5 = "Adapted from \"The Colors of Animals\" by Sir John Lubbock in A Book of Natural History (1902, ed. David Starr Jordan) The color of animals is by no means a matter of chance; it depends on many considerations, but in the majority of cases tends to protect the animal from danger by rendering it less conspicuous. Perhaps it may be said that if coloring is mainly protective, there ought to be but few brightly colored animals. There are, however, not a few cases in which vivid colors are themselves protective. The kingfisher itself, though so brightly colored, is by no means easy to see. The blue harmonizes with the water, and the bird as it darts along the stream looks almost like a flash of sunlight. Desert animals are generally the color of the desert. Thus, for instance, the lion, the antelope, and the wild donkey are all sand-colored. “Indeed,” says Canon Tristram, “in the desert, where neither trees, brushwood, nor even undulation of the surface afford the slightest protection to its foes, a modification of color assimilated to that of the surrounding country is absolutely necessary. Hence, without exception, the upper plumage of every bird, and also the fur of all the smaller mammals and the skin of all the snakes and lizards, is of one uniform sand color.” The next point is the color of the mature caterpillars, some of which are brown. This probably makes the caterpillar even more conspicuous among the green leaves than would otherwise be the case. Let us see, then, whether the habits of the insect will throw any light upon the riddle. What would you do if you were a big caterpillar? Why, like most other defenseless creatures, you would feed by night, and lie concealed by day. So do these caterpillars. When the morning light comes, they creep down the stem of the food plant, and lie concealed among the thick herbage and dry sticks and leaves, near the ground, and it is obvious that under such circumstances the brown color really becomes a protection. It might indeed be argued that the caterpillars, having become brown, concealed themselves on the ground, and that we were reversing the state of things. But this is not so, because, while we may say as a general rule that large caterpillars feed by night and lie concealed by day, it is by no means always the case that they are brown; some of them still retaining the green color. We may then conclude that the habit of concealing themselves by day came first, and that the brown color is a later adaptation.";
+            var obj1 = { id: 1, key: 2, width: 5 };
+            var obj2 = { name: "James", class: 1, reg: /13214/gi, date: new Date() };
+            var arr1 = [1, 2, 3, 4, 5];
+            var arr1 = ["A","B","C","D","E"];
 
-        var text1 = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.";
-        var text2 = "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).";
-        var text3 = "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of \"de Finibus Bonorum et Malorum\" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, \"Lorem ipsum dolor sit amet..\", comes from a line in section 1.10.32.";
-        var test4 = "You can take this test to know what is your approximate level of grammar in English. Alternatively, you can also take a few of our Use of English tests. If your grade for a Use of English test is 65% or higher, it means that your approximate grammar level in English is the same as that test. For example, if you take a couple of A2 tests and your grades are 65% or higher, it means that your approximate level of grammar is A2, and that you can start working on B1 grammar."
-        var test5 = "Adapted from \"The Colors of Animals\" by Sir John Lubbock in A Book of Natural History (1902, ed. David Starr Jordan) The color of animals is by no means a matter of chance; it depends on many considerations, but in the majority of cases tends to protect the animal from danger by rendering it less conspicuous. Perhaps it may be said that if coloring is mainly protective, there ought to be but few brightly colored animals. There are, however, not a few cases in which vivid colors are themselves protective. The kingfisher itself, though so brightly colored, is by no means easy to see. The blue harmonizes with the water, and the bird as it darts along the stream looks almost like a flash of sunlight. Desert animals are generally the color of the desert. Thus, for instance, the lion, the antelope, and the wild donkey are all sand-colored. “Indeed,” says Canon Tristram, “in the desert, where neither trees, brushwood, nor even undulation of the surface afford the slightest protection to its foes, a modification of color assimilated to that of the surrounding country is absolutely necessary. Hence, without exception, the upper plumage of every bird, and also the fur of all the smaller mammals and the skin of all the snakes and lizards, is of one uniform sand color.” The next point is the color of the mature caterpillars, some of which are brown. This probably makes the caterpillar even more conspicuous among the green leaves than would otherwise be the case. Let us see, then, whether the habits of the insect will throw any light upon the riddle. What would you do if you were a big caterpillar? Why, like most other defenseless creatures, you would feed by night, and lie concealed by day. So do these caterpillars. When the morning light comes, they creep down the stem of the food plant, and lie concealed among the thick herbage and dry sticks and leaves, near the ground, and it is obvious that under such circumstances the brown color really becomes a protection. It might indeed be argued that the caterpillars, having become brown, concealed themselves on the ground, and that we were reversing the state of things. But this is not so, because, while we may say as a general rule that large caterpillars feed by night and lie concealed by day, it is by no means always the case that they are brown; some of them still retaining the green color. We may then conclude that the habit of concealing themselves by day came first, and that the brown color is a later adaptation.";
-        var obj1 = { id: 1, key: 2, width: 5 };
-        var obj2 = { name: "James", class: 1, reg: /13214/gi, date: new Date() };
-        var arr1 = [1, 2, 3, 4, 5];
-        var arr1 = ["A","B","C","D","E"];
 
+            var canv = new utils.MyCanvas();
+            document.getElementById("canv").appendChild(canv.getCanvas());
 
-        var canv = new utils.MyCanvas();
-        document.getElementById("canv").appendChild(canv.getCanvas());
+            canv.setCanvas(524, 524);
 
-        canv.setCanvas(524, 524);
+            var center = {x: 0.5*canv.width, y: 0.5*canv.height}
+            var cx = center.x;
+            var cy = center.y;
 
-        var center = {x: 0.5*canv.width, y: 0.5*canv.height}
-        var cx = center.x;
-        var cy = center.y;
+            // canv.drawRect(center.x, center.y, 10, 10, { color: "red", fill: true})
+            // canv.drawDot(center.x+50, center.y+50,  { color: "blue" })
+            // canv.drawCircle(center.x, center.y, 25, { color: "blue", fill: true })
 
-        // canv.drawRect(center.x, center.y, 10, 10, { color: "red", fill: true})
-        // canv.drawDot(center.x+50, center.y+50,  { color: "blue" })
-        // canv.drawCircle(center.x, center.y, 25, { color: "blue", fill: true })
+            var i = 0;
+            var j = 1;
+            var rect = {
+                x: cx+25,
+                y: cy-25,
+                w: 100,
+                h: 100,
+            }
+            var acc = 0.03;
+            var img = await canv.promise.loadImage("./src/1.jpg");
+            var animation = new utils.MyAnimation(function() {
+                var deg = Math.floor(i);
+                var rotated = [
+                    utils.getVertex(rect.x, rect.y, rect.x-0.5*rect.w, rect.y-0.5*rect.h, deg),
+                    utils.getVertex(rect.x, rect.y, rect.x+0.5*rect.w, rect.y-0.5*rect.h, deg),
+                    utils.getVertex(rect.x, rect.y, rect.x-0.5*rect.w, rect.y+0.5*rect.h, deg),
+                    utils.getVertex(rect.x, rect.y, rect.x+0.5*rect.w, rect.y+0.5*rect.h, deg)
+                ];
 
-        var i = 0;
-        var j = 1;
-        var rect = {
-            x: cx+25,
-            y: cy-25,
-            w: 100,
-            h: 100,
-        }
-        var acc = 0.03;
-        var animation = new utils.MyAnimation(function() {
-            var deg = Math.floor(i);
-            var rotated = [
-                utils.getVertex(rect.x, rect.y, rect.x-0.5*rect.w, rect.y-0.5*rect.h, deg),
-                utils.getVertex(rect.x, rect.y, rect.x+0.5*rect.w, rect.y-0.5*rect.h, deg),
-                utils.getVertex(rect.x, rect.y, rect.x-0.5*rect.w, rect.y+0.5*rect.h, deg),
-                utils.getVertex(rect.x, rect.y, rect.x+0.5*rect.w, rect.y+0.5*rect.h, deg)
-            ];
+                canv.clear();
 
-            canv.clear();
+                for (var k = 12; k < 524; k += 50) {
+                    canv.drawLine(k, 0, k, 524);
+                    canv.drawLine(0, k, 524, k);
+                }
 
-            for (var k = 12; k < 524; k += 50) {
-                canv.drawLine(k, 0, k, 524);
-                canv.drawLine(0, k, 524, k);
+                canv.drawCircle(cx-2, cy-2, 2, { color: "black", fill: true})
+                canv.drawCircle(rect.x-2, rect.y-2, 2, { color: "red", fill: true})
+
+                canv.drawText(
+                    "0,0",
+                    center.x+4,
+                    center.y-4
+                );
+                canv.drawText(
+                    Math.floor((rect.x-cx))+","+Math.floor((rect.y-cy)),
+                    rect.x+4,
+                    rect.y-4,
+                    { 
+                        rotate: {
+                            x: rect.x,
+                            y: rect.y,
+                            value: deg
+                        } 
+                    }
+                );
+                canv.drawText(
+                    Math.floor((rotated[0].x-cx))+","+Math.floor(-(rotated[0].y-cy)), 
+                    rotated[0].x+3, 
+                    rotated[0].y-3
+                );
+                canv.drawText(
+                    Math.floor((rotated[1].x-cx))+","+Math.floor(-(rotated[1].y-cy)), 
+                    rotated[1].x+3, 
+                    rotated[1].y-3
+                );
+                canv.drawText(
+                    Math.floor((rotated[2].x-cx))+","+Math.floor(-(rotated[2].y-cy)), 
+                    rotated[2].x+3, 
+                    rotated[2].y-3
+                );
+                canv.drawText(
+                    Math.floor((rotated[3].x-cx))+","+Math.floor(-(rotated[3].y-cy)), 
+                    rotated[3].x+3, 
+                    rotated[3].y-3
+                );
+
+                // canv.drawLine(rotated[0].x, rotated[0].y, rotated[1].x, rotated[1].y); // top
+                // canv.drawLine(rotated[2].x, rotated[2].y, rotated[3].x, rotated[3].y); // bottom
+                // canv.drawLine(rotated[0].x, rotated[0].y, rotated[2].x, rotated[2].y); // left
+                // canv.drawLine(
+                //     rotated[1].x,
+                //     rotated[1].y,
+                //     rotated[3].x,
+                //     rotated[3].y
+                // );
+                canv.drawLine(
+                    rect.x-rect.w*0.5,
+                    rect.y-rect.h*0.5,
+                    rect.x+rect.w-rect.w*0.5,
+                    rect.y-rect.h*0.5,
+                    { color: "red", width: 2, rotate: { value: deg*2 } }
+                );
+                canv.drawCircle(
+                    rect.x+50-2,
+                    rect.y-2,
+                    2,
+                    { color: "green", fill: true,  rotate: {x: center.x+25, y: center.y-25, value: deg }
+                });
+
+                canv.drawCircle(
+                    rotated[1].x-2,
+                    rotated[1].y-2,
+                    2,
+                    { color: "blue", fill: true, rotate: { value: deg } }
+                )
+                
+                canv.drawRect(
+                    rect.x-rect.w*0.5,
+                    rect.y-rect.h*0.5,
+                    rect.w,
+                    rect.h,
+                    { color: "green", rotate: deg }
+                );
+
+                canv.drawRect(
+                    125,
+                    100,
+                    100,
+                    100,
+                    { color: "purple", rotateX: deg }
+                );
+
+                canv.drawRect(
+                    75,
+                    225,
+                    100,
+                    100,
+                    { color: "purple", rotateY: {
+                        x: 75, 
+                        y: 225,
+                        value: deg
+                    } }
+                );
+
+                canv.drawImage(
+                    img,
+                    325,
+                    325,
+                    150,
+                    100,
+                    {
+                        rotate: deg,
+                        rotateX: deg,
+                        rotateY: deg
+                    }
+                );
+
+                i += j;
+            }, 10);
+
+            function startAnimation() {
+                animation.start();
+            }
+            function pauseAnimetion() {
+                animation.pause();
+            }
+            function stopAnimetion() {
+                animation.stop();
             }
 
-            canv.drawCircle(cx-2, cy-2, 2, { color: "black", fill: true})
-            canv.drawCircle(rect.x-2, rect.y-2, 2, { color: "red", fill: true})
+            startAnimation();
 
-            canv.drawText(
-                "0,0",
-                center.x+4,
-                center.y-4
-            );
-            canv.drawText(
-                Math.floor((rect.x-cx))+","+Math.floor((rect.y-cy)),
-                rect.x+4,
-                rect.y-4,
-                { 
-                    rotate: {
-                        x: rect.x,
-                        y: rect.y,
-                        value: deg
-                    } 
-                }
-            );
-            canv.drawText(
-                Math.floor((rotated[0].x-cx))+","+Math.floor(-(rotated[0].y-cy)), 
-                rotated[0].x+3, 
-                rotated[0].y-3
-            );
-            canv.drawText(
-                Math.floor((rotated[1].x-cx))+","+Math.floor(-(rotated[1].y-cy)), 
-                rotated[1].x+3, 
-                rotated[1].y-3
-            );
-            canv.drawText(
-                Math.floor((rotated[2].x-cx))+","+Math.floor(-(rotated[2].y-cy)), 
-                rotated[2].x+3, 
-                rotated[2].y-3
-            );
-            canv.drawText(
-                Math.floor((rotated[3].x-cx))+","+Math.floor(-(rotated[3].y-cy)), 
-                rotated[3].x+3, 
-                rotated[3].y-3
-            );
+            // setTimeout(function() {
+            //     pauseAnimetion();
+            // }, 1000);
 
-            // canv.drawLine(rotated[0].x, rotated[0].y, rotated[1].x, rotated[1].y); // top
-            // canv.drawLine(rotated[2].x, rotated[2].y, rotated[3].x, rotated[3].y); // bottom
-            // canv.drawLine(rotated[0].x, rotated[0].y, rotated[2].x, rotated[2].y); // left
-            // canv.drawLine(
-            //     rotated[1].x,
-            //     rotated[1].y,
-            //     rotated[3].x,
-            //     rotated[3].y
-            // );
-            canv.drawLine(
-                rect.x-rect.w*0.5,
-                rect.y-rect.h*0.5,
-                rect.x+rect.w-rect.w*0.5,
-                rect.y-rect.h*0.5,
-                { color: "red", width: 2, rotate: { value: deg } }
-            );
-            canv.drawCircle(
-                rect.x+50-2,
-                rect.y-2,
-                2,
-                { color: "green", fill: true,  rotate: {x: center.x+25, y: center.y-25, value: deg }
-            });
+            // setTimeout(function() {
+            //     startAnimation();
+            // }, 2000);
 
-            canv.drawCircle(
-                rotated[1].x-2,
-                rotated[1].y-2,
-                2,
-                { color: "blue", fill: true, rotate: { value: deg } }
-            )
+            // setTimeout(function() {
+            //     stopAnimetion();
+            //     console.log(animation)
+            // }, 3000);
             
-            canv.drawRect(
-                rect.x-rect.w*0.5,
-                rect.y-rect.h*0.5,
-                rect.w,
-                rect.h,
-                { color: "green", rotate: deg }
-            );
+        })()
 
-            canv.drawRect(
-                125,
-                100,
-                100,
-                100,
-                { color: "purple", rotateX: deg }
-            );
 
-            canv.drawRect(
-                75,
-                225,
-                100,
-                100,
-                { color: "purple", rotateY: deg }
-            );
-
-            i += j;
-        }, 10);
-
-        function startAnimation() {
-            animation.start();
-        }
-        function pauseAnimetion() {
-            animation.pause();
-        }
-        function stopAnimetion() {
-            animation.stop();
-        }
-
-        startAnimation();
-
-        // setTimeout(function() {
-        //     pauseAnimetion();
-        // }, 1000);
-
-        // setTimeout(function() {
-        //     startAnimation();
-        // }, 2000);
-
-        // setTimeout(function() {
-        //     stopAnimetion();
-        //     console.log(animation)
-        // }, 3000);
-        
+       
 
     </script>
 </body>

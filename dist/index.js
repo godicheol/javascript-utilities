@@ -354,6 +354,12 @@
             });
             return cookie.split("=")[1];
         },
+        getRadians: function(deg) {
+            return deg * (Math.PI / 180);
+        },
+        getDegree: function(rad) {
+            return rad * (180 / Math.PI);
+        },
 
         /* Deep copy */
 
@@ -439,7 +445,7 @@
                 return v.toString(16);
             });
         },
-        genCharset: function(charset, len) {
+        genRandomString: function(charset, len) {
             /* charset = "abcdefg" */
             var res = "";
             var i;
@@ -458,7 +464,7 @@
 
          /* File Size */
         
-         convFileSize: function(bytes, format, dot) {
+        convFileSize: function(bytes, format, dot) {
             var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
             var alias = {"b": "Bytes","byte": "Bytes","bytes": "Bytes","kb": "KB","killobyte": "KB","killobytes": "KB",'mb': "MB",'megabyte': "MB",'megabytes': "MB",'gb': "GB",'gigabyte': "GB",'gigabytes': "GB",'tb': "TB",'terrabyte': "TB",'terrabytes': "TB",'pb': "PB",'petabyte': "PB",'petabytes': "PB",'eb': "EB",'exabyte': "EB",'exabytes': "EB",'zb': "ZB",'zettabyte': "ZB",'zettabytes': "ZB",'yb': "YB",'yottabyte': "YB",'yottabytes': "YB"}
             var f = (format && alias[format.toLowerCase()]) ? alias[format.toLowerCase()] : "Bytes";
@@ -1072,66 +1078,7 @@
         /* Rectangle */
 
         getRectangle: function(rect, updates) {
-            var getRotatedSize = function(_w, _h, _d) {
-                var radians = _d * Math.PI / 180;
-                var sinFraction = Math.sin(radians);
-                var cosFraction = Math.cos(radians);
-                if (sinFraction < 0) {
-                    sinFraction = -sinFraction;
-                }
-                if (cosFraction < 0) {
-                    cosFraction = -cosFraction;
-                }
-                return {
-                    width: (_w * cosFraction) + (_h * sinFraction),
-                    height: (_w * sinFraction) + (_h * cosFraction)
-                }
-            };
-            var getVertex = function(_px, _py, _cx, _cy, _d) {
-                var radians = _d * Math.PI / 180;
-                var sinFraction = Math.sin(radians);
-                var cosFraction = Math.cos(radians);
-                return {
-                    x: ((_px-_cx)*cosFraction)-((_py-_cy)*sinFraction)+_cx,
-                    y: ((_px-_cx)*sinFraction)+((_py-_cy)*cosFraction)+_cy
-                }
-            };
 
-            /*
-                pivot
-                [0, 1, 2]
-                [3, 4, 5]
-                [6, 7, 8]
-            */
-            var pivot = rect.pivot || 4;
-            var x = rect.x;
-            var y = rect.y;
-            var w = rect.width;
-            var h = rect.height;
-            var d = rect.degree || rect.deg || rect.rotate;
-            var fx = rect.flipX || rect.scaleX;
-            var fy = rect.flipY || rect.scaleY;
-            var cx;
-            var cy;
-            var ux = updates.x;
-            var uy = updates.y;
-            var uw = updates.width;
-            var uh = updates.height;
-            var ud = updates.degree || updates.deg || updates.rotate;
-            var ufx = updates.flipX || updates.scaleX;
-            var ufy = updates.flipY || updates.scaleY;
-            switch(pivot) {
-                case 0: break;
-                case 1: break;
-                case 2: break;
-                case 3: break;
-                case 4: break;
-                case 5: break;
-                case 6: break;
-                case 7: break;
-                case 8: break;
-                default: break;
-            }
         },
         getCoveredSize: function(sw, sh, dw, dh) {
             var aspectRatio = sw / sh;
@@ -1259,15 +1206,12 @@
                         f();
                     }
                 }.bind(this), d);
-                return true;
             };
             this.start = function() {
                 this.isStarted = true;
-                return true;
             };
             this.pause = function() {
                 this.isStarted = false;
-                return true;
             };
             this.stop = function() {
                 if (this.function) {
@@ -1276,11 +1220,11 @@
                 this.function = null;
                 this.isStarted = false;
                 this.count = 0;
-                return true;
             };
             /* Alias */
             this.go = this.start;
             this.end = this.stop;
+            this.clear = this.stop;
             /* Initialize */
             if (func && delay) {
                 this.set(func, delay);
@@ -1349,19 +1293,46 @@
                     }
                 }
             }
-            var setRotate = function(options, cx, cy) {
-                if (!options || !options.rotate) {
+            var setRotate = function(x, y, options) {
+                if (!options || typeof(options.rotate) === "undefined") {
                     return;
                 }
                 if (typeof(options.rotate) === "object") {
-                    ctx.translate(options.rotate.x || cx, options.rotate.y || cy);
-                    ctx.rotate((options.rotate.degree || options.rotate.deg) * Math.PI / 180);
-                    ctx.translate(-(options.rotate.x || cx), -(options.rotate.y || cy)); 
+                    ctx.translate(options.rotate.x || x, options.rotate.y || y);
+                    ctx.rotate(options.rotate.value * Math.PI / 180);
+                    ctx.translate(-(options.rotate.x || x), -(options.rotate.y || y)); 
                 }
                 if (typeof(options.rotate) === "number") {
-                    ctx.translate(cx, cy);
+                    ctx.translate(x, y);
                     ctx.rotate(options.rotate * Math.PI / 180);
-                    ctx.translate(-cx, -cy); 
+                    ctx.translate(-x, -y); 
+                }
+            }
+            var setRotateX = function(x, y, options) {
+                if (!options || typeof(options.rotateX) === "undefined") {
+                    return;
+                }
+                var deg = typeof(options.rotateX) === "object" ? options.rotateX.value : options.rotateX;
+                var val = Math.sin((deg+90)*Math.PI/180);
+                ctx.translate(x, y);
+                ctx.scale(val, 1);
+                ctx.translate(-x, -y); 
+            }
+            var setRotateY = function(x, y, options) {
+                if (!options || typeof(options.rotateY) === "undefined") {
+                    return;
+                }
+                var deg = typeof(options.rotateY) === "object" ? options.rotateY.value : options.rotateY;
+                var val = Math.sin((deg+90)*Math.PI/180);
+                if (typeof(options.rotateY) === "object") {
+                    ctx.translate(x, y);
+                    ctx.scale(1, val);
+                    ctx.translate(-x, -y); 
+                }
+                if (typeof(options.rotateY) === "number") {
+                    ctx.translate(x, y);
+                    ctx.scale(1, val);
+                    ctx.translate(-x, -y); 
                 }
             }
 
@@ -1385,16 +1356,24 @@
                 this.height = canvas.height;
             };
             this.drawDot = function(x, y, options) {
+                var cx = x;
+                var cy = y;
                 saveStyle();
                 setStyle(options);
-                setRotate(options, x, y);
-                ctx.fillRect(x, y, 1, 1);
+                setRotate(cx, cy, options);
+                setRotateX(cx, cy, options);
+                setRotateY(cx, cy, options);
+                ctx.fillRect(cx, cy, 1, 1);
                 unsetStyle();
             };
             this.drawLine = function(sx, sy, dx, dy, options) {
+                var cx = (sx+dx)*0.5;
+                var cy = (sy+dy)*0.5;
                 saveStyle();
                 setStyle(options);
-                setRotate(options, (sx+dx)*0.5, (sy+dy)*0.5);
+                setRotate(cx, cy, options);
+                setRotateX(cx, cy, options);
+                setRotateY(cx, cy, options);
                 ctx.beginPath();
                 ctx.moveTo(sx+0.5, sy+0.5); /* fix starting half pixel */
                 ctx.lineTo(dx+0.5, dy+0.5); /* fix starting half pixel */
@@ -1403,9 +1382,13 @@
                 unsetStyle();
             };
             this.drawRect = function(x, y, w, h, options) {
+                var cx = x+w*0.5;
+                var cy = y+h*0.5;
                 saveStyle();
                 setStyle(options);
-                setRotate(options, x+w*0.5, y+h*0.5);
+                setRotate(cx, cy, options);
+                setRotateX(cx, cy, options);
+                setRotateY(cx, cy, options);
                 if (options && options.fill) {
                     ctx.fillRect(x, y, w+1, h+1); /* fix starting half pixel */
                 } else {
@@ -1414,34 +1397,36 @@
                 unsetStyle();
             };
             this.drawCircle = function(x, y, rad, options) {
+                var cx = x+rad;
+                var cy = y+rad;
                 saveStyle();
                 setStyle(options);
-                setRotate(options, x+rad, y+rad);
+                setRotate(cx, cy, options);
+                setRotateX(cx, cy, options);
+                setRotateY(cx, cy, options);
                 ctx.beginPath();
                 if (options && options.fill) {
-                    ctx.arc(x+rad+0.5, y+rad+0.5, rad+0.5, 0, 2*Math.PI); /* fix starting half pixel */
+                    ctx.arc(cx+0.5, cy+0.5, rad+0.5, 0, 2*Math.PI); /* fix starting half pixel */
                     ctx.fill();
                 } else {
-                    ctx.arc(x+rad+0.5, y+rad+0.5, rad, 0, 2*Math.PI); /* fix starting half pixel */
+                    ctx.arc(cx+0.5, cy+0.5, rad, 0, 2*Math.PI); /* fix starting half pixel */
                     ctx.stroke();
                 }
                 ctx.closePath();
                 unsetStyle();
             };
             this.drawText = function(text, x, y, options) {
-                var res;
-                var w;
-                var h;
+                var cx = x;
+                var cy = y;
                 saveStyle();
                 setStyle(options);
-                res =  ctx.measureText(text);
-                w = res.width;
-                h = parseInt(ctx.font.match(/\d+/), 10);
-                setRotate(options, x, y);
-                ctx.fillText(text, x-w*0.5, y+h*0.5);
+                setRotate(cx, cy, options);
+                setRotateX(cx, cy, options);
+                setRotateY(cx, cy, options);
+                ctx.fillText(text, cx, cy);
                 unsetStyle();
             };
-            this.drawImage = function(src, x, y, w, h, options) {
+            this.drawImage = function(src, x, y, w, h, options, cb) {
                 saveStyle();
                 unsetStyle();
             };

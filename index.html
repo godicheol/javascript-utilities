@@ -91,18 +91,18 @@
 
             canv.drawText(
                 "0,0",
-                center.x+2,
-                center.y-2
+                center.x+4,
+                center.y-4
             );
             canv.drawText(
                 Math.floor((rect.x-cx))+","+Math.floor((rect.y-cy)),
-                rect.x,
-                rect.y,
+                rect.x+4,
+                rect.y-4,
                 { 
                     rotate: {
                         x: rect.x,
                         y: rect.y,
-                        degree: deg
+                        value: deg
                     } 
                 }
             );
@@ -141,20 +141,20 @@
                 rect.y-rect.h*0.5,
                 rect.x+rect.w-rect.w*0.5,
                 rect.y-rect.h*0.5,
-                { color: "red", width: 2, rotate: { degree: deg } }
+                { color: "red", width: 2, rotate: { value: deg } }
             );
             canv.drawCircle(
                 rect.x+50-2,
                 rect.y-2,
                 2,
-                { color: "green", fill: true,  rotate: {x: center.x+25, y: center.y-25, degree: deg }
+                { color: "green", fill: true,  rotate: {x: center.x+25, y: center.y-25, value: deg }
             });
 
             canv.drawCircle(
                 rotated[1].x-2,
                 rotated[1].y-2,
                 2,
-                { color: "blue", fill: true, rotate: { degree: deg } }
+                { color: "blue", fill: true, rotate: { value: deg } }
             )
             
             canv.drawRect(
@@ -165,8 +165,24 @@
                 { color: "green", rotate: deg }
             );
 
+            canv.drawRect(
+                125,
+                100,
+                100,
+                100,
+                { color: "purple", rotateX: deg }
+            );
+
+            canv.drawRect(
+                75,
+                225,
+                100,
+                100,
+                { color: "purple", rotateY: deg }
+            );
+
             i += j;
-        }, 12);
+        }, 10);
 
         function startAnimation() {
             animation.start();

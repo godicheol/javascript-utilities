@@ -5,8 +5,14 @@
 
         /* Math */
 
-        mod: function(n, m) {
+        getModulo: function(n, m) {
             return ((n % m) + m) % m;
+        },
+        getRadians: function(deg) {
+            return deg * (Math.PI / 180);
+        },
+        getDegree: function(rad) {
+            return rad * (180 / Math.PI);
         },
 
         /* Type */
@@ -353,12 +359,6 @@
                 return e.split("=")[0] === key;
             });
             return cookie.split("=")[1];
-        },
-        getRadians: function(deg) {
-            return deg * (Math.PI / 180);
-        },
-        getDegree: function(rad) {
-            return rad * (180 / Math.PI);
         },
 
         /* Deep copy */
@@ -1077,8 +1077,156 @@
 
         /* Rectangle */
 
-        getRectangle: function(rect, updates) {
+        MyRectangle: function(w, h) {
+            var Rect = this;
+            var getVertex = function(px, py, x, y, d) {
+                var radians = d * Math.PI / 180;
+                var sinFraction = Math.sin(radians);
+                var cosFraction = Math.cos(radians);
+                return {
+                    x: (x-px)*cosFraction-(y-py)*sinFraction+px,
+                    y: (x-px)*sinFraction+(y-py)*cosFraction+py
+                }
+            };
+            var getBoundingBox = function(a, b, c, d) {
+                return {
+                    x: Math.min(a.x, b.x, c.x, d.x),
+                    y: Math.min(a.y, b.y, c.y, d.y),
+                    width: Math.max(a.x, b.x, c.x, d.x) - Math.min(a.x, b.x, c.x, d.x),
+                    height: Math.max(a.y, b.y, c.y, d.y) - Math.min(a.y, b.y, c.y, d.y)
+                }
+            };
+            var getDiagonal = function(w, h) {
+                return Math.sqrt(w*w + h*h);
+            };
 
+            /* constructor */
+            this.__state__ = {
+                originX: 0,
+                originY: 0,
+                pivotX: null,
+                pivotY: null,
+                rectangleX: 0,
+                rectangleY: 0,
+                rectangleWidth: w,
+                rectangleHeight: h,
+                rectangleDegree: 0,
+            };
+
+            /* methods */
+            this.getState = function() {
+                var originX = this.__state__.originX;
+                var originY = this.__state__.originY;
+                var x1 = this.__state__.rectangleX;
+                var x2 = this.__state__.rectangleX + this.__state__.rectangleWidth;
+                var y1 = this.__state__.rectangleY;
+                var y2 = this.__state__.rectangleY + this.__state__.rectangleHeight;
+                var width = this.__state__.rectangleWidth;
+                var height = this.__state__.rectangleHeight;
+                var degree = this.__state__.rectangleDegree;
+                var px = this.__state__.pivotX;
+                var py = this.__state__.pivotY;
+
+                /* set origin */
+                x1 += originX;
+                x2 += originX;
+                y1 += originY;
+                y2 += originY;
+
+                /* calc */
+                var area = width * height;
+                var centerX = x1+width*0.5;
+                var centerY = y1+height*0.5;
+                var pivotX = typeof(px) === "number" ? px : centerX;
+                var pivotY = typeof(py) === "number" ? py : centerY;
+                var diagonal = getDiagonal(width, height);
+                var vertexA = getVertex(pivotX, pivotY, x1, y1, degree);
+                var vertexB = getVertex(pivotX, pivotY, x2, y1, degree);
+                var vertexC = getVertex(pivotX, pivotY, x1, y2, degree);
+                var vertexD = getVertex(pivotX, pivotY, x2, y2, degree);
+                var boundingBox = getBoundingBox(vertexA, vertexB, vertexC, vertexD);
+
+                return {
+                    origin: {
+                        x: originX,
+                        y: originY
+                    },
+                    center: {
+                        x: centerX,
+                        y: centerY
+                    },
+                    pivot: {
+                        x: pivotX,
+                        y: pivotY
+                    },
+                    x: x1,
+                    y: y1,
+                    width: width,
+                    height: height,
+                    aspectRatio: width/height,
+                    degree: degree,
+                    area: area,
+                    diagonal: diagonal,
+                    boundingBox: boundingBox,
+                    vertexA: vertexA,
+                    vertexB: vertexB,
+                    vertexC: vertexC,
+                    vertexD: vertexD,
+                }
+            };
+            this.origin = function(x, y) {
+                this.__state__.originX = x;
+                this.__state__.originY = y;
+                return this;
+            };
+            this.pivot = function(x, y) {
+                this.__state__.pivotX = x;
+                this.__state__.pivotY = y;
+                return this;
+            };
+            this.translate = function(x, y) {
+                this.__state__.rectangleX = x;
+                this.__state__.rectangleY = y;
+                return this;
+            };
+            this.resize = function(w, h) {
+                this.__state__.rectangleWidth = w;
+                this.__state__.rectangleHeight = h;
+                return this;
+            };
+            this.scale = function(n) {
+                this.__state__.rectangleWidth = this.__state__.rectangleWidth * n;
+                this.__state__.rectangleHeight = this.__state__.rectangleHeight * n;
+                return this;
+            };
+            this.rotate = function(degree) {
+                this.__state__.rectangleDegree = degree;
+                return this;
+            };
+            this.fit = function(type, width, height) {
+                var ar = this.__state__.rectangleWidth / this.__state__.rectangleHeight;
+                var nw = this.__state__.rectangleWidth < 0; /* is negative */
+                var nh = this.__state__.rectangleHeight < 0; /* is negative */
+                var o = height * ar < width;
+                if (type === "cover") {
+                    this.__state__.rectangleWidth = Math.abs(o ? width : height*ar);
+                    this.__state__.rectangleHeight = Math.abs(o ? width/ar : height);
+                } else if (type === "contain") {
+                    this.__state__.rectangleWidth = Math.abs(o ? height*ar : width);
+                    this.__state__.rectangleHeight = Math.abs(o ? height : width/ar);
+                } else {
+                    var err = new Error('Invalid argument type');
+                    err.name = "TypeError";
+                    throw err;
+                }
+                if (nw) {
+                    this.__state__.rectangleWidth = -this.__state__.rectangleWidth;
+                }
+                if (nh) {
+                    this.__state__.rectangleHeight = -this.__state__.rectangleHeight;
+                }
+                return this;
+            };
         },
         getCoveredSize: function(sw, sh, dw, dh) {
             var aspectRatio = sw / sh;
@@ -1154,15 +1302,17 @@
                 height: (w * sinFraction) + (h * cosFraction)
             }
         },
-        getVertex: function(cx, cy, x, y, d) {
-            /* center, current, degree  */
+        getVertex: function(px, py, x, y, d) {
             var radians = d * Math.PI / 180;
             var sinFraction = Math.sin(radians);
             var cosFraction = Math.cos(radians);
-            return {
-                x: cx+((x-cx)*cosFraction)-((y-cy)*sinFraction),
-                y: cy+((x-cx)*sinFraction)+((y-cy)*cosFraction)
-            }
+            return [
+                (x-px)*cosFraction-(y-py)*sinFraction+px,
+                (x-px)*sinFraction+(y-py)*cosFraction+py
+            ];
+        },
+        getDiagonal: function(w, h) {
+            return Math.sqrt(w*w + h*h);
         },
 
         /* Function */
@@ -1197,6 +1347,7 @@
             this.function = null;
             this.isStarted = false;
             this.count = 0;
+            this.startedAt = null;
             this.set = function(f, d) {
                 this.count = 0;
                 this.isStarted = false;
@@ -1209,6 +1360,7 @@
             };
             this.start = function() {
                 this.isStarted = true;
+                this.startedAt = new Date();
             };
             this.pause = function() {
                 this.isStarted = false;
@@ -1220,6 +1372,7 @@
                 this.function = null;
                 this.isStarted = false;
                 this.count = 0;
+                this.startedAt = null;
             };
             /* Alias */
             this.go = this.start;
@@ -1547,6 +1700,7 @@
                 }
             }
         },
+
     }
 
     if (typeof(window.utils) === "undefined") {

@@ -5,69 +5,161 @@
 
         /* Math */
 
+        /**
+         * 
+         * @param {Number} n 
+         * @param {Number} m 
+         * @returns
+         */
         getModulo: function(n, m) {
             return ((n % m) + m) % m;
         },
+        /**
+         * 
+         * @param {Number} deg 
+         * @returns
+         */
         getRadians: function(deg) {
             return deg * (Math.PI / 180);
         },
+        /**
+         * 
+         * @param {Number} rad 
+         * @returns 
+         */
         getDegree: function(rad) {
             return rad * (180 / Math.PI);
         },
-
-        /* Type */
-
+        /**
+         * 
+         * @param {Boolean} bool 
+         * @returns 
+         */
         isBoolean: function(bool) {
             return (typeof(bool) === "boolean") || (typeof(bool) === "number" && (bool === 1 || bool === 0)) || (typeof(bool) === "string" && (bool === "true" || bool === "false" || bool === "1" || bool === "0"))
         },
+        /**
+         * 
+         * @param {Number} num 
+         * @returns 
+         */
         isNumeric: function(num) {
             return typeof(num) === "number" || (typeof(num) === "string" && !isNaN(parseFloat(num)) && isFinite(num));
         },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
         isString: function(str) {
             return typeof(str) === "string";
         },
+        /**
+         * 
+         * @param {Object} obj 
+         * @returns 
+         */
         isObject: function(obj) {
             return typeof(obj) === "object" && obj !== null && Object.prototype.toString.call(obj) !== '[object Array]';
         },
+        /**
+         * 
+         * @param {Array} arr 
+         * @returns 
+         */
         isArray: function(arr) {
             return typeof(arr) === "object" && Object.prototype.toString.call(arr) === '[object Array]';
         },
+        /**
+         * 
+         * @param {Date} date 
+         * @returns 
+         */
         isDate: function(date) {
             return date instanceof Date && !isNaN(date.valueOf());
         },
+        /**
+         * 
+         * @param {Node} node 
+         * @returns 
+         */
         isNode: function(node) {
             return (typeof(Node) === "object" ? node instanceof Node : node) && typeof(node) === "object" && typeof(node.nodeType) === "number" && typeof(node.nodeName) === "string";
         },
-        isNodeList: function(node) {
-            return typeof(node) === "object" && /^\[object (HTMLCollection|NodeList|Object)\]$/.test(Object.prototype.toString.call(node)) && typeof(node.length) === "number" && (node.length === 0 || (typeof(node[0]) === "object" && node[0].nodeType > 0));
+        /**
+         * 
+         * @param {NodeList} node 
+         * @returns 
+         */
+        isNodeList: function(nodeList) {
+            return typeof(nodeList) === "object" && /^\[object (HTMLCollection|NodeList|Object)\]$/.test(Object.prototype.toString.call(nodeList)) && typeof(nodeList.length) === "number" && (nodeList.length === 0 || (typeof(nodeList[0]) === "object" && nodeList[0].nodeType > 0));
         },
+        /**
+         * 
+         * @param {HTMLElement} elem 
+         * @returns 
+         */
         isDOMElement: function(elem) {
             return (typeof(HTMLElement) === "object" ? elem instanceof HTMLElement : elem) && typeof(elem) === "object" && elem !== null && elem.nodeType === 1 && typeof(elem.nodeName) === "string";
         },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
         isMimeType: function(str) {
 			var pattern = new RegExp("(application|audio|font|example|image|message|model|multipart|text|video|x-(?:[0-9A-Za-z!#$%&'*+.^_`|~-]+))/([0-9A-Za-z!#$%&'*+.^_`|~-]+)((?:[ \t]*;[ \t]*[0-9A-Za-z!#$%&'*+.^_`|~-]+=(?:[0-9A-Za-z!#$%&'*+.^_`|~-]+|\"(?:[^\"\\\\]|\\.)*\"))*)");
 			return pattern.test(str);
 		},
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
         isColor: function(str) {
             var pattern = new RegExp("^(?:#(?:[A-Fa-f0-9]{3}){1,2}|(?:rgb[(](?:\s*0*(?:\d\d?(?:\.\d+)?(?:\s*%)?|\.\d+\s*%|100(?:\.0*)?\s*%|(?:1\d\d|2[0-4]\d|25[0-5])(?:\.\d+)?)\s*(?:,(?![)])|(?=[)]))){3}|hsl[(]\s*0*(?:[12]?\d{1,2}|3(?:[0-5]\d|60))\s*(?:\s*,\s*0*(?:\d\d?(?:\.\d+)?\s*%|\.\d+\s*%|100(?:\.0*)?\s*%)){2}\s*|(?:rgba[(](?:\s*0*(?:\d\d?(?:\.\d+)?(?:\s*%)?|\.\d+\s*%|100(?:\.0*)?\s*%|(?:1\d\d|2[0-4]\d|25[0-5])(?:\.\d+)?)\s*,){3}|hsla[(]\s*0*(?:[12]?\d{1,2}|3(?:[0-5]\d|60))\s*(?:\s*,\s*0*(?:\d\d?(?:\.\d+)?\s*%|\.\d+\s*%|100(?:\.0*)?\s*%)){2}\s*,)\s*0*(?:\.\d+|1(?:\.0*)?)\s*)[)])$");
             return pattern.test(str);
         },
+        /**
+         * 
+         * @param {Regexp} regexp 
+         * @returns 
+         */
         isRegexp: function(regexp) {
             return (typeof(regexp) === "object" && regexp instanceof RegExp) || (typeof(regexp) === "string" && /^\/.*\/[gi]{0,1}$/.test(regexp));
         },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
         isCapital: function(str) {
             return str.charAt(0) === str.charAt(0).toUpperCase();
         },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
         isUrl: function(str) {
             return /^(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})$/.test(str);
         },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
         isSafeUrl: function(str) {
             return /^[a-zA-Z0-9-._~()'!*:@,?\/#+&=]+$/.test(str);
         },
-
-        /* Change type */
-
+        /**
+         * 
+         * @param {Boolean} bool 
+         * @param {Number} bool 
+         * @returns 
+         */
         toBoolean: function(bool) {
+            this.toBoolean()
             if (typeof(bool) === "boolean") {
                 return bool;
             } else if (typeof(bool) === "number" && (bool === 1 || bool === 0)) {
@@ -82,28 +174,43 @@
                 throw err;
             }
         },
-        toNumber: function(num) {
-            if (typeof(num) === "number") {
-                return num;
-            } else if (typeof(num) === "string" && !isNaN(parseFloat(num)) && isFinite(num)) {
-                return parseFloat(num);
-            } else {
-                var err = new Error('Invalid argument type');
-                err.name = "TypeError";
-                throw err;
-            }
-        },
-        toString: function(str) {
-            if (typeof(str) === "string") {
+        /**
+         * 
+         * @param {String} num 
+         * @returns 
+         */
+        toNumber: function(str) {
+            if (typeof(str) === "number") {
                 return str;
-            } else if (typeof(str) === "number") {
-                return str.toString(10);
+            } else if (typeof(str) === "string" && !isNaN(parseFloat(str)) && isFinite(str)) {
+                return parseFloat(str);
             } else {
                 var err = new Error('Invalid argument type');
                 err.name = "TypeError";
                 throw err;
             }
         },
+        /**
+         * 
+         * @param {Number} num 
+         * @returns 
+         */
+        toString: function(num) {
+            if (typeof(num) === "string") {
+                return num;
+            } else if (typeof(num) === "number") {
+                return num.toString(10);
+            } else {
+                var err = new Error('Invalid argument type');
+                err.name = "TypeError";
+                throw err;
+            }
+        },
+        /**
+         * 
+         * @param {Array} arr 
+         * @returns 
+         */
         toObject: function(arr) {
             /* arr = [[key, value], [key, value]] */
             return arr.reduce(function(prev, curr) {
@@ -111,52 +218,80 @@
                 return prev;
             }, {});
         },
-        toArray: function(any) {
-            if (typeof(any) === "object" && any !== null && Object.prototype.toString.call(any) !== '[object Array]') {
+        /**
+         * 
+         * @param {Object} obj 
+         * @returns 
+         */
+        toArray: function(obj) {
+            if (typeof(obj) === "object" && obj !== null && Object.prototype.toString.call(obj) !== '[object Array]') {
                 return Object.entries(any); /* Object */
-            } else if (typeof(any) === "object" && any !== null && Object.prototype.toString.call(any) === '[object Array]') {
-                return any; /* Array */
-            } else if (typeof(any) === "string") {
-                return any.split(''); /* String */
+            } else if (typeof(obj) === "object" && obj !== null && Object.prototype.toString.call(obj) === '[object Array]') {
+                return obj; /* Array */
+            } else if (typeof(obj) === "string") {
+                return obj.split(''); /* String */
             } else {
                 var err = new Error('Invalid argument type');
                 err.name = "TypeError";
                 throw err;
             }
         },
-        toDate: function(date) {
-            if (typeof(date) === "object" && date instanceof Date && !isNaN(date.valueOf())) {
-                return date;
-            } else if (typeof(date) === "number") {
-                return new Date(date);
-            } else if (typeof(date) === "string") {
-                return new Date(date);
+        /**
+         * 
+         * @param {Number} num 
+         * @returns 
+         */
+        toDate: function(num) {
+            if (typeof(num) === "object" && num instanceof Date && !isNaN(num.valueOf())) {
+                return num;
+            } else if (typeof(num) === "number") {
+                return new Date(num);
+            } else if (typeof(num) === "string") {
+                return new Date(num);
             } else {
                 var err = new Error('Invalid argument type');
                 err.name = "TypeError";
                 throw err;
             }
         },
-        toRegexp: function(regexp) {
-            if (typeof(regexp) === "object" && regexp instanceof RegExp) {
-                return regexp;
-            } else if (typeof(regexp) === "string" && /^\/.*\/[gi]{0,1}$/.test(regexp)) {
-                return new RegExp(regexp);
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
+        toRegexp: function(str) {
+            if (typeof(str) === "object" && str instanceof RegExp) {
+                return str;
+            } else if (typeof(str) === "string" && /^\/.*\/[gi]{0,1}$/.test(str)) {
+                return new RegExp(str);
             } else {
                 var err = new Error('Invalid argument type');
                 err.name = "TypeError";
                 throw err;
             }
         },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
         toCapital: function(str) {
             return str.charAt(0).toUpperCase() + str.slice(1);
         },
+        /**
+         * 
+         * @param {String} str 
+         * @param {String} char 
+         * @returns 
+         */
         toSafeUrl: function(str, char) {
             return str.replace(/[\{\}\[\].,;:|\)*~`!^<>@\$%\\\(\'\"\s]/g, char || "_");
         },
-
-        /* Get */
-
+        /**
+         * 
+         * @param {Any} any 
+         * @returns 
+         */
         getType: function(any) {
             if (typeof(any) === "object") {
                 if (Object.prototype.toString.call(any) === '[object Array]') {
@@ -170,6 +305,10 @@
                 return typeof(any);
             }
         },
+        /**
+         * 
+         * @returns 
+         */
         getOs: function() {
             var clients = [
                 {system:'Windows 10', pattern:/(Windows 10.0|Windows NT 10.0)/},
@@ -207,6 +346,10 @@
             }
             return undefined;
         },
+        /**
+         * 
+         * @returns 
+         */
         getBrowserName: function() {
             var alias = {"Opera": "Opera","OPR": "Opera","Edge": "Microsoft Legacy Edge","Edg": "Microsoft Edge","MSIE": "Microsoft Internet Explorer","Chrome": "Chrome","Safari": "Safari","Firefox": "Firefox","Trident/": "Microsoft Internet Explorer"}
             var res = /Opera|OPR|Edge|Edg|MSIE|Chrome|Firefox|Trident\//.exec(navigator.userAgent);
@@ -215,6 +358,10 @@
             }
             return alias[res[0]]
         },
+        /**
+         * 
+         * @returns 
+         */
         getBrowserVersion: function() {
             var alias = {"Opera": "Opera","OPR": "Opera","Edge": "Microsoft Legacy Edge","Edg": "Microsoft Edge","MSIE": "Microsoft Internet Explorer","Chrome": "Chrome","Safari": "Safari","Firefox": "Firefox","Trident/": "Microsoft Internet Explorer"}
             var res = /Opera|OPR|Edge|Edg|MSIE|Chrome|Firefox|Trident\//.exec(navigator.userAgent);
@@ -238,18 +385,31 @@
             }
             return version;
         },
+        /**
+         * 
+         * @returns 
+         */
         getScreenSize: function() {
             return {
                 width: window.screen.width * window.devicePixelRatio,
                 height: window.screen.height * window.devicePixelRatio
             }
         },
+        /**
+         * 
+         * @returns 
+         */
         getViewportSize: function() {
             return {
                 width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
                 height: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight,
             }
         },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
         getMimeType: function(str) {
             switch(str) {
                 case "html":
@@ -347,12 +507,27 @@
                 default: return undefined;
             }
         },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
         getExtension: function(str) {
             return str.split('.').pop();
         },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
         getFileName: function(str) {
             return str.replace(/^.*[\\\/]/, '');
         },
+        /**
+         * 
+         * @param {String} key 
+         * @returns 
+         */
         getCookie: function(key) {
             var cookies = document.cookie.split(';');
             var cookie = cookies.find(function(e) {
@@ -360,23 +535,38 @@
             });
             return cookie.split("=")[1];
         },
-
-        /* Deep copy */
-
+        /**
+         * 
+         * @param {Object} obj 
+         * @returns 
+         */
         copyObject: function(obj) {
             return JSON.parse(JSON.stringify(obj));
         },
+        /**
+         * 
+         * @param {Array} arr 
+         * @returns 
+         */
         copyArray: function(arr) {
             return JSON.parse(JSON.stringify(arr));
         },
-
-        /* Generate */
-
+        /**
+         * 
+         * @param {String} title 
+         * @param {String} message 
+         * @returns 
+         */
         genError: function(title, message) {
             var err = new Error(message);
             err.name = title;
             return err;
         },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
         genHash: function(str) {
             var hash = 0;
             var i;
@@ -388,6 +578,11 @@
             }
             return hash;
         },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
         genMd5: function(str) {
             function M(d) {
                 for (var _, m = "0123456789ABCDEF", f = "", r = 0; r < d.length; r++) _ = d.charCodeAt(r), f += m.charAt(_ >>> 4 & 15) + m.charAt(15 & _);
@@ -438,6 +633,10 @@
             var r = M(V(Y(X(str), 8 * str.length)));
             return r.toLowerCase()
         },
+        /**
+         * 
+         * @returns 
+         */
         genUuid4: function() {
             return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
                 var r = Math.random() * 16 | 0,
@@ -445,6 +644,12 @@
                 return v.toString(16);
             });
         },
+        /**
+         * 
+         * @param {String} charset 
+         * @param {Number} len 
+         * @returns 
+         */
         genRandomString: function(charset, len) {
             /* charset = "abcdefg" */
             var res = "";
@@ -454,6 +659,10 @@
             }
             return res;
         },
+        /**
+         * 
+         * @returns 
+         */
         genShortId: function() {
             var f = (Math.random() * 46656) | 0;
 			var s = (Math.random() * 46656) | 0;
@@ -461,9 +670,13 @@
 			s = ("000" + s.toString(36)).slice(-3);
 			return f + s;
         },
-
-         /* File Size */
-        
+        /**
+         * 
+         * @param {Number} bytes 
+         * @param {String} format 
+         * @param {Number} dot 
+         * @returns 
+         */
         convFileSize: function(bytes, format, dot) {
             var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
             var alias = {"b": "Bytes","byte": "Bytes","bytes": "Bytes","kb": "KB","killobyte": "KB","killobytes": "KB",'mb': "MB",'megabyte': "MB",'megabytes': "MB",'gb': "GB",'gigabyte': "GB",'gigabytes': "GB",'tb': "TB",'terrabyte': "TB",'terrabytes': "TB",'pb': "PB",'petabyte': "PB",'petabytes': "PB",'eb': "EB",'exabyte': "EB",'exabytes': "EB",'zb': "ZB",'zettabyte': "ZB",'zettabytes': "ZB",'yb': "YB",'yottabyte': "YB",'yottabytes': "YB"}
@@ -476,6 +689,12 @@
             var i = sizes.indexOf(f);
             return parseFloat((bytes / Math.pow(k, i)).toFixed(dp)) + ' ' + sizes[i];
         },
+        /**
+         * 
+         * @param {Number} bytes 
+         * @param {Number} dot 
+         * @returns 
+         */
         humanlizeFileSize: function(bytes, dot) {
             if (bytes === 0) {
                 return "0 bytes";
@@ -486,9 +705,10 @@
             var i = Math.floor(Math.log(bytes) / Math.log(k));
             return parseFloat((bytes / Math.pow(k, i)).toFixed(dp)) + ' ' + sizes[i];
         },
-        
-        /* Cookie */
-
+        /**
+         * 
+         * @returns 
+         */
         isCookieEndabled: function() {
             if (typeof(navigator.cookieEnabled) !== "undefined") {
                 if (navigator.cookieEnabled) {
@@ -506,21 +726,35 @@
                 }
             }
         },
+        /**
+         * 
+         * @param {String} key 
+         * @param {String} val 
+         */
         setCookie: function(key, val) {
             document.cookie = key + '=' + val;
         },
+        /**
+         * 
+         * @param {String} key 
+         */
         removeCookie: function(key) {
             document.cookie = key + '=; Max-Age=-99999999;';
         },
-
-        /* Browser */
-
+        /**
+         * 
+         * @param {String} url 
+         * @param {String} target 
+         */
         openUrl: function(url, target) {
             window.open(url, target);
         },
-
-        /* String */
-
+        /**
+         * 
+         * @param {String} pad 
+         * @param {String} str 
+         * @returns 
+         */
         padLeft: function(pad, str) {
             /* pad = "0000" */
             if (!str) {
@@ -528,6 +762,12 @@
             }
             return (pad + str).slice(-pad.length);
         },
+        /**
+         * 
+         * @param {String} pad 
+         * @param {String} str 
+         * @returns 
+         */
         padRight: function(pad, str) {
             /* pad = "0000" */
             if (!str) {
@@ -535,42 +775,41 @@
             }
             return (str + pad).substring(0, pad.length);
         },
+        /**
+         * 
+         * @param {Array} arr 
+         * @param {String} header 
+         * @param {String} footer 
+         * @returns 
+         */
         joinString: function(arr, header, footer) {
             return arr.map(function(e) {
                 return (header ? header : "") + e + (footer ? footer : "");
             }).join("");
         },
-        getCommonString: function(stringArray) {
-             
-        },
-        parseString: function(str, locale) {
-        },
+        /**
+         * 
+         * @param {String} str 
+         * @param {String} from 
+         * @param {String} to 
+         * @returns 
+         */
         replaceString: function(str, from, to) {
             return str.split(from).join(to);
         },
-
-        /* Object */
-
-        /* 
-            var schema = new MySchema({
-                name: String,
-                weight: Number,
-            })
-            var human = {
-                name: "James",
-                weight: "5"
-            }
-            var isMatch = schema.test(human);
-
-            console.log(isMatch); // true
-
-            var newHuman = schema.get(human);
-
-            console.log(newHuman); // { name: "James", weight: 5 }
+       /** 
+        * MySchema.set(object)   
+        * MySchema.get(object)   
+        * MySchema.test(object)   
+        * MySchema.isValidType(constructor)   
+        * MySchema.getValidType(constructor)   
+        * MySchema.isValidValue(key, value)   
+        * MySchema.getValidValue(key, value)    
+        * @param {Object} object 
         */
         MySchema: function(object) {
             var Schema = this;
-            /* Constructor */
+            /* constructor */
             this.Types = {
                 Boolean: {
                     get: function(v) {
@@ -832,30 +1071,21 @@
             this.getValidValue = function(key, val) {
                 return Schema.types[key].set(val);
             };
-            /* Alias */
+            /* alias */
             this.set = Schema.init;
             this.add = Schema.init;
             this.save = Schema.get;
             this.convert = Schema.get;
             this.confirm = Schema.test;
             this.validate = Schema.test;
-            /* Initialize this.types */
+            /* initialize this.types */
             this.init(object);
         },
-        /* 
-            var data = {id:1,attr:{width:5,height:6}}
-            queryObject(data, {
-                $and: [{
-                    id:1
-                }, {
-                    attr: {
-                        width: {
-                            $gt: 1,
-                            $lt: 6
-                        }
-                    }
-                }]
-            })
+       /**
+        * 
+        * @param {Object} dataObject 
+        * @param {Object} queryObject 
+        * @returns 
         */
         queryObject: function(dataObject, queryObject) {
             var isOperator = function(str) {
@@ -1050,14 +1280,21 @@
             }
             return matchQuery(null, dataObject, queryObject);
         },
-
-        /* Array */
-
+        /**
+         * 
+         * @param {Array} arr 
+         * @returns 
+         */
         concatInArray: function(arr) {
             return arr.reduce(function(prev, curr) {
                 return prev.concat(curr);
             }, []);
         },
+        /**
+         * 
+         * @param {Array} arr 
+         * @returns 
+         */
         removeDuplicatesInArray: function(arr) {
             return arr.reduce(function(prev, curr) {
                 if (prev.indexOf(curr) < 0) {
@@ -1066,17 +1303,29 @@
                 return prev;
             }, []);
         },
-
-        /* Regular expression */
-
+        /**
+         * 
+         * @param {Array} regexpArray 
+         * @param {String} flags 
+         * @returns 
+         */
         combineRegexp: function(regexpArray, flags) {
             return new RegExp(regexpArray.map(function(e) {
                 return e.source;
             }).join("\|"), flags);
         },
-
-        /* Rectangle */
-
+        /**
+         * MyRectangle.getState()   
+         * MyRectangle.origin(x, y)   
+         * MyRectangle.pivot(x, y)   
+         * MyRectangle.translate(x, y)   
+         * MyRectangle.resize(w, h)   
+         * MyRectangle.scale(ratio)   
+         * MyRectangle.rotate(degree)   
+         * MyRectangle.fit(type, width, height)   
+         * @param {Number} w 
+         * @param {Number} h 
+         */
         MyRectangle: function(w, h) {
             var Rect = this;
             var getVertex = function(px, py, x, y, d) {
@@ -1095,9 +1344,6 @@
                     width: Math.max(a.x, b.x, c.x, d.x) - Math.min(a.x, b.x, c.x, d.x),
                     height: Math.max(a.y, b.y, c.y, d.y) - Math.min(a.y, b.y, c.y, d.y)
                 }
-            };
-            var getDiagonal = function(w, h) {
-                return Math.sqrt(w*w + h*h);
             };
 
             /* constructor */
@@ -1139,13 +1385,13 @@
                 var centerY = y1+height*0.5;
                 var pivotX = typeof(px) === "number" ? px : centerX;
                 var pivotY = typeof(py) === "number" ? py : centerY;
-                var diagonal = getDiagonal(width, height);
+                var diagonal = Math.sqrt(width*width+height*height);
                 var vertexA = getVertex(pivotX, pivotY, x1, y1, degree);
                 var vertexB = getVertex(pivotX, pivotY, x2, y1, degree);
                 var vertexC = getVertex(pivotX, pivotY, x1, y2, degree);
                 var vertexD = getVertex(pivotX, pivotY, x2, y2, degree);
                 var boundingBox = getBoundingBox(vertexA, vertexB, vertexC, vertexD);
-
+                
                 return {
                     origin: {
                         x: originX,
@@ -1228,6 +1474,14 @@
                 return this;
             };
         },
+        /**
+         * 
+         * @param {Number} sw 
+         * @param {Number} sh 
+         * @param {Number} dw 
+         * @param {Number} dh 
+         * @returns 
+         */
         getCoveredSize: function(sw, sh, dw, dh) {
             var aspectRatio = sw / sh;
             if (dh * aspectRatio < dw) {
@@ -1242,6 +1496,14 @@
                 }
             }
         },
+        /**
+         *  
+         * @param {Number} sw 
+         * @param {Number} sh 
+         * @param {Number} dw 
+         * @param {Number} dh 
+         * @returns 
+         */
         getContainedSize: function(sw, sh, dw, dh) {
             var aspectRatio = sw / sh;
             if (dh * aspectRatio < dw) {
@@ -1256,6 +1518,16 @@
                 }
             }
         },
+        /**
+         * 
+         * @param {Number} sw source width 
+         * @param {Number} sh source height
+         * @param {Number} mxw max width
+         * @param {Number} mxh max height
+         * @param {Number} mnw min width
+         * @param {Number} mnh min height
+         * @returns 
+         */
         getOptimumSize: function(sw, sh, mxw, mxh, mnw, mnh) {
             var aspectRatio = sw / sh;
             var maxWidth;
@@ -1287,6 +1559,13 @@
                 height: Math.min(maxHeight, Math.max(minHeight, sh))
             }
         },
+        /**
+         * 
+         * @param {Number} w width
+         * @param {Number} h height
+         * @param {Number} d degree
+         * @returns 
+         */
         getRotatedSize: function(w, h, d) {
             var radians = d * Math.PI / 180;
             var sinFraction = Math.sin(radians);
@@ -1302,6 +1581,15 @@
                 height: (w * sinFraction) + (h * cosFraction)
             }
         },
+        /**
+         * 
+         * @param {Number} px PivotX
+         * @param {Number} py PivotY
+         * @param {Number} x RectangleX
+         * @param {Number} y RectangleY
+         * @param {Number} d RectangleDegree
+         * @returns 
+         */
         getVertex: function(px, py, x, y, d) {
             var radians = d * Math.PI / 180;
             var sinFraction = Math.sin(radians);
@@ -1311,37 +1599,38 @@
                 (x-px)*sinFraction+(y-py)*cosFraction+py
             ];
         },
+        /**
+         * 
+         * @param {Number} w 
+         * @param {Number} h 
+         * @returns 
+         */
         getDiagonal: function(w, h) {
             return Math.sqrt(w*w + h*h);
         },
-
-        /* Function */
-
-        /* 
-            var res = await utils.execPromises(arr, function(prev, curr, index) {
-                return new Promise(function(resolve, reject) {
-                    resolve(prev ? prev + curr : curr);
-                })
-            })
-        */
-        execPromises: function(dataArray, promiseFunc) {
+        /**
+         * 
+         * @param {Array} dataArray 
+         * @param {Function} promiseFunc 
+         * @param {Any} prevValue 
+         * @returns 
+         */
+        execPromises: function(dataArray, promiseFunc, prevValue) {
             var promises = function() {
                 return dataArray.reduce(function(prev, curr, index) {
                     return prev.then(function(res) {
                         return promiseFunc(res, curr, index);
                     });
-                }, Promise.resolve());
+                }, Promise.resolve(prevValue));
             }
             return promises();
         },
-        /* 
-            var a = new MyAnimation(function() {
-                // Code
-            }, 1000);
-
-            a.start();
-            a.pause();
-            a.stop();
+       /**
+        * MyAnimation.start()   
+        * MyAnimation.pause()   
+        * MyAnimation.stop()    
+        * @param {Function} func 
+        * @param {Number} delay 
         */
         MyAnimation: function(func, delay) {
             this.function = null;
@@ -1383,13 +1672,21 @@
                 this.set(func, delay);
             }
         },
-
-        /* Canvas api */
-
+        /**
+         * 
+         * @returns 
+         */
         hasCanvas: function() {
             var element = document.createElement('canvas');
             return !!(element.getContext && element.getContext('2d'));
         },
+        /**
+         * 
+         * @param {String} text 
+         * @param {String} size 
+         * @param {String} font 
+         * @returns 
+         */
         getTextWidth: function(text, size, font) {
             var canvas = document.createElement("canvas");
             var ctx = canvas.getContext("2d");
@@ -1398,7 +1695,17 @@
             return metrics.width;
         },
         /**
-         * 
+         * MyCanvas.getCanvas()     
+         * MyCanvas.setCanvas(w, h)     
+         * MyCanvas.drawDot(x, y, options)  
+         * MyCanvas.drawLine(x1, y1, x2, y2 options)    
+         * MyCanvas.drawRect(x, y, w, h, options)   
+         * MyCanvas.drawCircle(x, y, radians, options)  
+         * MyCanvas.drawText(x, y, text, options)   
+         * MyCanvas.drawImage(x, y, w, h, img, options)     
+         * MyCanvas.loadImage(src, callback)    
+         * MyCanvas.promise.loadImage(src)  
+         * MyCanvas.clear() 
          * @param {Number} width 
          * @param {Number} height 
          */
@@ -1513,14 +1820,14 @@
             canvas.width = width;
             canvas.height = height;
 
-            /* Constructor */
+            /* constructor */
             this.canvas = canvas;
             this.context = ctx;
             this.width = canvas.width;
             this.height = canvas.height;
             this.promise = {};
 
-            /* Methods */
+            /* methods */
             this.getCanvas = function() {
                 return canvas;
             };
@@ -1529,6 +1836,7 @@
                 canvas.height = h;
                 this.width = canvas.width;
                 this.height = canvas.height;
+                return this;
             };
             this.drawDot = function(x, y, options) {
                 var cx = x;
@@ -1540,6 +1848,7 @@
                 setRotateY(cx, cy, options);
                 ctx.fillRect(cx, cy, 1, 1);
                 unsetStyle();
+                return this;
             };
             this.drawLine = function(sx, sy, dx, dy, options) {
                 var cx = (sx+dx)*0.5;
@@ -1555,6 +1864,7 @@
                 ctx.stroke();
                 ctx.closePath();
                 unsetStyle();
+                return this;
             };
             this.drawRect = function(x, y, w, h, options) {
                 var cx = x+w*0.5;
@@ -1570,6 +1880,7 @@
                     ctx.strokeRect(x+0.5, y+0.5, w, h); /* fix starting half pixel */
                 }
                 unsetStyle();
+                return this;
             };
             this.drawCircle = function(x, y, rad, options) {
                 var cx = x+rad;
@@ -1589,8 +1900,9 @@
                 }
                 ctx.closePath();
                 unsetStyle();
+                return this;
             };
-            this.drawText = function(text, x, y, options) {
+            this.drawText = function(x, y, text, options) {
                 var cx = x;
                 var cy = y;
                 saveStyle();
@@ -1600,8 +1912,9 @@
                 setRotateY(cx, cy, options);
                 ctx.fillText(text, cx, cy);
                 unsetStyle();
+                return this;
             };
-            this.drawImage = function(img, x, y, w, h, options) {
+            this.drawImage = function(x, y, w, h, img, options) {
                 var cx = x+w*0.5;
                 var cy = y+h*0.5;
                 var dx = x;
@@ -1615,6 +1928,7 @@
                 setRotateY(cx, cy, options);
                 ctx.drawImage(img, dx, dy, dw, dh);
                 unsetStyle();
+                return this;
             };
             this.loadImage = function(src, cb) {
                 var img = new Image();
@@ -1640,9 +1954,10 @@
             };
             this.clear = function() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
+                return this;
             };
           
-            /* Initialize */
+            /* initialize */
             ctx.strokeStyle = "#000000";
             ctx.fillStyle = "#000000";
             ctx.width = 1;
@@ -1651,6 +1966,10 @@
             ctx.textBaseline = "alphabetic";
             ctx.save();
         },
+        /**
+         * 
+         * @returns 
+         */
         getMaxCanvasSize: function() {
             var w = [8388607, 4194303, 65535, 32767, 16384, 8192, 4096, 1];
             var h = [8388607, 4194303, 65535, 32767, 16384, 8192, 4096, 1];

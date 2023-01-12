@@ -1708,6 +1708,7 @@
                 this.stoppedAt = new Date();
                 return this;
             };
+            this.callback = null;
             /* alias */
             this.set = this.init;
             this.go = this.start;

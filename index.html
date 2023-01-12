@@ -121,16 +121,31 @@
                 canv.drawCircle(state.boundingBox.vertexC.x-2, state.boundingBox.vertexC.y-2, 2, { fill: true, color: "black"})
                 canv.drawCircle(state.boundingBox.vertexD.x-2, state.boundingBox.vertexD.y-2, 2, { fill: true, color: "black"})
 
-                /* rorateX */
+                /* & pivot & rotate & rorateX  */
+                var PIVOT_X = ORIGIN_X + 12.5;
+                var PIVOT_Y = ORIGIN_Y + 12.5;
                 var rect2 = new utils.MyRectangle(100, 100)
-                    .origin(CANVAS_WIDTH*0.5, CANVAS_WIDTH*0.5)
+                    .origin(ORIGIN_X, ORIGIN_Y)
+                    .pivot(PIVOT_X, PIVOT_Y)
                     .resize(50, 100)
-                    .rotate(deg*0.2)
+                    .rotate(deg)
                     .rotateX(deg)
                     .translate(12.5, 12.5);
                 var state2 = rect2.getState();
 
-                canv.drawRect(state2.x, state2.y, state2.width, state2.height, { color: "red", rotate: deg*0.2, rotateX: deg })
+                canv.drawRect(state2.x, state2.y, state2.width, state2.height, {
+                    color: "red",
+                    rotate: {
+                        x: PIVOT_X,
+                        y: PIVOT_Y,
+                        value: deg
+                    },
+                    rotateX: {
+                        x: PIVOT_X,
+                        y: PIVOT_Y,
+                        value: deg
+                    }
+                })
                 canv.drawRect(state2.boundingBox.x, state2.boundingBox.y, state2.boundingBox.width, state2.boundingBox.height, { color: "blue" })
                 canv.drawCircle(state2.vertexA.x-2, state2.vertexA.y-2, 2, { fill: true, color: "black"})
                 canv.drawCircle(state2.vertexB.x-2, state2.vertexB.y-2, 2, { fill: true, color: "black"})
@@ -143,7 +158,7 @@
 
                 /* rorateY */
                 var rect3 = new utils.MyRectangle(100, 100)
-                    .origin(CANVAS_WIDTH*0.5, CANVAS_WIDTH*0.5)
+                    .origin(ORIGIN_X, ORIGIN_Y)
                     .resize(-50, 100)
                     .rotate(deg*0.5)
                     .rotateY(deg)
@@ -162,7 +177,7 @@
 
                 /* image */
                 var rect4 = new utils.MyRectangle(100, 100)
-                    .origin(CANVAS_WIDTH*0.5, CANVAS_WIDTH*0.5)
+                    .origin(ORIGIN_X, ORIGIN_Y)
                     .resize(-100, -50)
                     .rotate(deg)
                     .rotateX(deg)

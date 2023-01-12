@@ -1941,6 +1941,25 @@
                 unsetStyle();
                 return this;
             };
+            this.drawEllipse = function(x, y, rx, ry, options) {
+                var cx = x+rx;
+                var cy = y+ry;
+                saveStyle();
+                setStyle(options);
+                setRotate(cx, cy, options);
+                setRotateX(cx, cy, options);
+                setRotateY(cx, cy, options);
+                ctx.beginPath();
+                ctx.ellipse(cx, cy, rx, ry, 0, 0, 2*Math.PI);
+                if (options && options.fill) {
+                    ctx.fill();
+                } else {
+                    ctx.stroke();
+                }
+                ctx.closePath();
+                unsetStyle();
+                return this;
+            };
             this.drawText = function(x, y, text, options) {
                 var cx = x;
                 var cy = y;

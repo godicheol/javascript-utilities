@@ -822,10 +822,9 @@
          * MySchema.getValidValue(key, value)    
          * @param {Object} object 
          */
-        MySchema: function(object) {
+        MySchema: function(__obj) {
             var Schema = this;
-            /* constructor */
-            this.Types = {
+            var SchemaTypes = {
                 Boolean: {
                     get: function(v) {
                         if (typeof(v) === "boolean") {
@@ -1013,6 +1012,8 @@
                     }
                 }
             };
+
+            /* constructor */
             this.types = {};
             this.init = function(obj) {
                 var keys = Object.keys(obj);
@@ -1064,14 +1065,14 @@
             };
             this.isValidType = function(__construtor) {
                 try {
-                    return typeof(Schema.Types[__construtor.name]) === "object";
+                    return typeof(SchemaTypes[__construtor.name]) === "object";
                 } catch(err) {
                     return false;
                 }
             };
             this.getValidType = function(__construtor) {
                 try {
-                    return Schema.Types[__construtor.name];
+                    return SchemaTypes[__construtor.name];
                 } catch(err) {
                     return undefined;
                 }
@@ -1094,7 +1095,9 @@
             this.confirm = Schema.test;
             this.validate = Schema.test;
             /* initialize this.types */
-            this.init(object);
+            if (__obj) {
+                this.init(__obj);
+            }
         },
         /**
          * 
@@ -1331,24 +1334,50 @@
          * @param {Number} w 
          * @param {Number} h 
          */
-        MyRectangle: function(w, h) {
+        MyRectangle: function(width, height) {
             var Rect = this;
-            var getVertex = function(px, py, x, y, d) {
+            var getVertex = function(px, py, x, y, d, dx, dy) {
                 var radians = d * Math.PI / 180;
+                var scaleX = Math.sin((dy+90)*Math.PI/180);
+                var scaleY = Math.sin((dx+90)*Math.PI/180);
                 var sinFraction = Math.sin(radians);
                 var cosFraction = Math.cos(radians);
                 return {
-                    x: (x-px)*cosFraction-(y-py)*sinFraction+px,
-                    y: (x-px)*sinFraction+(y-py)*cosFraction+py
+                    x: (x-px)*scaleX*cosFraction-(y-py)*scaleY*sinFraction+px,
+                    y: (x-px)*scaleX*sinFraction+(y-py)*scaleY*cosFraction+py
                 }
             };
             var getBoundingBox = function(a, b, c, d) {
+                var x = Math.min(a.x, b.x, c.x, d.x);
+                var y = Math.min(a.y, b.y, c.y, d.y);
+                var w = Math.max(a.x, b.x, c.x, d.x)-Math.min(a.x, b.x, c.x, d.x);
+                var h = Math.max(a.y, b.y, c.y, d.y)-Math.min(a.y, b.y, c.y, d.y);
+                var px = x+w*0.5;
+                var py = x+h*0.5;
+                var vertexA = getVertex(px, py, x, y, 0, 0, 0);
+                var vertexB = getVertex(px, py, x+w, y, 0, 0, 0);
+                var vertexC = getVertex(px, py, x, y+h, 0, 0, 0);
+                var vertexD = getVertex(px, py, x+w, y+h, 0, 0, 0);
+                var diagonal = getDiagonal(w, h);
                 return {
-                    x: Math.min(a.x, b.x, c.x, d.x),
-                    y: Math.min(a.y, b.y, c.y, d.y),
-                    width: Math.max(a.x, b.x, c.x, d.x) - Math.min(a.x, b.x, c.x, d.x),
-                    height: Math.max(a.y, b.y, c.y, d.y) - Math.min(a.y, b.y, c.y, d.y)
+                    x: x,
+                    y: y,
+                    width: w,
+                    height: h,
+                    aspectRatio: w/h,
+                    area: w*h,
+                    degree: 0,
+                    degreeX: 0,
+                    degreeY: 0,
+                    diagonal: diagonal,
+                    vertexA: vertexA,
+                    vertexB: vertexB,
+                    vertexC: vertexC,
+                    vertexD: vertexD,
                 }
+            };
+            var getDiagonal = function(w, h) {
+                return Math.sqrt(w*w+h*h);
             };
 
             /* constructor */
@@ -1359,44 +1388,39 @@
                 pivotY: null,
                 rectangleX: 0,
                 rectangleY: 0,
-                rectangleWidth: w,
-                rectangleHeight: h,
+                rectangleWidth: width,
+                rectangleHeight: height,
                 rectangleDegree: 0,
+                rectangleDegreeX: 0,
+                rectangleDegreeY: 0,
             };
 
             /* methods */
             this.getState = function() {
                 var originX = this.__state__.originX;
                 var originY = this.__state__.originY;
-                var x1 = this.__state__.rectangleX;
-                var x2 = this.__state__.rectangleX + this.__state__.rectangleWidth;
-                var y1 = this.__state__.rectangleY;
-                var y2 = this.__state__.rectangleY + this.__state__.rectangleHeight;
-                var width = this.__state__.rectangleWidth;
-                var height = this.__state__.rectangleHeight;
+                var x1 = originX + this.__state__.rectangleX;
+                var x2 = originX + this.__state__.rectangleX + this.__state__.rectangleWidth;
+                var y1 = originY + this.__state__.rectangleY;
+                var y2 = originY + this.__state__.rectangleY + this.__state__.rectangleHeight;
+                var w = this.__state__.rectangleWidth;
+                var h = this.__state__.rectangleHeight;
                 var degree = this.__state__.rectangleDegree;
-                var px = this.__state__.pivotX;
-                var py = this.__state__.pivotY;
-
-                /* set origin */
-                x1 += originX;
-                x2 += originX;
-                y1 += originY;
-                y2 += originY;
-
-                /* calc */
-                var area = width * height;
-                var centerX = x1+width*0.5;
-                var centerY = y1+height*0.5;
-                var pivotX = typeof(px) === "number" ? px : centerX;
-                var pivotY = typeof(py) === "number" ? py : centerY;
-                var diagonal = Math.sqrt(width*width+height*height);
-                var vertexA = getVertex(pivotX, pivotY, x1, y1, degree);
-                var vertexB = getVertex(pivotX, pivotY, x2, y1, degree);
-                var vertexC = getVertex(pivotX, pivotY, x1, y2, degree);
-                var vertexD = getVertex(pivotX, pivotY, x2, y2, degree);
-                var boundingBox = getBoundingBox(vertexA, vertexB, vertexC, vertexD);
+                var degreeX = this.__state__.rectangleDegreeX;
+                var degreeY = this.__state__.rectangleDegreeY;
+                var area = w*h;
+                var centerX = x1+w*0.5;
+                var centerY = y1+h*0.5;
+                var pivotX = typeof(this.__state__.pivotX) === "number" ? this.__state__.pivotX : centerX;
+                var pivotY = typeof(this.__state__.pivotY) === "number" ? this.__state__.pivotY : centerY;
                 
+                /* calc */
+                var diagonal = getDiagonal(w, h);
+                var vertexA = getVertex(pivotX, pivotY, x1, y1, degree, degreeX, degreeY);
+                var vertexB = getVertex(pivotX, pivotY, x2, y1, degree, degreeX, degreeY);
+                var vertexC = getVertex(pivotX, pivotY, x1, y2, degree, degreeX, degreeY);
+                var vertexD = getVertex(pivotX, pivotY, x2, y2, degree, degreeX, degreeY);
+                var boundingBox = getBoundingBox(vertexA, vertexB, vertexC, vertexD);
                 return {
                     origin: {
                         x: originX,
@@ -1412,17 +1436,17 @@
                     },
                     x: x1,
                     y: y1,
-                    width: width,
-                    height: height,
-                    aspectRatio: width/height,
+                    width: w,
+                    height: h,
+                    aspectRatio: w/h,
                     degree: degree,
                     area: area,
                     diagonal: diagonal,
-                    boundingBox: boundingBox,
                     vertexA: vertexA,
                     vertexB: vertexB,
                     vertexC: vertexC,
                     vertexD: vertexD,
+                    boundingBox: boundingBox,
                 }
             };
             this.origin = function(x, y) {
@@ -1454,17 +1478,25 @@
                 this.__state__.rectangleDegree = degree;
                 return this;
             };
-            this.fit = function(type, width, height) {
+            this.rotateX = function(degree) {
+                this.__state__.rectangleDegreeX = degree;
+                return this;
+            };
+            this.rotateY = function(degree) {
+                this.__state__.rectangleDegreeY = degree;
+                return this;
+            };
+            this.fit = function(type, w, h) {
                 var ar = this.__state__.rectangleWidth / this.__state__.rectangleHeight;
                 var nw = this.__state__.rectangleWidth < 0; /* is negative */
                 var nh = this.__state__.rectangleHeight < 0; /* is negative */
-                var o = height * ar < width;
+                var o = h * ar < w;
                 if (type === "cover") {
-                    this.__state__.rectangleWidth = Math.abs(o ? width : height*ar);
-                    this.__state__.rectangleHeight = Math.abs(o ? width/ar : height);
+                    this.__state__.rectangleWidth = Math.abs(o ? w : h*ar);
+                    this.__state__.rectangleHeight = Math.abs(o ? w/ar : h);
                 } else if (type === "contain") {
-                    this.__state__.rectangleWidth = Math.abs(o ? height*ar : width);
-                    this.__state__.rectangleHeight = Math.abs(o ? height : width/ar);
+                    this.__state__.rectangleWidth = Math.abs(o ? h*ar : w);
+                    this.__state__.rectangleHeight = Math.abs(o ? h : w/ar);
                 } else {
                     var err = new Error('invalid argument type');
                     err.name = "TypeError";
@@ -1617,16 +1649,16 @@
          * 
          * @param {Array} dataArray 
          * @param {Function} promiseFunc 
-         * @param {Any} prevValue 
+         * @param {Any} initialValue 
          * @returns 
          */
-        execPromises: function(dataArray, promiseFunc, prevValue) {
+        execPromises: function(dataArray, promiseFunc, initialValue) {
             var promises = function() {
                 return dataArray.reduce(function(prev, curr, index) {
                     return prev.then(function(res) {
                         return promiseFunc(res, curr, index);
                     });
-                }, Promise.resolve(prevValue));
+                }, Promise.resolve(initialValue));
             }
             return promises();
         },
@@ -1717,8 +1749,6 @@
          * MyCanvas.drawCircle(x, y, radians, options)  
          * MyCanvas.drawText(x, y, text, options)   
          * MyCanvas.drawImage(x, y, w, h, img, options)     
-         * MyCanvas.loadImage(src, callback)    
-         * MyCanvas.promise.loadImage(src)  
          * MyCanvas.clear() 
          * @param {Number} width 
          * @param {Number} height 
@@ -1798,8 +1828,8 @@
                     cy = y;
                 }
                 ctx.translate(cx, cy);
-                ctx.scale(val, 1);
-                ctx.translate(-cx, -cy); 
+                ctx.scale(1, val);
+                ctx.translate(-cx, -cy);
             }
             var setRotateY = function(x, y, options) {
                 if (!options || typeof(options.rotateY) === "undefined") {
@@ -1822,8 +1852,8 @@
                     cy = y;
                 }
                 ctx.translate(cx, cy);
-                ctx.scale(1, val);
-                ctx.translate(-cx, -cy); 
+                ctx.scale(val, 1);
+                ctx.translate(-cx, -cy);
             }
 
             canvas.width = width;
@@ -1834,7 +1864,6 @@
             this.context = ctx;
             this.width = canvas.width;
             this.height = canvas.height;
-            this.promise = {};
 
             /* methods */
             this.getCanvas = function() {
@@ -1939,28 +1968,6 @@
                 unsetStyle();
                 return this;
             };
-            this.loadImage = function(src, cb) {
-                var img = new Image();
-                img.onload = function() {
-                    return cb(null, img);
-                }
-                img.onerror = function(err) {
-                    return cb(err);
-                }
-                img.src = src;
-            };
-            this.promise.loadImage = function(src) {
-                return new Promise(function(resolve, reject) {
-                    var img = new Image();
-                    img.onload = function() {
-                        resolve(img);
-                    }
-                    img.onerror = function(err) {
-                        reject(err);
-                    }
-                    img.src = src;
-                });
-            };
             this.clear = function() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 return this;
@@ -2027,6 +2034,41 @@
                     height: mxa
                 }
             }
+        },
+        /**
+         * 
+         * @param {String} src 
+         * @param {Function} cb Callback
+         * @returns 
+         */
+        loadImage: function(src, cb) {
+            var img = new Image();
+            img.onload = function() {
+                return cb(null, img);
+            };
+            img.onerror = function(err) {
+                return cb(err);
+            };
+            img.src = src;
+        },
+        /**
+         * 
+         * @param {String} src 
+         * @returns Promise
+         */
+        loadImagePromise: function(src) {
+            return new Promise(function(resolve, reject) {
+                var img = new Image();
+                img.onload = function() {
+                    resolve(img);
+                    return;
+                }
+                img.onerror = function(err) {
+                    reject(err);
+                    return;
+                }
+                img.src = src;
+            });
         },
 
     }

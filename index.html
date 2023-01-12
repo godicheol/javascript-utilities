@@ -20,6 +20,9 @@
 
     <h3>MyAnimation, MyCanvas, MyRectangle</h3>
     <div id="canv-container"></div>
+    <span id="count-animation">0</span>
+    <button id="start-animation">Start</button>
+    <button id="pause-animation">Pause</button>
 
     <!-- js -->
     <script src="dist/index.js"></script>
@@ -44,6 +47,17 @@
         var obj1 = { id: 1, key: 2, attr: { width: 5, height: 10 }, array: [1, 2, 3, 4, 5]};
         var arr1 = [1, 2, 3, 4, 5];
         var arr2 = ["A","B","C","D","E"];
+        var img = 
+
+        /* loadImage */
+        utils.loadImage("./src/1.jpg", function(err, res) {
+            if (err) {
+                console.error(err);
+                return false;
+            }
+            img = res;
+            console.log("utils.loadImage", res);
+        });
 
         /* MyAnimation, MyCanvas, MyRectangle */
         (async function() {
@@ -94,6 +108,69 @@
                 canv.drawCircle(state.vertexB.x-2, state.vertexB.y-2, 2, { fill: true, color: "black"})
                 canv.drawCircle(state.vertexC.x-2, state.vertexC.y-2, 2, { fill: true, color: "black"})
                 canv.drawCircle(state.vertexD.x-2, state.vertexD.y-2, 2, { fill: true, color: "black"})
+                canv.drawCircle(state.boundingBox.vertexA.x-2, state.boundingBox.vertexA.y-2, 2, { fill: true, color: "black"})
+                canv.drawCircle(state.boundingBox.vertexB.x-2, state.boundingBox.vertexB.y-2, 2, { fill: true, color: "black"})
+                canv.drawCircle(state.boundingBox.vertexC.x-2, state.boundingBox.vertexC.y-2, 2, { fill: true, color: "black"})
+                canv.drawCircle(state.boundingBox.vertexD.x-2, state.boundingBox.vertexD.y-2, 2, { fill: true, color: "black"})
+
+                /* rorateX */
+                var rect2 = new utils.MyRectangle(100, 100)
+                    .origin(CANVAS_WIDTH*0.5, CANVAS_WIDTH*0.5)
+                    .resize(50, 100)
+                    .rotate(deg*0.2)
+                    .rotateX(deg)
+                    .translate(12.5, 12.5);
+                var state2 = rect2.getState();
+
+                canv.drawRect(state2.x, state2.y, state2.width, state2.height, { color: "red", rotate: deg*0.2, rotateX: deg })
+                canv.drawRect(state2.boundingBox.x, state2.boundingBox.y, state2.boundingBox.width, state2.boundingBox.height, { color: "blue" })
+                canv.drawCircle(state2.vertexA.x-2, state2.vertexA.y-2, 2, { fill: true, color: "black"})
+                canv.drawCircle(state2.vertexB.x-2, state2.vertexB.y-2, 2, { fill: true, color: "black"})
+                canv.drawCircle(state2.vertexC.x-2, state2.vertexC.y-2, 2, { fill: true, color: "black"})
+                canv.drawCircle(state2.vertexD.x-2, state2.vertexD.y-2, 2, { fill: true, color: "black"})
+                canv.drawCircle(state2.boundingBox.vertexA.x-2, state2.boundingBox.vertexA.y-2, 2, { fill: true, color: "black"})
+                canv.drawCircle(state2.boundingBox.vertexB.x-2, state2.boundingBox.vertexB.y-2, 2, { fill: true, color: "black"})
+                canv.drawCircle(state2.boundingBox.vertexC.x-2, state2.boundingBox.vertexC.y-2, 2, { fill: true, color: "black"})
+                canv.drawCircle(state2.boundingBox.vertexD.x-2, state2.boundingBox.vertexD.y-2, 2, { fill: true, color: "black"})
+
+                /* rorateY */
+                var rect3 = new utils.MyRectangle(100, 100)
+                    .origin(CANVAS_WIDTH*0.5, CANVAS_WIDTH*0.5)
+                    .resize(-50, 100)
+                    .rotate(deg*0.5)
+                    .rotateY(deg)
+                    .translate(-50, 25);
+                var state3 = rect3.getState();
+                canv.drawRect(state3.x, state3.y, state3.width, state3.height, { color: "red", rotate: deg*0.5, rotateY: deg })
+                canv.drawRect(state3.boundingBox.x, state3.boundingBox.y, state3.boundingBox.width, state3.boundingBox.height, { color: "blue" })
+                canv.drawCircle(state3.vertexA.x-2, state3.vertexA.y-2, 2, { fill: true, color: "black"})
+                canv.drawCircle(state3.vertexB.x-2, state3.vertexB.y-2, 2, { fill: true, color: "black"})
+                canv.drawCircle(state3.vertexC.x-2, state3.vertexC.y-2, 2, { fill: true, color: "black"})
+                canv.drawCircle(state3.vertexD.x-2, state3.vertexD.y-2, 2, { fill: true, color: "black"})
+                canv.drawCircle(state3.boundingBox.vertexA.x-2, state3.boundingBox.vertexA.y-2, 2, { fill: true, color: "black"})
+                canv.drawCircle(state3.boundingBox.vertexB.x-2, state3.boundingBox.vertexB.y-2, 2, { fill: true, color: "black"})
+                canv.drawCircle(state3.boundingBox.vertexC.x-2, state3.boundingBox.vertexC.y-2, 2, { fill: true, color: "black"})
+                canv.drawCircle(state3.boundingBox.vertexD.x-2, state3.boundingBox.vertexD.y-2, 2, { fill: true, color: "black"})
+
+                /* image */
+                var rect4 = new utils.MyRectangle(100, 100)
+                    .origin(CANVAS_WIDTH*0.5, CANVAS_WIDTH*0.5)
+                    .resize(-100, -50)
+                    .rotate(deg)
+                    .rotateX(deg)
+                    .translate(-25, -25);
+                var state4 = rect4.getState();
+
+                canv.drawImage(state4.x, state4.y, state4.width, state4.height, img, { color: "blue", rotate: deg, rotateX: deg })
+                canv.drawRect(state4.boundingBox.x, state4.boundingBox.y, state4.boundingBox.width, state4.boundingBox.height, { color: "blue" })
+                canv.drawCircle(state4.vertexA.x-2, state4.vertexA.y-2, 2, { fill: true, color: "black"})
+                canv.drawCircle(state4.vertexB.x-2, state4.vertexB.y-2, 2, { fill: true, color: "black"})
+                canv.drawCircle(state4.vertexC.x-2, state4.vertexC.y-2, 2, { fill: true, color: "black"})
+                canv.drawCircle(state4.vertexD.x-2, state4.vertexD.y-2, 2, { fill: true, color: "black"})
+                canv.drawCircle(state4.boundingBox.vertexA.x-2, state4.boundingBox.vertexA.y-2, 2, { fill: true, color: "black"})
+                canv.drawCircle(state4.boundingBox.vertexB.x-2, state4.boundingBox.vertexB.y-2, 2, { fill: true, color: "black"})
+                canv.drawCircle(state4.boundingBox.vertexC.x-2, state4.boundingBox.vertexC.y-2, 2, { fill: true, color: "black"})
+                canv.drawCircle(state4.boundingBox.vertexD.x-2, state4.boundingBox.vertexD.y-2, 2, { fill: true, color: "black"})
 
                 i += j;
 
@@ -112,15 +189,25 @@
                 animation.stop();
             }
 
+            document.getElementById("start-animation").addEventListener("click", startAnimation);
+            document.getElementById("pause-animation").addEventListener("click", pauseAnimation);
+
             /* start animation */
             startAnimation();
         })();
 
         /* queryObject */
         (function() {
-
-
-            var res = utils.queryObject(obj1, {
+            var obj = {
+                id: 1,
+                key: 2,
+                attr: {
+                    width: 5,
+                    height: 10
+                },
+                array: [1, 2, 3, 4, 5]
+            };
+            var query = {
                 $and: [{
                     $and: [{
                         $and: [{
@@ -154,14 +241,54 @@
                     array: [1,2,3,4,5],
                     array: [1,2,3,4,5],
                 }]
-            });
+            }
+            var res = utils.queryObject(obj, query);
 
             console.log("utils.queryObject", res);
         })();
 
         /* MySchema */
         (function() {
+            var obj = {
+                name: "James",
+                age: "15",
+                attributes: {
+                    height: "140",
+                    weight: "115"
+                }
+            }
+            var schema = new utils.MySchema()
+            schema.set({
+                name: {
+                    type: String
+                },
+                age: {
+                    type: Number,
+                },
+                attributes: {
+                    type: Object,
+                },
+            });
             
+            var res = schema.test(obj);
+            var res2 = schema.get(obj);
+            console.log("utils.MySchema", res2);
+        })();
+
+        /* execPromises */
+        (async function() {
+            var arr = [1,2,3,4,5];
+            var initialValue = 0;
+            var func = function(prev, curr, index) {
+                return new Promise(function(resolve, reject) {
+                    setTimeout(function() {
+                        resolve(prev + curr);
+                    }, 100);
+                });
+            }
+
+            var res = await utils.execPromises(arr, func, initialValue);
+            console.log("utils.execPromises", res);
         })();
        
 

@@ -34,7 +34,7 @@
          * @returns
          */
         getScale: function(deg) {
-            return Math.sin((deg+90)*Math.PI/180);
+            return Math.sin((deg + 90) * Math.PI / 180);
         },
         /**
          * 
@@ -1365,11 +1365,11 @@
             var getDiagonal = function(w, h) {
                 return Math.sqrt(w*w+h*h);
             };
-            var getScale = function(degree) {
-                return Math.sin((degree+90)*Math.PI/180);
+            var getScale = function(deg) {
+                return Math.sin((deg+90)*Math.PI/180);
             };
-            var getRadians = function(degree) {
-                return degree * Math.PI / 180;
+            var getRadians = function(deg) {
+                return deg*Math.PI/180;
             };
             var getVertex = function(px, py, x, y, d, dx, dy) {
                 var radians = getRadians(d);
@@ -1791,6 +1791,12 @@
         MyCanvas: function MyCanvas(width, height) {
             var canvas = document.createElement('canvas');
             var ctx = canvas && canvas.getContext('2d');
+            var getScale = function(deg) {
+                return Math.sin((deg+90)*Math.PI/180);
+            };
+            var getRadians = function(deg) {
+                return deg * Math.PI / 180;
+            };
             var saveStyle = function() {
                 ctx.save();
             };
@@ -1831,64 +1837,70 @@
                 if (!options || typeof(options.rotate) === "undefined") {
                     return;
                 }
+                var rad;
+                var px;
+                var py;
                 if (typeof(options.rotate) === "object") {
-                    ctx.translate(options.rotate.x || x, options.rotate.y || y);
-                    ctx.rotate(options.rotate.value * Math.PI / 180);
-                    ctx.translate(-(options.rotate.x || x), -(options.rotate.y || y)); 
+                    rad = getRadians(options.rotate.degree);
+                    px = options.rotate.x || x;
+                    py = options.rotate.y || y;
                 }
                 if (typeof(options.rotate) === "number") {
-                    ctx.translate(x, y);
-                    ctx.rotate(options.rotate * Math.PI / 180);
-                    ctx.translate(-x, -y); 
+                    rad = getRadians(options.rotate);
+                    px = x;
+                    py = y;
                 }
+                ctx.translate(px, py);
+                ctx.rotate(rad);
+                ctx.translate(-px, -py); 
             }
             var setRotateX = function(x, y, options) {
                 if (!options || typeof(options.rotateX) === "undefined") {
                     return;
                 }
                 var deg;
-                var val;
-                var cx;
-                var cy;
+                var scale;
+                var px;
+                var py;
                 if (typeof(options.rotateX) === "object") {
-                    deg = options.rotateX.value || options.rotateX;
-                    val = Math.sin((deg+90)*Math.PI/180);
-                    cx = options.rotateX.x || x;
-                    cy = options.rotateX.y || y;
+                    deg = options.rotateX.degree || options.rotateX;
+                    scale = getScale(deg);
+                    px = options.rotateX.x || x;
+                    py = options.rotateX.y || y;
                 }
                 if (typeof(options.rotateX) === "number") {
                     deg = options.rotateX;
-                    val = Math.sin((deg+90)*Math.PI/180);
-                    cx = x;
-                    cy = y;
+                    scale = getScale(deg);
+                    px = x;
+                    py = y;
                 }
-                ctx.translate(cx, cy);
-                ctx.scale(1, val);
-                ctx.translate(-cx, -cy);
+                ctx.translate(px, py);
+                ctx.scale(1, scale);
+                ctx.translate(-px, -py);
             }
             var setRotateY = function(x, y, options) {
                 if (!options || typeof(options.rotateY) === "undefined") {
                     return;
                 }
                 var deg;
-                var val;
-                var cx;
-                var cy;
+                var scale;
+                var px;
+                var py;
                 if (typeof(options.rotateY) === "object") {
-                    deg = options.rotateY.value || options.rotateY;
-                    val = Math.sin((deg+90)*Math.PI/180);
-                    cx = options.rotateY.x || x;
-                    cy = options.rotateY.y || y;
+                    deg = options.rotateY.degree || options.rotateY;
+                    scale = getScale(deg);
+                    px = options.rotateY.x || x;
+                    py = options.rotateY.y || y;
                 }
                 if (typeof(options.rotateY) === "number") {
                     deg = options.rotateY;
-                    val = Math.sin((deg+90)*Math.PI/180);
-                    cx = x;
-                    cy = y;
+                    scale = getScale(deg);
+                    px = x;
+                    py = y;
                 }
-                ctx.translate(cx, cy);
-                ctx.scale(val, 1);
-                ctx.translate(-cx, -cy);
+                ctx.translate(px, py);
+                ctx.scale(scale, 1);
+                ctx.translate(-px, -py);
             }
 
             canvas.width = width;

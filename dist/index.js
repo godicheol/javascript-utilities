@@ -22,19 +22,11 @@
         },
         /**
          * 
-         * @param {Number} deg 
-         * @returns
+         * @param {String} str 
+         * @returns 
          */
-        getRadians: function(deg) {
-            return deg * (Math.PI / 180);
-        },
-        /**
-         * 
-         * @param {Number} deg 
-         * @returns
-         */
-        getScale: function(deg) {
-            return Math.sin((deg + 90) * Math.PI / 180);
+        trim: function(str) {
+            return str.replace(/^\s*|\s*$/g, "");
         },
         /**
          * 
@@ -1378,6 +1370,22 @@
                 }
                 return prev;
             }, []);
+        },
+        /**
+         * 
+         * @param {Number} deg 
+         * @returns
+         */
+        getRadians: function(deg) {
+            return deg * (Math.PI / 180);
+        },
+        /**
+         * 
+         * @param {Number} deg 
+         * @returns
+         */
+        getScale: function(deg) {
+            return Math.sin((deg + 90) * Math.PI / 180);
         },
         /**
          * MyRectangle.getState()   

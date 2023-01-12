@@ -30,6 +30,14 @@
         },
         /**
          * 
+         * @param {Number} deg 
+         * @returns
+         */
+        getScale: function(deg) {
+            return Math.sin((deg+90)*Math.PI/180);
+        },
+        /**
+         * 
          * @param {Number} rad 
          * @returns 
          */
@@ -1354,12 +1362,21 @@
          */
         MyRectangle: function(width, height) {
             var Rect = this;
+            var getDiagonal = function(w, h) {
+                return Math.sqrt(w*w+h*h);
+            };
+            var getScale = function(degree) {
+                return Math.sin((degree+90)*Math.PI/180);
+            };
+            var getRadians = function(degree) {
+                return degree * Math.PI / 180;
+            };
             var getVertex = function(px, py, x, y, d, dx, dy) {
-                var radians = d * Math.PI / 180;
-                var scaleX = Math.sin((dy+90)*Math.PI/180);
-                var scaleY = Math.sin((dx+90)*Math.PI/180);
+                var radians = getRadians(d);
                 var sinFraction = Math.sin(radians);
                 var cosFraction = Math.cos(radians);
+                var scaleX = getScale(dy);
+                var scaleY = getScale(dx);
                 return {
                     x: (x-px)*scaleX*cosFraction-(y-py)*scaleY*sinFraction+px,
                     y: (x-px)*scaleX*sinFraction+(y-py)*scaleY*cosFraction+py
@@ -1393,9 +1410,6 @@
                     vertexC: vertexC,
                     vertexD: vertexD,
                 }
-            };
-            var getDiagonal = function(w, h) {
-                return Math.sqrt(w*w+h*h);
             };
 
             /* constructor */
@@ -2137,7 +2151,7 @@
             var completedKoreanChar = /[가-힣]/;
             var sentences = str.split(/(?:\r\n|\r|\n|[.]+\s+|[?!]+\s*|[.]$)/).filter((s) => s !== "");
             var words = str.split(/\s*(?:\s+|\r\n+|\r+|\n+|[.,·()!?]+)\s*/).filter((w) => w !== "");
-
+            var convAiReadable;
             return {
                 sentences: sentences,
                 words: words

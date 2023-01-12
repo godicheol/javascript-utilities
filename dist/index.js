@@ -714,7 +714,7 @@
          * 
          * @returns 
          */
-        isCookieEndabled: function() {
+        isCookieEnabled: function() {
             if (typeof(navigator.cookieEnabled) !== "undefined") {
                 if (navigator.cookieEnabled) {
                     return true;
@@ -1346,6 +1346,8 @@
          * MyRectangle.resize(w, h)   
          * MyRectangle.scale(ratio)   
          * MyRectangle.rotate(degree)   
+         * MyRectangle.rotateX(degree)   
+         * MyRectangle.rotateY(degree)   
          * MyRectangle.fit(type, width, height)   
          * @param {Number} w 
          * @param {Number} h 
@@ -1424,13 +1426,13 @@
                 var degree = this.__state__.rectangleDegree;
                 var degreeX = this.__state__.rectangleDegreeX;
                 var degreeY = this.__state__.rectangleDegreeY;
-                var area = w*h;
                 var centerX = x1+w*0.5;
                 var centerY = y1+h*0.5;
                 var pivotX = typeof(this.__state__.pivotX) === "number" ? this.__state__.pivotX : centerX;
                 var pivotY = typeof(this.__state__.pivotY) === "number" ? this.__state__.pivotY : centerY;
                 
                 /* calc */
+                var area = w*h;
                 var diagonal = getDiagonal(w, h);
                 var vertexA = getVertex(pivotX, pivotY, x1, y1, degree, degreeX, degreeY);
                 var vertexB = getVertex(pivotX, pivotY, x2, y1, degree, degreeX, degreeY);

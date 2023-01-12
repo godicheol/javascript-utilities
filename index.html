@@ -15,18 +15,18 @@
 
 <body>
     <!-- html -->
-    <div id="container">
-        <h3 style="margin-left: 1rem;">List</h3>
-    </div>
+    <h3>List</h3>
+    <div id="list-container"></div>
 
-    <div id="canv"></div>
+    <h3>MyAnimation, MyCanvas, MyRectangle</h3>
+    <div id="canv-container"></div>
 
     <!-- js -->
     <script src="dist/index.js"></script>
     <script>
+        /* Print list */
         (function() {
-            return false;
-            var container = document.getElementById("container");
+            var container = document.getElementById("list-container");
             var list = Object.keys(utils);
             var html = "\<ol\>";
             list.forEach(function(e, idx) {
@@ -36,23 +36,27 @@
             container.innerHTML += html;
         })();
 
+        var text1 = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.";
+        var text2 = "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).";
+        var text3 = "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of \"de Finibus Bonorum et Malorum\" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, \"Lorem ipsum dolor sit amet..\", comes from a line in section 1.10.32.";
+        var test4 = "You can take this test to know what is your approximate level of grammar in English. Alternatively, you can also take a few of our Use of English tests. If your grade for a Use of English test is 65% or higher, it means that your approximate grammar level in English is the same as that test. For example, if you take a couple of A2 tests and your grades are 65% or higher, it means that your approximate level of grammar is A2, and that you can start working on B1 grammar."
+        var test5 = "Adapted from \"The Colors of Animals\" by Sir John Lubbock in A Book of Natural History (1902, ed. David Starr Jordan) The color of animals is by no means a matter of chance; it depends on many considerations, but in the majority of cases tends to protect the animal from danger by rendering it less conspicuous. Perhaps it may be said that if coloring is mainly protective, there ought to be but few brightly colored animals. There are, however, not a few cases in which vivid colors are themselves protective. The kingfisher itself, though so brightly colored, is by no means easy to see. The blue harmonizes with the water, and the bird as it darts along the stream looks almost like a flash of sunlight. Desert animals are generally the color of the desert. Thus, for instance, the lion, the antelope, and the wild donkey are all sand-colored. “Indeed,” says Canon Tristram, “in the desert, where neither trees, brushwood, nor even undulation of the surface afford the slightest protection to its foes, a modification of color assimilated to that of the surrounding country is absolutely necessary. Hence, without exception, the upper plumage of every bird, and also the fur of all the smaller mammals and the skin of all the snakes and lizards, is of one uniform sand color.” The next point is the color of the mature caterpillars, some of which are brown. This probably makes the caterpillar even more conspicuous among the green leaves than would otherwise be the case. Let us see, then, whether the habits of the insect will throw any light upon the riddle. What would you do if you were a big caterpillar? Why, like most other defenseless creatures, you would feed by night, and lie concealed by day. So do these caterpillars. When the morning light comes, they creep down the stem of the food plant, and lie concealed among the thick herbage and dry sticks and leaves, near the ground, and it is obvious that under such circumstances the brown color really becomes a protection. It might indeed be argued that the caterpillars, having become brown, concealed themselves on the ground, and that we were reversing the state of things. But this is not so, because, while we may say as a general rule that large caterpillars feed by night and lie concealed by day, it is by no means always the case that they are brown; some of them still retaining the green color. We may then conclude that the habit of concealing themselves by day came first, and that the brown color is a later adaptation.";
+        var obj1 = { id: 1, key: 2, attr: { width: 5, height: 10 }, array: [1, 2, 3, 4, 5]};
+        var arr1 = [1, 2, 3, 4, 5];
+        var arr2 = ["A","B","C","D","E"];
+
+        /* MyAnimation, MyCanvas, MyRectangle */
         (async function() {
-            var text1 = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.";
-            var text2 = "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).";
-            var text3 = "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of \"de Finibus Bonorum et Malorum\" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, \"Lorem ipsum dolor sit amet..\", comes from a line in section 1.10.32.";
-            var test4 = "You can take this test to know what is your approximate level of grammar in English. Alternatively, you can also take a few of our Use of English tests. If your grade for a Use of English test is 65% or higher, it means that your approximate grammar level in English is the same as that test. For example, if you take a couple of A2 tests and your grades are 65% or higher, it means that your approximate level of grammar is A2, and that you can start working on B1 grammar."
-            var test5 = "Adapted from \"The Colors of Animals\" by Sir John Lubbock in A Book of Natural History (1902, ed. David Starr Jordan) The color of animals is by no means a matter of chance; it depends on many considerations, but in the majority of cases tends to protect the animal from danger by rendering it less conspicuous. Perhaps it may be said that if coloring is mainly protective, there ought to be but few brightly colored animals. There are, however, not a few cases in which vivid colors are themselves protective. The kingfisher itself, though so brightly colored, is by no means easy to see. The blue harmonizes with the water, and the bird as it darts along the stream looks almost like a flash of sunlight. Desert animals are generally the color of the desert. Thus, for instance, the lion, the antelope, and the wild donkey are all sand-colored. “Indeed,” says Canon Tristram, “in the desert, where neither trees, brushwood, nor even undulation of the surface afford the slightest protection to its foes, a modification of color assimilated to that of the surrounding country is absolutely necessary. Hence, without exception, the upper plumage of every bird, and also the fur of all the smaller mammals and the skin of all the snakes and lizards, is of one uniform sand color.” The next point is the color of the mature caterpillars, some of which are brown. This probably makes the caterpillar even more conspicuous among the green leaves than would otherwise be the case. Let us see, then, whether the habits of the insect will throw any light upon the riddle. What would you do if you were a big caterpillar? Why, like most other defenseless creatures, you would feed by night, and lie concealed by day. So do these caterpillars. When the morning light comes, they creep down the stem of the food plant, and lie concealed among the thick herbage and dry sticks and leaves, near the ground, and it is obvious that under such circumstances the brown color really becomes a protection. It might indeed be argued that the caterpillars, having become brown, concealed themselves on the ground, and that we were reversing the state of things. But this is not so, because, while we may say as a general rule that large caterpillars feed by night and lie concealed by day, it is by no means always the case that they are brown; some of them still retaining the green color. We may then conclude that the habit of concealing themselves by day came first, and that the brown color is a later adaptation.";
-            var obj1 = { id: 1, key: 2, width: 5 };
-            var obj2 = { name: "James", class: 1, reg: /13214/gi, date: new Date() };
-            var arr1 = [1, 2, 3, 4, 5];
-            var arr1 = ["A","B","C","D","E"];
+            var CANVAS_WIDTH = 262;
+            var CANVAS_HEIGHT = 262;
+            var OFFSET = 12;
 
             /* init canvas */
             var canv = new utils.MyCanvas();
-            document.getElementById("canv").appendChild(canv.getCanvas());
+            document.getElementById("canv-container").appendChild(canv.getCanvas());
 
             /* set canvas size */
-            canv.setCanvas(524, 524);
+            canv.setCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
 
             var i = 0;
             var j = 3;
@@ -64,17 +68,16 @@
                 canv.clear();
 
                 /* draw lines */
-                for (var k = 12; k < 524; k += 50) {
-                    canv.drawLine(k, 0, k, 524);
-                    canv.drawLine(0, k, 524, k);
+                for (var k = OFFSET*0.5; k < CANVAS_WIDTH; k += 25) {
+                    canv.drawLine(k, 0, k, CANVAS_WIDTH);
+                    canv.drawLine(0, k, CANVAS_WIDTH, k);
                 }
-
 
                 /* init rectangle */
                 var rect = new utils.MyRectangle(100, 100)
-                    .origin(262, 262)
+                    .origin(CANVAS_WIDTH*0.5, CANVAS_WIDTH*0.5)
                     .resize(50, -100)
-                    .translate(25, -25)
+                    .translate(12.5, -12.5)
                     .rotate(deg);
 
                 /* get state */
@@ -94,9 +97,9 @@
 
                 i += j;
 
-                if (i > 360) {
-                    stopAnimation();
-                }
+                // if (i > 360) {
+                //     stopAnimation();
+                // }
             }, 36);
 
             function startAnimation() {
@@ -113,7 +116,53 @@
             startAnimation();
         })();
 
+        /* queryObject */
+        (function() {
 
+
+            var res = utils.queryObject(obj1, {
+                $and: [{
+                    $and: [{
+                        $and: [{
+                            id: 1
+                        }, {
+                            $or: [{
+                                key: {
+                                    $gt: 1,
+                                    $lt: 3
+                                },
+                            }, {
+                                width: {
+                                    $gt: 5
+                                }
+                            }]
+                        }],
+                    }]
+                }],
+                attr: {
+                    width: {
+                        $not: {
+                            $eq: 6
+                        }
+                    },
+                    height: {
+                        $gt: 4,
+                        $lt: 15
+                    }
+                },
+                $and: [{
+                    array: [1,2,3,4,5],
+                    array: [1,2,3,4,5],
+                }]
+            });
+
+            console.log("utils.queryObject", res);
+        })();
+
+        /* MySchema */
+        (function() {
+            
+        })();
        
 
     </script>

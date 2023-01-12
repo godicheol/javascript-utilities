@@ -8,8 +8,17 @@
          * @param {Number} m 
          * @returns
          */
-        getModulo: function(n, m) {
+        modulo: function(n, m) {
             return ((n % m) + m) % m;
+        },
+        /**
+         * 
+         * @param {Number} n 
+         * @param {Number} m 
+         * @returns
+         */
+        square: function(n, m) {
+            return Math.pow(n, m);
         },
         /**
          * 
@@ -152,7 +161,6 @@
         /**
          * 
          * @param {Boolean} bool 
-         * @param {Number} bool 
          * @returns 
          */
         toBoolean: function(bool) {
@@ -166,14 +174,14 @@
             } else if (typeof(bool) === "string" && (bool === "1" || bool === "0")) {
                 return bool === "1";
             } else {
-                var err = new Error('Invalid argument type');
+                var err = new Error('invalid argument type');
                 err.name = "TypeError";
                 throw err;
             }
         },
         /**
          * 
-         * @param {String} num 
+         * @param {String} str 
          * @returns 
          */
         toNumber: function(str) {
@@ -182,7 +190,7 @@
             } else if (typeof(str) === "string" && !isNaN(parseFloat(str)) && isFinite(str)) {
                 return parseFloat(str);
             } else {
-                var err = new Error('Invalid argument type');
+                var err = new Error('invalid argument type');
                 err.name = "TypeError";
                 throw err;
             }
@@ -198,7 +206,7 @@
             } else if (typeof(num) === "number") {
                 return num.toString(10);
             } else {
-                var err = new Error('Invalid argument type');
+                var err = new Error('invalid argument type');
                 err.name = "TypeError";
                 throw err;
             }
@@ -228,7 +236,7 @@
             } else if (typeof(obj) === "string") {
                 return obj.split(''); /* String */
             } else {
-                var err = new Error('Invalid argument type');
+                var err = new Error('invalid argument type');
                 err.name = "TypeError";
                 throw err;
             }
@@ -246,7 +254,7 @@
             } else if (typeof(num) === "string") {
                 return new Date(num);
             } else {
-                var err = new Error('Invalid argument type');
+                var err = new Error('invalid argument type');
                 err.name = "TypeError";
                 throw err;
             }
@@ -262,7 +270,7 @@
             } else if (typeof(str) === "string" && /^\/.*\/[gi]{0,1}$/.test(str)) {
                 return new RegExp(str);
             } else {
-                var err = new Error('Invalid argument type');
+                var err = new Error('invalid argument type');
                 err.name = "TypeError";
                 throw err;
             }
@@ -786,6 +794,16 @@
         },
         /**
          * 
+         * @param {Array} arr Array in Array
+         * @returns 
+         */
+        joinArrayInArray: function(arr) {
+            return arr.reduce(function(prev, curr) {
+                return prev.concat(curr);
+            }, []);
+        },
+        /**
+         * 
          * @param {String} str 
          * @param {String} from 
          * @param {String} to 
@@ -794,16 +812,16 @@
         replaceString: function(str, from, to) {
             return str.split(from).join(to);
         },
-       /** 
-        * MySchema.set(object)   
-        * MySchema.get(object)   
-        * MySchema.test(object)   
-        * MySchema.isValidType(constructor)   
-        * MySchema.getValidType(constructor)   
-        * MySchema.isValidValue(key, value)   
-        * MySchema.getValidValue(key, value)    
-        * @param {Object} object 
-        */
+        /** 
+         * MySchema.set(object)   
+         * MySchema.get(object)   
+         * MySchema.test(object)   
+         * MySchema.isValidType(constructor)   
+         * MySchema.getValidType(constructor)   
+         * MySchema.isValidValue(key, value)   
+         * MySchema.getValidValue(key, value)    
+         * @param {Object} object 
+         */
         MySchema: function(object) {
             var Schema = this;
             /* constructor */
@@ -836,7 +854,7 @@
                         } else if (v === null) {
                             return null;
                         } else {
-                            var err = new Error('Invalid argument type');
+                            var err = new Error('invalid argument type');
                             err.name = "TypeError";
                             throw err;
                         }
@@ -862,7 +880,7 @@
                         } else if (v === null) {
                             return null;
                         } else {
-                            var err = new Error('Invalid argument type');
+                            var err = new Error('invalid argument type');
                             err.name = "TypeError";
                             throw err;
                         }
@@ -888,7 +906,7 @@
                         } else if (v === null) {
                             return null;
                         } else {
-                            var err = new Error('Invalid argument type');
+                            var err = new Error('invalid argument type');
                             err.name = "TypeError";
                             throw err;
                         }
@@ -910,7 +928,7 @@
                         } else if (v === null) {
                             return null;
                         } else {
-                            var err = new Error('Invalid argument type');
+                            var err = new Error('invalid argument type');
                             err.name = "TypeError";
                             throw err;
                         }
@@ -932,7 +950,7 @@
                         } else if (v === null) {
                             return null;
                         } else {
-                            var err = new Error('Invalid argument type');
+                            var err = new Error('invalid argument type');
                             err.name = "TypeError";
                             throw err;
                         }
@@ -962,7 +980,7 @@
                         } else if (v === null) {
                             return null;
                         } else {
-                            var err = new Error('Invalid argument type');
+                            var err = new Error('invalid argument type');
                             err.name = "TypeError";
                             throw err;
                         }
@@ -988,7 +1006,7 @@
                         } else if (v === null) {
                             return null;
                         } else {
-                            var err = new Error('Invalid argument type');
+                            var err = new Error('invalid argument type');
                             err.name = "TypeError";
                             throw err;
                         }
@@ -1078,12 +1096,12 @@
             /* initialize this.types */
             this.init(object);
         },
-       /**
-        * 
-        * @param {Object} dataObject 
-        * @param {Object} queryObject 
-        * @returns 
-        */
+        /**
+         * 
+         * @param {Object} dataObject 
+         * @param {Object} queryObject 
+         * @returns 
+         */
         queryObject: function(dataObject, queryObject) {
             var isOperator = function(str) {
                 return /^(\$and|\$or|\$nor|\$not|\$eq|\$ne|\$in|\$nin|\$gt|\$gte|\$lt|\$lte|\$exists)$/i.test(str);
@@ -1230,12 +1248,12 @@
                 var keys;
                 var res = true;
                 if (k && !chkType(k, q)) {
-                    var err = new Error('Invalid argument type');
+                    var err = new Error('invalid argument type');
                     err.name = "TypeError";
                     throw err;
                 }
                 if (isLoopOperator(k)) {
-                    /* Logical operators */
+                    /* Logical operators without $not */
                     kv = k;
                     dv = d;
                     keys = q;
@@ -1276,16 +1294,6 @@
                 return res;
             }
             return matchQuery(null, dataObject, queryObject);
-        },
-        /**
-         * 
-         * @param {Array} arr 
-         * @returns 
-         */
-        concatInArray: function(arr) {
-            return arr.reduce(function(prev, curr) {
-                return prev.concat(curr);
-            }, []);
         },
         /**
          * 
@@ -1458,7 +1466,7 @@
                     this.__state__.rectangleWidth = Math.abs(o ? height*ar : width);
                     this.__state__.rectangleHeight = Math.abs(o ? height : width/ar);
                 } else {
-                    var err = new Error('Invalid argument type');
+                    var err = new Error('invalid argument type');
                     err.name = "TypeError";
                     throw err;
                 }
@@ -1634,22 +1642,30 @@
             this.isStarted = false;
             this.count = 0;
             this.startedAt = null;
-            this.set = function(f, d) {
-                this.count = 0;
-                this.isStarted = false;
+            this.stoppedAt = null;
+            this.init = function(f, d) {
                 this.function = setInterval(function() {
                     if (this.isStarted) {
                         this.count++;
                         f();
                     }
                 }.bind(this), d);
+                this.isStarted = false;
+                this.count = 0;
+                this.startedAt = null;
+                this.stoppedAt = null;
+                return this;
             };
             this.start = function() {
                 this.isStarted = true;
+                this.count = 0;
                 this.startedAt = new Date();
+                this.stoppedAt = null;
+                return this;
             };
             this.pause = function() {
                 this.isStarted = false;
+                return this;
             };
             this.stop = function() {
                 if (this.function) {
@@ -1657,16 +1673,17 @@
                 }
                 this.function = null;
                 this.isStarted = false;
-                this.count = 0;
-                this.startedAt = null;
+                this.stoppedAt = new Date();
+                return this;
             };
-            /* Alias */
+            /* alias */
+            this.set = this.init;
             this.go = this.start;
             this.end = this.stop;
             this.clear = this.stop;
-            /* Initialize */
+            /* initialize */
             if (func && delay) {
-                this.set(func, delay);
+                this.init(func, delay);
             }
         },
         /**

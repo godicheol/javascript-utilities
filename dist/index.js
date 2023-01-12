@@ -804,6 +804,33 @@
         },
         /**
          * 
+         * @param {Array} regexpArray 
+         * @param {String} flags 
+         * @returns 
+         */
+        joinRegexp: function(regexpArray, flags) {
+            return new RegExp(regexpArray.map(function(e) {
+                return e.source;
+            }).join("\|"), flags);
+        },
+        /**
+         * 
+         * @param {Array} arr ObjectArray
+         */
+        joinObject: function(arr) {
+            return arr.reduce(function(prev, curr) {
+                for (var prop in curr) {
+                    if (!prev.hasProperty(prop) || prev[prop] === undefined) {
+                        prev[prop] = [curr[prop]];
+                    } else {
+                        prev[prop].push(curr[prop])
+                    }
+                }
+                return prev;
+            }, {});
+        },
+        /**
+         * 
          * @param {String} str 
          * @param {String} from 
          * @param {String} to 
@@ -1310,17 +1337,6 @@
                 }
                 return prev;
             }, []);
-        },
-        /**
-         * 
-         * @param {Array} regexpArray 
-         * @param {String} flags 
-         * @returns 
-         */
-        combineRegexp: function(regexpArray, flags) {
-            return new RegExp(regexpArray.map(function(e) {
-                return e.source;
-            }).join("\|"), flags);
         },
         /**
          * MyRectangle.getState()   

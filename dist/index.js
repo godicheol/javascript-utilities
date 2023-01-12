@@ -1682,56 +1682,58 @@
         },
        /**
         * MyAnimation.start()   
-        * MyAnimation.pause()   
-        * MyAnimation.stop()    
+        * MyAnimation.stop()   
+        * MyAnimation.toggle()    
+        * MyAnimation.reset()    
+        * MyAnimation.clear()    
         * @param {Function} func 
         * @param {Number} delay 
         */
         MyAnimation: function(func, delay) {
+            /* constructor */
             this.function = null;
             this.isStarted = false;
             this.count = 0;
-            this.startedAt = null;
-            this.stoppedAt = null;
+
+            /* methods */
             this.init = function(f, d) {
+                var self = this;
                 this.function = setInterval(function() {
-                    if (this.isStarted) {
-                        this.count++;
+                    if (self.isStarted) {
+                        self.count++;
                         f();
                     }
-                }.bind(this), d);
-                this.isStarted = false;
-                this.count = 0;
-                this.startedAt = null;
-                this.stoppedAt = null;
-                return this;
+                }, d);
             };
             this.start = function() {
                 this.isStarted = true;
-                this.count = 0;
-                this.startedAt = new Date();
-                this.stoppedAt = null;
-                return this;
-            };
-            this.pause = function() {
-                this.isStarted = false;
                 return this;
             };
             this.stop = function() {
+                this.isStarted = false;
+                return this;
+            };
+            this.toggle = function() {
+                this.isStarted = this.isStarted === false;
+                return this;
+            };
+            this.reset = function() {
+                this.count = 0;
+                return this;
+            };
+            this.clear = function() {
                 if (this.function) {
                     clearInterval(this.function);
                 }
                 this.function = null;
                 this.isStarted = false;
-                this.stoppedAt = new Date();
                 return this;
             };
             this.callback = null;
             /* alias */
-            this.set = this.init;
             this.go = this.start;
+            this.pause = this.stop;
             this.end = this.stop;
-            this.clear = this.stop;
             /* initialize */
             if (func && delay) {
                 this.init(func, delay);
@@ -2108,6 +2110,41 @@
                 img.src = src;
             });
         },
+        /**
+         * 
+         * @param {Stinrg} str 
+         * @returns Array
+         */
+        getSentences: function(str) {
+            return str.split(/(?:\r\n|\r|\n|[.]+\s+|[?!]+\s*|[.]$)/).filter((s) => s !== "");
+        },
+        /**
+         * 
+         * @param {String} str 
+         * @returns Array
+         */
+        getWords: function(str) {
+            return str.split(/\s*(?:\s+|\r\n+|\r+|\n+|[.,·()!?]+)\s*/).filter((w) => w !== "");
+        },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
+        parseKorean: function(str) {
+            var koreanChar = /[ㄱ-ㅎㅏ-ㅣ가-힣]/;
+            var koreanCharUnicode = /\u3131-\u314e\u314f-\u3136\uac00-\ud7a3/;
+            var completedKoreanChar = /[가-힣]/;
+            var sentences = str.split(/(?:\r\n|\r|\n|[.]+\s+|[?!]+\s*|[.]$)/).filter((s) => s !== "");
+            var words = str.split(/\s*(?:\s+|\r\n+|\r+|\n+|[.,·()!?]+)\s*/).filter((w) => w !== "");
+
+            return {
+                sentences: sentences,
+                words: words
+            }
+        },
+
+        
 
     }
 

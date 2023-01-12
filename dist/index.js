@@ -700,7 +700,7 @@
          * @param {Number} dot 
          * @returns 
          */
-        humanlizeFileSize: function(bytes, dot) {
+        humanizeFileSize: function(bytes, dot) {
             if (bytes === 0) {
                 return "0 bytes";
             }

@@ -155,8 +155,41 @@
          * @param {String} str 
          * @returns 
          */
+        isEmail: function(str) {
+            return /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(str); /* W3C */
+        },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
         isUrl: function(str) {
-            return /^(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})$/.test(str);
+            return /^((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)$/.test(str);
+            /* /^(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})$/.test(str); */
+        },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
+        isIpAddress: function(str) {
+            return /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/.test(str);
+        },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
+        isPhoneNumber: function(str) {
+            return /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{4}[-\s\.]?[0-9]{4,6}$/.test(str);
+        },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
+        isHexColor: function(str) {
+            return /^#?([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})$/.test(str);
         },
         /**
          * 

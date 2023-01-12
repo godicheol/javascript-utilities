@@ -54,9 +54,6 @@
             /* set canvas size */
             canv.setCanvas(524, 524);
 
-            var center = {x: 0.5*canv.width, y: 0.5*canv.height}
-            var cx = center.x;
-            var cy = center.y;
             var i = 0;
             var j = 3;
             /* init animation */
@@ -74,10 +71,10 @@
 
 
                 /* init rectangle */
-                var rect = new utils.MyRectangle(100, -100)
+                var rect = new utils.MyRectangle(100, 100)
                     .origin(262, 262)
+                    .resize(50, -100)
                     .translate(25, -25)
-                    .fit("cover", 50, 100)
                     .rotate(deg);
 
                 /* get state */

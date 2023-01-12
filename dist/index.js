@@ -2,9 +2,6 @@
     'use strict';
 
     var mainObject = {
-
-        /* Math */
-
         /**
          * 
          * @param {Number} n 
@@ -1712,11 +1709,6 @@
         MyCanvas: function MyCanvas(width, height) {
             var canvas = document.createElement('canvas');
             var ctx = canvas && canvas.getContext('2d');
-            var setRotate = function(x, y, deg) {
-                ctx.translate(x, y);
-                ctx.rotate(deg * Math.PI / 180);
-                ctx.translate(-x, -y);
-            };
             var saveStyle = function() {
                 ctx.save();
             };

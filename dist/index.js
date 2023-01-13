@@ -2144,7 +2144,7 @@
         },
         /**
          * 
-         * @param {String} src 
+         * @param {File} src File or String
          * @param {Function} cb Callback
          * @returns 
          */
@@ -2156,11 +2156,19 @@
             img.onerror = function(err) {
                 return cb(err);
             };
-            img.src = src;
+            if (src instanceof Blob) {
+                try {
+                    img.src = URL.createObjectURL(src);
+                } catch(err) {
+                    return cb(err);
+                }
+            } else {
+                img.src = src;
+            }
         },
         /**
          * 
-         * @param {String} src 
+         * @param {File} src File or String
          * @returns Promise
          */
         loadImagePromise: function(src) {
@@ -2174,7 +2182,16 @@
                     reject(err);
                     return;
                 }
-                img.src = src;
+                if (src instanceof Blob) {
+                    try {
+                        img.src = URL.createObjectURL(src);
+                    } catch(err) {
+                        reject(err);
+                        return;
+                    }
+                } else {
+                    img.src = src;
+                }
             });
         },
         /**
@@ -2737,120 +2754,15 @@
         },
         /**
          * 
-         * @param {Array} fileArray 
+         * @param {Array} arr 
+         * @returns 
          */
-        MyImages: function MyImages(fileArray) {
-            var MyImages = this;
-            var createURL = function(blob) {
-                return URL.createObjectURL(blob);
-            };
-            var revokeURL = function(url) {
-                URL.revokeObjectURL(url);
-                return true;
-            };
-
-            /* construtor */
-            this.__images__ = [];
-
-            /* methods */
-            this.add = function(file) {
-                var index = this.__images__.length;
-                var src;
-                var type;
-                if (file instanceof Blob || file instanceof File) {
-                    src = createURL(file);
-                    type = "file";
-                } else if (typeof(file) === "string") {
-                    src = file;
-                    type = "url";
-                }
-                this.__images__.push({
-                    index: index,
-                    isLoaded: false,
-                    type: type,
-                    src: src,
-                    img: null,
-                    attributes: {
-                        width: 0,
-                        height: 0,
-                        naturalWidth: 0,
-                        naturalHeight: 0,
-                    },
-                    load: function(cb) {
-                        MyImages.load(index, cb);
-                    },
-                    remove: function() {
-                        MyImages.remove(index);
-                        return MyImages;
-                    }
-                });
-                return this.get(index);
-            };
-            this.get = function(index) {
-                return this.__images__[index];
-            };
-            this.load = async function(index, cb) {
-                var image = this.get(index);
-                var img = new Image();
-                var src;
-                if (image.type === "file") {
-                    src = image.src;
-                } else {
-                    try {
-                        src = await this.fetch(this.src);
-                    } catch(err) {
-                        return cb(err);
-                    }
-                    image.src = src;
-                    image.type = "file";
-                }
-                img.onload = function() {
-                    image.isLoaded = true;
-                    image.attributes.width = img.width;
-                    image.attributes.height = img.height;
-                    image.attributes.naturalWidth = img.naturalWidth;
-                    image.attributes.naturalHeight = img.naturalHeight;
-                    return cb(null, image);
-                };
-                img.onerror = function(err) {
-                    return cb(err);
-                };
-                img.src = src;
-            };
-            this.remove = function(index) {
-                var image = this.get(index);
-                revokeURL(image.src);
-                this.__images__[i] = null;
-                return this;
-            }
-            this.fetch = function(url) {
-                return new Promise(function(resolve, reject) {
-                    fetch(url)
-                        .then(function(res) {
-                            if (!res.ok) {
-                                var err = new Error("fetch error");
-                                err.name = "FetchError";
-                                throw err;
-                            }
-                            return res.blob();
-                        })
-                        .then(function(blob) {
-                            var url = createURL(blob);
-                            resolve(url);
-                        })
-                        .catch(function(err) {
-                            reject(err);
-                        });
-                });
-            }
-
-
-            /* initialize */
-            
+        padToHexArray: function(arr) {
+            return arr.map(function(hex) {
+                return ("000" + hex.toUpperCase()).slice(-4);
+            });
         },
 
-
-        
 
     }
 

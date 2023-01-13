@@ -30,14 +30,6 @@
         },
         /**
          * 
-         * @param {Number} rad 
-         * @returns 
-         */
-        getDegree: function(rad) {
-            return rad * (180 / Math.PI);
-        },
-        /**
-         * 
          * @param {Boolean} bool 
          * @returns 
          */
@@ -1381,6 +1373,14 @@
         },
         /**
          * 
+         * @param {Number} rad 
+         * @returns 
+         */
+        getDegree: function(rad) {
+            return rad * (180 / Math.PI);
+        },
+        /**
+         * 
          * @param {Number} deg 
          * @returns
          */
@@ -2179,6 +2179,23 @@
         },
         /**
          * 
+         * @param {Blob} file File, Blob or MediaSource
+         * @returns 
+         */
+        getObjectURL: function(file) {
+            return URL.createObjectURL(file);
+        },
+        /**
+         * 
+         * @param {String} url 
+         * @returns 
+         */
+        removeObjectURL: function(url) {
+            URL.revokeObjectURL(url);
+            return true;
+        },
+        /**
+         * 
          * @param {Stinrg} str 
          * @returns Array
          */
@@ -2210,6 +2227,628 @@
                 words: words
             }
         },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
+        stringToUnicode: function(str) {
+            var res = [];
+            var i = 0;
+            var len = str.length;
+            var char;
+            while(i < len) {
+                char = str.charCodeAt(i++);
+                res.push(char);
+            }
+            return res;
+        },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
+        stringToHex: function(str) {
+            var res = [];
+            var i = 0;
+            var len = str.length;
+            var char;
+            while(i < len) {
+                char = str.charCodeAt(i++).toString(16);
+                res.push(char);
+            }
+            return res;
+        },
+        /**
+         * 
+         * @param {String} str 
+         * @returns
+         */
+        stringToUtf8: function(str) {
+            var res = [];
+            var len = str.length;
+            var i = 0;
+            var char1, char2;
+            while(i < len) {
+                char1 = str.charCodeAt(i++);
+                if (char1 < 0x0080) {
+                    // code point range: U+0000 - U+007F
+                    res.push(char1);
+                } else if (char1 < 0x0800) {
+                    // code point range: U+0080 - U+07FF
+                    res.push(0xC0 | (char1 >> 6),
+                        0x80 | (char1 & 0x3F));
+                } else if (char1 < 0xD800 || char1 >= 0xE000 ) {
+                    // code point range: U+0800 - U+FFFF
+                    res.push(0xE0 | (char1 >> 12),
+                        0x80 | ((char1 >> 6) & 0x3F),
+                        0x80 | (char1 & 0x3F));
+                } else {
+                    // surrogate pair
+                    // code point range: U+10000 - U+10FFFF
+                    char2 = str.charCodeAt(i++);
+                    char1 = 0x00010000 + ((char1 & 0x03FF) << 10) | (char2 & 0x03FF);
+                    res.push(0xF0 | (char1 >> 18),
+                        0x80 | ((char1 >> 12) & 0x3F),
+                        0x80 | ((char1 >> 6) & 0x3F),
+                        0x80 | (char1 & 0x3F));
+                }
+            }
+            return res;
+        },
+        /**
+         * 
+         * @param {String} str 
+         * @returns
+         */
+        stringToUtf16le: function(str) {
+            var res = [];
+            var i = 0;
+            var len = str.length;
+            var char;
+            while (i < len) {
+                char = str.charCodeAt(i++);
+                if (char <= 0xFF) {
+                    // 0x00 - 0xFF
+                    res.push(char, 0);
+                } else if (char <= 0xFFFF) {
+                    // 0xFF - 0xFFFF
+                    res.push(char & 0xFF,
+                        ((char >> 8) & 0xFF));
+                }
+            }
+            return res;
+        },
+        /**
+         * 
+         * @param {String} str 
+         * @returns
+         */
+        stringToUtf16be: function(str) {
+            var res = [];
+            var i = 0;
+            var len = str.length;
+            var char;
+            while (i < len) {
+                char = str.charCodeAt(i++);
+                if (char <= 0xFF) {
+                    // 0x00 - 0xFF
+                    res.push(0, char);
+                } else if (char <= 0xFFFF) {
+                    // 0xFF - 0xFFFF
+                    res.push(char >> 8 & 0xFF,
+                        char & 0xFF);
+                }
+            }
+            return res;
+        },
+        /**
+         * 
+         * @param {Array} arr 
+         * @returns 
+         */
+        unicodeToString: function(arr) {
+            var res = "";
+            var i = 0;
+            var len = arr.length;
+            while(i < len) {
+                res += String.fromCharCode(arr[i++]);
+            }
+            return res;
+        },
+        /**
+         * 
+         * @param {Array} arr 
+         * @returns 
+         */
+        unicodeToHex: function(arr) {
+            var res = [];
+            var i = 0;
+            var len = arr.length;
+            while(i < len) {
+                res.push(arr[i++].toString(16));
+            }
+            return res;
+        },
+        /**
+         * 
+         * @param {Array} arr 
+         * @returns 
+         */
+        unicodeToUtf8: function(arr) {
+            var res = [];
+            var i = 0;
+            var len = arr.length;
+            var char1, char2;
+            while(i < len) {
+                char1 = arr[i++];
+                if (char1 < 0x0080) {
+                    // code point range: U+0000 - U+007F
+                    res.push(char1);
+                } else if (char1 < 0x0800) {
+                    // code point range: U+0080 - U+07FF
+                    res.push(0xC0 | (char1 >> 6),
+                        0x80 | (char1 & 0x3F));
+                } else if (char1 < 0xD800 || char1 >= 0xE000 ) {
+                    // code point range: U+0800 - U+FFFF
+                    res.push(0xE0 | (char1 >> 12),
+                        0x80 | ((char1 >> 6) & 0x3F),
+                        0x80 | (char1 & 0x3F));
+                } else {
+                    // surrogate pair
+                    // code point range: U+10000 - U+10FFFF
+                    char2 = arr[i++];
+                    char1 = 0x00010000 + ((char1 & 0x03FF) << 10) | (char2 & 0x03FF);
+                    res.push(0xF0 | (char1 >> 18),
+                        0x80 | ((char1 >> 12) & 0x3F),
+                        0x80 | ((char1 >> 6) & 0x3F),
+                        0x80 | (char1 & 0x3F));
+                }
+            }
+            return res;
+        },
+        /**
+         * 
+         * @param {Array} arr 
+         * @returns
+         */
+        unicodeToUtf16le: function(arr) {
+            var res = [];
+            var i = 0;
+            var len = arr.length;
+            var char;
+            while (i < len) {
+                char = arr[i++];
+                if (char <= 0xFF) {
+                    // 0x00 - 0xFF
+                    res.push(char, 0);
+                } else if (char <= 0xFFFF) {
+                    // 0xFF - 0xFFFF
+                    res.push(char & 0xFF,
+                        ((char >> 8) & 0xFF));
+                }
+            }
+            return res;
+        },
+        /**
+         * 
+         * @param {Array} arr 
+         * @returns
+         */
+        unicodeToUtf16be: function(arr) {
+            var res = [];
+            var i = 0;
+            var len = arr.length;
+            var char;
+            while (i < len) {
+                char = arr[i++];
+                if (char <= 0xFF) {
+                    // 0x00 - 0xFF
+                    res.push(0, char);
+                } else if (char <= 0xFFFF) {
+                    // 0xFF - 0xFFFF
+                    res.push(char >> 8 & 0xFF,
+                        char & 0xFF);
+                }
+            }
+            return res;
+        },
+        /**
+         * 
+         * @param {Array} arr 
+         * @returns 
+         */
+        utf8ToUnicode: function(arr) {
+            var res = [];
+            var i = 0;
+            var len = arr.length;
+            var char1, char2, char3;
+            while (i < len) {
+                char1 = arr[i++];
+                switch(char1 >> 4) {
+                    case 0:
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                        // 0xxx xxxx
+                        res.push(char1);
+                        break;
+                    case 12:
+                    case 13:
+                        // 110x xxxx
+                        // 10xx xxxx
+                        char2 = arr[i++];
+                        res.push(((char1 & 0x1F) << 6) | 
+                            (char2 & 0x3F));
+                        break;
+                    case 14:
+                        // 1110 xxxx
+                        // 10xx xxxx
+                        // 10xx xxxx
+                        char2 = arr[i++];
+                        char3 = arr[i++];
+                        res.push(((char1 & 0x0F) << 12) | 
+                            ((char2 & 0x3F) << 6) | 
+                            ((char3 & 0x3F) << 0));
+                        break;
+                }
+            }
+            return res;
+        },
+        /**
+         * 
+         * @param {Array} arr 
+         * @returns 
+         */
+        utf8ToHex: function(arr) {
+            var res = [];
+            var i = 0;
+            var len = arr.length;
+            var char1, char2, char3;
+            while (i < len) {
+                char1 = arr[i++];
+                switch(char1 >> 4) {
+                    case 0:
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                        // 0xxx xxxx
+                        res.push(char1.toString(16));
+                        break;
+                    case 12:
+                    case 13:
+                        // 110x xxxx
+                        // 10xx xxxx
+                        char2 = arr[i++];
+                        res.push((((char1 & 0x1F) << 6) | 
+                            (char2 & 0x3F)).toString(16));
+                        break;
+                    case 14:
+                        // 1110 xxxx
+                        // 10xx xxxx
+                        // 10xx xxxx
+                        char2 = arr[i++];
+                        char3 = arr[i++];
+                        res.push((((char1 & 0x0F) << 12) | 
+                            ((char2 & 0x3F) << 6) | 
+                            ((char3 & 0x3F) << 0)).toString(16));
+                        break;
+                }
+            }
+            return res;
+        },
+        /**
+         * 
+         * @param {Array} arr Uint8Array
+         * @returns String
+         */
+        utf8ToString: function(arr) {
+            var res = "";
+            var len = arr.length;
+            var i = 0;
+            var char1, char2, char3;
+            while (i < len) {
+                char1 = arr[i++];
+                switch(char1 >> 4) {
+                    case 0:
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                        // 0xxx xxxx
+                        res += String.fromCharCode(char1);
+                        break;
+                    case 12:
+                    case 13:
+                        // 110x xxxx
+                        // 10xx xxxx
+                        char2 = arr[i++];
+                        res += String.fromCharCode(((char1 & 0x1F) << 6) |
+                            (char2 & 0x3F));
+                        break;
+                    case 14:
+                        // 1110 xxxx
+                        // 10xx xxxx
+                        // 10xx xxxx
+                        char2 = arr[i++];
+                        char3 = arr[i++];
+                        res += String.fromCharCode(((char1 & 0x0F) << 12) |
+                            ((char2 & 0x3F) << 6) |
+                            ((char3 & 0x3F) << 0));
+                        break;
+                }
+            }
+            return res;
+        },
+        /**
+         * 
+         * @param {Array} arr 
+         * @returns 
+         */
+        utf16leToUnicode: function(arr) {
+            var res = [];
+            var len = arr.length;
+            var i = (len >= 2) && 
+                ((arr[0] === 0xFE && arr[1] === 0xFF) || 
+                (arr[0] === 0xFF && arr[1] === 0xFE)) ? 2 : 0;
+            var char1, char2;
+            while (i < len) {
+                char1 = arr[i++];
+                char2 = arr[i++];
+                if (char2 === 0) {
+                    res.push(char1);
+                } else {
+                    res.push(((char2 & 0xFF) << 8) |
+                        (char1 & 0xFF));
+                }
+            }
+            return res;
+        },
+        /**
+         * 
+         * @param {Array} arr 
+         * @returns 
+         */
+        utf16leToHex: function(arr) {
+            var res = [];
+            var len = arr.length;
+            var i = (len >= 2) && 
+                ((arr[0] === 0xFE && arr[1] === 0xFF) || 
+                (arr[0] === 0xFF && arr[1] === 0xFE)) ? 2 : 0;
+            var char1, char2;
+            while (i < len) {
+                char1 = arr[i++];
+                char2 = arr[i++];
+                if (char2 === 0) {
+                    res.push(char1.toString(16));
+                } else {
+                    res.push((((char2 & 0xFF) << 8) |
+                        (char1 & 0xFF)).toString(16));
+                }
+            }
+            return res;
+        },
+        /**
+         * 
+         * @param {Array} arr 
+         * @returns 
+         */
+        utf16leToString: function(arr) {
+            var res = "";
+            var len = arr.length;
+            var i = (len >= 2) && 
+                ((arr[0] === 0xFE && arr[1] === 0xFF) || 
+                (arr[0] === 0xFF && arr[1] === 0xFE)) ? 2 : 0;
+            var char1, char2;
+            while (i < len) {
+                char1 = arr[i++];
+                char2 = arr[i++];
+                if (char2 === 0) {
+                    res += String.fromCharCode(char1);
+                } else {
+                    res += String.fromCharCode(((char2 & 0xFF) << 8) |
+                        (char1 & 0xFF));
+                }
+            }
+            return res;
+        },
+        /**
+         * 
+         * @param {Array} arr 
+         * @returns 
+         */
+        utf16beToUnicode: function(arr) {
+            var res = [];
+            var len = arr.length;
+            var i = (len >= 2) && 
+                ((arr[0] === 0xFE && arr[1] === 0xFF) || 
+                (arr[0] === 0xFF && arr[1] === 0xFE)) ? 2 : 0;
+            var char1, char2;
+            while (i < len) {
+                char1 = arr[i++];
+                char2 = arr[i++];
+                if (char1 === 0) {
+                    res.push(char2);
+                } else {
+                    res.push(((char1 & 0xFF) << 8) |
+                        (char2 & 0xFF));
+                }
+            }
+            return res;
+        },
+        /**
+         * 
+         * @param {Array} arr 
+         * @returns 
+         */
+        utf16beToHex: function(arr) {
+            var res = [];
+            var len = arr.length;
+            var i = (len >= 2) && 
+                ((arr[0] === 0xFE && arr[1] === 0xFF) || 
+                (arr[0] === 0xFF && arr[1] === 0xFE)) ? 2 : 0;
+            var char1, char2;
+            while (i < len) {
+                char1 = arr[i++];
+                char2 = arr[i++];
+                if (char1 === 0) {
+                    res.push(char2.toString(16));
+                } else {
+                    res.push((((char1 & 0xFF) << 8) |
+                        (char2 & 0xFF)).toString(16));
+                }
+            }
+            return res;
+        },
+        /**
+         * 
+         * @param {Array} arr 
+         * @returns 
+         */
+        utf16beToString: function(arr) {
+            var res = "";
+            var len = arr.length;
+            var i = (len >= 2) && 
+                ((arr[0] === 0xFE && arr[1] === 0xFF) || 
+                (arr[0] === 0xFF && arr[1] === 0xFE)) ? 2 : 0;
+            var char1, char2;
+            while (i < len) {
+                char1 = arr[i++];
+                char2 = arr[i++];
+                if (char1 === 0) {
+                    res += String.fromCharCode(char1);
+                } else {
+                    res += String.fromCharCode(((char1 & 0xFF) << 8) | 
+                        (char2 & 0xFF));
+                }
+            }
+            return res;
+        },
+        /**
+         * 
+         * @param {Array} fileArray 
+         */
+        MyImages: function MyImages(fileArray) {
+            var MyImages = this;
+            var createURL = function(blob) {
+                return URL.createObjectURL(blob);
+            };
+            var revokeURL = function(url) {
+                URL.revokeObjectURL(url);
+                return true;
+            };
+
+            /* construtor */
+            this.__images__ = [];
+
+            /* methods */
+            this.add = function(file) {
+                var index = this.__images__.length;
+                var src;
+                var type;
+                if (file instanceof Blob || file instanceof File) {
+                    src = createURL(file);
+                    type = "file";
+                } else if (typeof(file) === "string") {
+                    src = file;
+                    type = "url";
+                }
+                this.__images__.push({
+                    index: index,
+                    isLoaded: false,
+                    type: type,
+                    src: src,
+                    img: null,
+                    attributes: {
+                        width: 0,
+                        height: 0,
+                        naturalWidth: 0,
+                        naturalHeight: 0,
+                    },
+                    load: function(cb) {
+                        MyImages.load(index, cb);
+                    },
+                    remove: function() {
+                        MyImages.remove(index);
+                        return MyImages;
+                    }
+                });
+                return this.get(index);
+            };
+            this.get = function(index) {
+                return this.__images__[index];
+            };
+            this.load = async function(index, cb) {
+                var image = this.get(index);
+                var img = new Image();
+                var src;
+                if (image.type === "file") {
+                    src = image.src;
+                } else {
+                    try {
+                        src = await this.fetch(this.src);
+                    } catch(err) {
+                        return cb(err);
+                    }
+                    image.src = src;
+                    image.type = "file";
+                }
+                img.onload = function() {
+                    image.isLoaded = true;
+                    image.attributes.width = img.width;
+                    image.attributes.height = img.height;
+                    image.attributes.naturalWidth = img.naturalWidth;
+                    image.attributes.naturalHeight = img.naturalHeight;
+                    return cb(null, image);
+                };
+                img.onerror = function(err) {
+                    return cb(err);
+                };
+                img.src = src;
+            };
+            this.remove = function(index) {
+                var image = this.get(index);
+                revokeURL(image.src);
+                this.__images__[i] = null;
+                return this;
+            }
+            this.fetch = function(url) {
+                return new Promise(function(resolve, reject) {
+                    fetch(url)
+                        .then(function(res) {
+                            if (!res.ok) {
+                                var err = new Error("fetch error");
+                                err.name = "FetchError";
+                                throw err;
+                            }
+                            return res.blob();
+                        })
+                        .then(function(blob) {
+                            var url = createURL(blob);
+                            resolve(url);
+                        })
+                        .catch(function(err) {
+                            reject(err);
+                        });
+                });
+            }
+
+
+            /* initialize */
+            
+        },
+
 
         
 

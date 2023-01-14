@@ -352,12 +352,34 @@
 
         /* imageData */
         (async function() {
-            await utils.setTimeoutPromise(function() {
-                return;
-            }, 1000);
+            var CANVAS_WIDTH = 262;
+            var CANVAS_HEIGHT = 262;
+            var OFFSET = 12;
+            var ORIGIN_X = CANVAS_WIDTH*0.5;
+            var ORIGIN_Y = CANVAS_HEIGHT*0.5;
+            var text = "Lorem Ipsum";
 
-            var res = utils.getImageData(img);
-            console.log("utils.getImageData", res);
+            /* init canvas */
+            var canv = new utils.MyCanvas();
+            
+            document.getElementById("canv-container").appendChild(canv.getCanvas());
+
+            /* set canvas size */
+            canv.setCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+
+            /* draw */
+            canv.drawText(
+                ORIGIN_X+4,
+                ORIGIN_Y-4, 
+                text, {
+                    color: "black",
+                    rotate: 0,
+                    font: "10px serif"
+                })
+
+            var res = canv.getImageData();
+            console.log(res)
+
         })();
 
     </script>

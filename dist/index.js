@@ -1816,8 +1816,8 @@
         /**
          * 
          * @param {String} text 
-         * @param {String} size 
-         * @param {String} font 
+         * @param {String} size 10px
+         * @param {String} font serif
          * @returns 
          */
         getTextWidth: function(text, size, font) {
@@ -1829,14 +1829,22 @@
         },
         /**
          * 
+         * @param {Number} size 
+         * @returns 
+         */
+        getTextHeight: function(size) {
+            return size * 0.3; // incorrect
+        },
+        /**
+         * 
          * @param {Img} img 
          * @returns 
          */
         getImageData: function(img) {
             var canvas = document.createElement("canvas");
-            var ctx = canvas.getContext("2d");
-            canvas.width = img.width || img.naturalWidth;
-            canvas.height = img.height || img.naturalHeight;
+            var ctx = canvas && canvas.getContext("2d");
+            canvas.width = img.naturalWidth || img.width;
+            canvas.height = img.naturalHeight || img.height;
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
             var data = ctx.getImageData(0, 0, canvas.width, canvas.height);
             return {
@@ -1907,19 +1915,21 @@
                 if (!options || typeof(options.rotate) === "undefined") {
                     return;
                 }
+                var deg;
                 var rad;
                 var px;
                 var py;
                 if (typeof(options.rotate) === "object") {
-                    rad = getRadians(options.rotate.degree);
-                    px = options.rotate.x || x;
-                    py = options.rotate.y || y;
+                    deg = options.rotate.degree;
+                    px = options.rotate.x;
+                    py = options.rotate.y;
                 }
                 if (typeof(options.rotate) === "number") {
-                    rad = getRadians(options.rotate);
+                    deg = options.rotate;
                     px = x;
                     py = y;
                 }
+                rad = getRadians(deg);
                 ctx.translate(px, py);
                 ctx.rotate(rad);
                 ctx.translate(-px, -py); 
@@ -1933,17 +1943,16 @@
                 var px;
                 var py;
                 if (typeof(options.rotateX) === "object") {
-                    deg = options.rotateX.degree || options.rotateX;
-                    scale = getScale(deg);
-                    px = options.rotateX.x || x;
-                    py = options.rotateX.y || y;
+                    deg = options.rotateX.degree;
+                    px = options.rotateX.x;
+                    py = options.rotateX.y;
                 }
                 if (typeof(options.rotateX) === "number") {
                     deg = options.rotateX;
-                    scale = getScale(deg);
                     px = x;
                     py = y;
                 }
+                scale = getScale(deg);
                 ctx.translate(px, py);
                 ctx.scale(1, scale);
                 ctx.translate(-px, -py);
@@ -1957,17 +1966,16 @@
                 var px;
                 var py;
                 if (typeof(options.rotateY) === "object") {
-                    deg = options.rotateY.degree || options.rotateY;
-                    scale = getScale(deg);
-                    px = options.rotateY.x || x;
-                    py = options.rotateY.y || y;
+                    deg = options.rotateY.degree;
+                    px = options.rotateY.x;
+                    py = options.rotateY.y;
                 }
                 if (typeof(options.rotateY) === "number") {
                     deg = options.rotateY;
-                    scale = getScale(deg);
                     px = x;
                     py = y;
                 }
+                scale = getScale(deg);
                 ctx.translate(px, py);
                 ctx.scale(scale, 1);
                 ctx.translate(-px, -py);
@@ -2077,14 +2085,17 @@
                 return this;
             };
             this.drawText = function(x, y, text, options) {
-                var cx = x;
-                var cy = y;
                 saveStyle();
                 setStyle(options);
+                var metrics = ctx.measureText(text);
+                var size = /(\d+)px/.exec(ctx.font)[1];
+                var height = parseInt(size) * 0.3; // incorrect
+                var cx = x + metrics.width * 0.5;
+                var cy = y - height;
                 setRotate(cx, cy, options);
                 setRotateX(cx, cy, options);
                 setRotateY(cx, cy, options);
-                ctx.fillText(text, cx, cy);
+                ctx.fillText(text, x, y);
                 unsetStyle();
                 return this;
             };
@@ -2094,7 +2105,7 @@
                 var dx = x;
                 var dy = y;
                 var dw = w || img.naturalWidth || img.width;
-                var dh = h || img.naturalHeihgt || img.height;
+                var dh = h || img.naturalHeight || img.height;
                 saveStyle();
                 setStyle(options);
                 setRotate(cx, cy, options);
@@ -2103,6 +2114,12 @@
                 ctx.drawImage(img, dx, dy, dw, dh);
                 unsetStyle();
                 return this;
+            };
+            this.getImageData = function(x, y, w, h) {
+                return ctx.getImageData(x || 0, y || 0, w || canvas.width, h || canvas.height);
+            };
+            this.putImageData = function(data) {
+                return ctx.putImageData(data, 0, 0);
             };
             this.clear = function() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);

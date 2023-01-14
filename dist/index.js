@@ -1837,21 +1837,61 @@
         },
         /**
          * 
-         * @param {Img} img 
-         * @returns 
+         * @param {Blob} blob 
+         * @param {Function} cb 
          */
-        getImageData: function(img) {
+        getImageData: function(blob, cb) {
             var canvas = document.createElement("canvas");
             var ctx = canvas && canvas.getContext("2d");
-            canvas.width = img.naturalWidth || img.width;
-            canvas.height = img.naturalHeight || img.height;
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            var data = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            return {
-                canvas: canvas,
-                context: ctx,
-                imageData: data,
-            }
+            var img = document.createElement("img");
+            img.onload = function() {
+                canvas.width = img.naturalWidth || img.width;
+                canvas.height = img.naturalHeight || img.height;
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                var data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                return cb(null, {
+                    img: img,
+                    src: img.src,
+                    canvas: canvas,
+                    context: ctx,
+                    imageData: data,
+                });
+            };
+            img.onerror = function(err) {
+                return cb(err);
+            };
+            img.src = URL.createObjectURL(blob);
+        },
+        /**
+         * 
+         * @param {Blob} blob 
+         * @returns 
+         */
+        getImageDataPromise: function(blob) {
+            return new Promise(function(resolve, reject) {
+                var canvas = document.createElement("canvas");
+                var ctx = canvas && canvas.getContext("2d");
+                var img = document.createElement("img");
+                img.onload = function() {
+                    canvas.width = img.naturalWidth || img.width;
+                    canvas.height = img.naturalHeight || img.height;
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    var data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    resolve({
+                        img: img,
+                        src: img.src,
+                        canvas: canvas,
+                        context: ctx,
+                        imageData: data,
+                    });
+                    return;
+                };
+                img.onload = function(err) {
+                    reject(err);
+                    return;
+                };
+                img.src = URL.createObjectURL(blob);
+            });
         },
         /**
          * MyCanvas.getCanvas()     

@@ -2069,7 +2069,7 @@
                 unsetStyle();
                 return this;
             };
-            this.drawRect = function(x, y, w, h, options) {
+            this.drawRectangle = function(x, y, w, h, options) {
                 var cx = x+w*0.5;
                 var cy = y+h*0.5;
                 saveStyle();
@@ -2185,7 +2185,10 @@
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 return this;
             };
-          
+            /* alias */
+            this.drawRect = this.drawRectangle;
+            this.drawImg = this.drawImage;
+
             /* initialize */
             ctx.strokeStyle = "#000000";
             ctx.fillStyle = "#000000";

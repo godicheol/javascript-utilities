@@ -3051,6 +3051,66 @@
                 return "\\u" + ("000" + code.toString(16)).slice(-4);
             });
         },
+        /**
+         * 
+         * @param {Array} arr 
+         * @returns 
+         */
+        decimalToBinary: function(arr) {
+            return arr.map(function(code) {
+                return code.toString(2);
+            });
+        },
+        /**
+         * 
+         * @param {Array} arr 
+         * @returns 
+         */
+        decimalToHex: function(arr) {
+            return arr.map(function(code) {
+                return code.toString(16);
+            });
+        },
+        /**
+         * 
+         * @param {Array} arr 
+         * @returns 
+         */
+        binaryToDecimal: function(arr) {
+            return arr.map(function(bin) {
+                return parseInt(bin, 2);
+            });
+        },
+        /**
+         * 
+         * @param {Array} arr 
+         * @returns 
+         */
+        binaryToHex: function(arr) {
+            return arr.map(function(bin) {
+                return parseInt(bin, 2).toString(16);
+            });
+        },
+        /**
+         * 
+         * @param {Array} arr 
+         * @returns 
+         */
+        hexToDecimal: function(arr) {
+            return arr.map(function(hex) {
+                return parseInt(hex, 16);
+            });
+        },
+        /**
+         * 
+         * @param {Array} arr 
+         * @returns 
+         */
+        hexToBinary: function(arr) {
+            return arr.map(function(hex) {
+                return parseInt(hex, 16).toString(2);
+            });
+        },
 
 
     }

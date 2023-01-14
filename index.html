@@ -343,11 +343,9 @@
 
             var res = utils.stringToCode(str);
             var res2 = utils.codeToUtf8(res);
-            var res3 = utils.utf8ToString(res2)
 
             console.log("utils.stringToCode",res);
             console.log("utils.codeToUtf8", res2);
-            console.log("utils.utf8ToString", res3);
         })();
 
         /* setTimeOutPromise */
@@ -356,37 +354,6 @@
                 return "Delay 1000";
             }, 1000);
             console.log("utils.setTimeoutPromise", res);
-        })();
-
-        /* imageData */
-        (async function() {
-            var CANVAS_WIDTH = 262;
-            var CANVAS_HEIGHT = 262;
-            var OFFSET = 12;
-            var ORIGIN_X = CANVAS_WIDTH*0.5;
-            var ORIGIN_Y = CANVAS_HEIGHT*0.5;
-            var text = "Lorem Ipsum";
-
-            /* init canvas */
-            var canv = new utils.MyCanvas();
-            
-            document.getElementById("canv-container").appendChild(canv.getCanvas());
-
-            /* set canvas size */
-            canv.setCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
-
-            /* draw */
-            canv.drawText(
-                ORIGIN_X+4,
-                ORIGIN_Y-4, 
-                text, {
-                    color: "black",
-                    rotate: 45,
-                    font: "10px serif"
-                })
-
-            var res = canv.getImageData();
-            console.log(res)
         })();
 
         /* slice */

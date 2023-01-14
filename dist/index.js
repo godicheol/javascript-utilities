@@ -2161,6 +2161,26 @@
             this.putImageData = function(data) {
                 return ctx.putImageData(data, 0, 0);
             };
+            this.slice = function(x, y, w, h) {
+                var __canvas = document.createElement("canvas");
+                var __ctx = __canvas.getContext("2d");
+
+                var sx = x;
+                var sy = y;
+                var sw = w;
+                var sh = h;
+                var dx = 0;
+                var dy = 0;
+                var dw = w;
+                var dh = h;
+
+                __canvas.width = dw;
+                __canvas.height = dh;
+
+                __ctx.drawImage(canvas, sx, sy, sw, sh, dx, dy, dw, dh);
+
+                return __canvas;
+            };
             this.clear = function() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 return this;
@@ -2843,7 +2863,7 @@
          * @param {Array} arr 
          * @returns 
          */
-        padToHexArray: function(arr) {
+        padToHex: function(arr) {
             return arr.map(function(hex) {
                 return ("000" + hex.toUpperCase()).slice(-4);
             });

@@ -25,6 +25,10 @@
     <button id="stop-animation">Pause</button>
     <button id="toggle-animation">Toggle</button>
 
+    <h3>MyCanvas.slice</h3>
+    <div id="canv-container-2"></div>
+    <div id="canv-container-3"></div>
+
     <!-- js -->
     <script src="dist/index.js"></script>
     <script>
@@ -373,13 +377,24 @@
                 ORIGIN_Y-4, 
                 text, {
                     color: "black",
-                    rotate: 0,
+                    rotate: 45,
                     font: "10px serif"
                 })
 
             var res = canv.getImageData();
             console.log(res)
+        })();
 
+        /* slice */
+        (function() {
+            var CANVAS_WIDTH = 262;
+            var CANVAS_HEIGHT = 262;
+            var canv = new utils.MyCanvas();
+            canv.setCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+            canv.drawRect(31, 31, 150, 150, { fill: true, rotate: 45 });
+            var res = canv.slice(0,131,131,131);
+            document.getElementById("canv-container-2").appendChild(canv.getCanvas());
+            document.getElementById("canv-container-2").appendChild(res);
         })();
 
     </script>

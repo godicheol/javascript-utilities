@@ -1735,15 +1735,15 @@
             }
             return promises();
         },
-       /**
-        * MyAnimation.start()   
-        * MyAnimation.stop()   
-        * MyAnimation.toggle()    
-        * MyAnimation.reset()    
-        * MyAnimation.clear()    
-        * @param {Function} func 
-        * @param {Number} delay 
-        */
+        /**
+         * MyAnimation.start()   
+         * MyAnimation.stop()   
+         * MyAnimation.toggle()    
+         * MyAnimation.reset()    
+         * MyAnimation.clear()    
+         * @param {Function} func 
+         * @param {Number} delay 
+         */
         MyAnimation: function(func, delay) {
             /* constructor */
             this.function = null;
@@ -1796,6 +1796,17 @@
         },
         /**
          * 
+         * @param {Function} func 
+         * @param {Number} delay 
+         * @returns 
+         */
+        setTimeoutPromise: function(func, delay) {
+            return new Promise(function(resolve, reject) {
+                setTimeout(resolve, delay);
+            }).then(func);
+        },
+        /**
+         * 
          * @returns 
          */
         hasCanvas: function() {
@@ -1815,6 +1826,24 @@
             ctx.font = size+" "+font;
             var metrics = ctx.measureText(text);
             return metrics.width;
+        },
+        /**
+         * 
+         * @param {Img} img 
+         * @returns 
+         */
+        getImageData: function(img) {
+            var canvas = document.createElement("canvas");
+            var ctx = canvas.getContext("2d");
+            canvas.width = img.width || img.naturalWidth;
+            canvas.height = img.height || img.naturalHeight;
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            var data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            return {
+                canvas: canvas,
+                context: ctx,
+                imageData: data,
+            }
         },
         /**
          * MyCanvas.getCanvas()     

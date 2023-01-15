@@ -68,7 +68,7 @@
         });
 
         /* MyAnimation, MyCanvas, MyRectangle */
-        (async function() {
+        (function() {
             var CANVAS_WIDTH = 262;
             var CANVAS_HEIGHT = 262;
             var OFFSET = 12;
@@ -93,8 +93,8 @@
 
                 /* draw lines */
                 for (var k = OFFSET*0.5; k < CANVAS_WIDTH; k += 25) {
-                    canv.drawLine(k, 0, k, CANVAS_WIDTH);
-                    canv.drawLine(0, k, CANVAS_WIDTH, k);
+                    canv.drawLine(k, 0, k, CANVAS_WIDTH, { color: "black" });
+                    canv.drawLine(0, k, CANVAS_WIDTH, k, { color: "black" });
                 }
                 /* draw origin */
                 canv.drawCircle(ORIGIN_X-2, ORIGIN_X-2, 2, { fill: true, color: "black"})

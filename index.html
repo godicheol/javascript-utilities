@@ -27,7 +27,10 @@
 
     <h3>MyCanvas.slice</h3>
     <div id="canv-container-2"></div>
+
+    <h3>setGrayscaleFilter, setSobelFilter</h3>
     <div id="canv-container-3"></div>
+    <input id="upload-3" type="file" accept="image/*">
 
     <!-- js -->
     <script src="dist/index.js"></script>
@@ -203,12 +206,11 @@
                 i += j;
 
                 document.getElementById("count-animation").innerHTML = Math.floor(deg/90)*90;
-                
 
                 // if (i > 360) {
                 //     stopAnimation();
                 // }
-            }, 36);
+            }, 64);
 
             function startAnimation() {
                 animation.start();
@@ -363,9 +365,42 @@
             var canv = new utils.MyCanvas();
             canv.setCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
             canv.drawRect(31, 31, 150, 150, { fill: true, rotate: 45 });
-            var res = canv.slice(0,131,131,131);
+            var canv2 = canv.slice(0,131,131,131);
             document.getElementById("canv-container-2").appendChild(canv.getCanvas());
-            document.getElementById("canv-container-2").appendChild(res);
+            document.getElementById("canv-container-2").appendChild(canv2);
+        })();
+
+        /* grayscalem sibel */
+        (function() {
+            var CANVAS_WIDTH = 262;
+            var CANVAS_HEIGHT = 262;
+            var canv1 = new utils.MyCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+            var canv2 = new utils.MyCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+            document.getElementById("canv-container-3").appendChild(canv1.getCanvas());
+            document.getElementById("canv-container-3").appendChild(canv2.getCanvas());
+
+            document.getElementById("upload-3").addEventListener("change", function(e) {
+                if (e.target.files.length < 0) {
+                    return false;
+                }
+                canv1.loadImage(e.target.files[0], function(err, res) {
+                    if (err) {
+                        console.error(err);
+                        return false;
+                    }
+                    console.log(res.width, res.height)
+                    canv1.setCanvas(res.width, res.height);
+                    canv2.setCanvas(res.width, res.height);
+                    canv1.fit("contain", CANVAS_WIDTH, CANVAS_HEIGHT);
+                    canv2.fit("contain", CANVAS_WIDTH, CANVAS_HEIGHT);
+                    canv1.drawImage(0,0,canv1.width,canv1.height,res);
+                    var imageData = canv1.getImageData();
+                    var newImageData = utils.setSobelFilter(imageData);
+                    canv2.putImageData(0, 0, newImageData);
+
+                    console.log("utils.setSobelFilter", newImageData);
+                });
+            })
         })();
 
     </script>

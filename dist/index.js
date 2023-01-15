@@ -242,7 +242,6 @@
          * @returns 
          */
         toObject: function(arr) {
-            /* arr = [[key, value], [key, value]] */
             return arr.reduce(function(prev, curr) {
                 prev[curr[0]] = curr[1];
                 return prev;
@@ -255,11 +254,11 @@
          */
         toArray: function(obj) {
             if (typeof(obj) === "object" && obj !== null && Object.prototype.toString.call(obj) !== '[object Array]') {
-                return Object.entries(any); /* Object */
+                return Object.entries(any);
             } else if (typeof(obj) === "object" && obj !== null && Object.prototype.toString.call(obj) === '[object Array]') {
-                return obj; /* Array */
+                return obj;
             } else if (typeof(obj) === "string") {
-                return obj.split(''); /* String */
+                return obj.split('');
             } else {
                 var err = new Error('invalid argument type');
                 err.name = "TypeError";
@@ -604,7 +603,7 @@
             for (i = 0; i < str.length; i++) {
                 char = str.charCodeAt(i);
                 hash = ((hash << 5) - hash) + char;
-                hash |= 0; // Convert to 32bit integer
+                hash |= 0; // convert to 32bit integer
             }
             return hash;
         },
@@ -676,12 +675,11 @@
         },
         /**
          * 
-         * @param {String} charset 
+         * @param {String} charset "ABCDEFG"
          * @param {Number} len 
          * @returns 
          */
         genRandomString: function(charset, len) {
-            /* charset = "abcdefg" */
             var res = "";
             var i;
             for (i = 0; i < len; i++) {
@@ -781,12 +779,11 @@
         },
         /**
          * 
-         * @param {String} pad 
+         * @param {String} pad "0000"
          * @param {String} str 
          * @returns 
          */
         padLeft: function(pad, str) {
-            /* pad = "0000" */
             if (!str) {
                 return pad;
             }
@@ -794,12 +791,11 @@
         },
         /**
          * 
-         * @param {String} pad 
+         * @param {String} pad "0000"
          * @param {String} str 
          * @returns 
          */
         padRight: function(pad, str) {
-            /* pad = "0000" */
             if (!str) {
                 return pad;
             }
@@ -819,7 +815,7 @@
         },
         /**
          * 
-         * @param {Array} arr Array in Array
+         * @param {Array} arr [[1,2], [3,4]]
          * @returns 
          */
         joinArrayInArray: function(arr) {
@@ -829,7 +825,7 @@
         },
         /**
          * 
-         * @param {Array} regexpArray 
+         * @param {Array} regexpArray array of regexp
          * @param {String} flags 
          * @returns 
          */
@@ -840,7 +836,7 @@
         },
         /**
          * 
-         * @param {Array} arr ObjectArray
+         * @param {Array} arr array of object
          */
         joinObject: function(arr) {
             return arr.reduce(function(prev, curr) {
@@ -872,7 +868,7 @@
          * MySchema.getValidType(constructor)   
          * MySchema.isValidValue(key, value)   
          * MySchema.getValidValue(key, value)    
-         * @param {Object} object 
+         * @param {Object} __obj 
          */
         MySchema: function(__obj) {
             var Schema = this;
@@ -1065,7 +1061,7 @@
                 }
             };
 
-            /* constructor */
+            // constructor
             this.types = {};
             this.init = function(obj) {
                 var keys = Object.keys(obj);
@@ -1139,14 +1135,14 @@
             this.getValidValue = function(key, val) {
                 return Schema.types[key].set(val);
             };
-            /* alias */
+            // alias
             this.set = Schema.init;
             this.add = Schema.init;
             this.save = Schema.get;
             this.convert = Schema.get;
             this.confirm = Schema.test;
             this.validate = Schema.test;
-            /* initialize this.types */
+            // initialize this.types
             if (__obj) {
                 this.init(__obj);
             }
@@ -1205,7 +1201,7 @@
                 var t = getType(v);
                 var i;
                 if (isLoopOperator(k)) {
-                    /* Object array */
+                    // array of object
                     if (t === "array") {
                         for (i = 0; i < v.length; i++) {
                             if (getType(v[i]) !== "object") {
@@ -1214,27 +1210,27 @@
                         }
                     }
                 } else if (isMatchOperator(k)) {
-                    /* Not object, Not array */
+                    // not object, not array
                     if (t === "object" || t === "array") {
                         return false;
                     }
                 } else if (isNumberOperator(k)) {
-                    /* Number */
+                    // number
                     if (t !== "number") {
                         return false;
                     }
                 } else if (isArrayOperator(k)) {
-                    /* Array */
+                    // array
                     if (t !== "array") {
                         return false;
                     }
                 } else if (isNotOperator(k)) {
-                    /* Object */
+                    // object
                     if (t !== "object") {
                         return false;
                     }
                 } else if (isElementOperator(k)) {
-                    /* Boolean */
+                    // boolean
                     if (t !== "boolean" && v !== 1 && v !== 0 && v !== "true" && v !== "false" && v !== "1" && v !== "0") {
                         return false;
                     }
@@ -1308,7 +1304,7 @@
                     throw err;
                 }
                 if (isLoopOperator(k)) {
-                    /* Logical operators without $not */
+                    // logical operators without $not
                     kv = k;
                     dv = d;
                     keys = q;
@@ -1327,7 +1323,7 @@
                         res = !res;
                     }
                 } else if (qt === "object") {
-                    /* Object, Operators */
+                    // object, operators
                     keys = Object.keys(q);
                     for (i = 0; i < keys.length; i++) {
                         kv = keys[i];
@@ -1340,7 +1336,7 @@
                         }
                     }
                 } else {
-                    /* String, Number, Array, Comparison operators */
+                    // match
                     kv = k;
                     dv = d;
                     qv = q;
@@ -1398,8 +1394,8 @@
          * MyRectangle.rotateX(degree)   
          * MyRectangle.rotateY(degree)   
          * MyRectangle.fit(type, width, height)   
-         * @param {Number} w 
-         * @param {Number} h 
+         * @param {Number} width 
+         * @param {Number} height 
          */
         MyRectangle: function(width, height) {
             var Rect = this;
@@ -1453,7 +1449,7 @@
                 }
             };
 
-            /* constructor */
+            // constructor
             this.__state__ = {
                 originX: 0,
                 originY: 0,
@@ -1468,7 +1464,7 @@
                 rectangleDegreeY: 0,
             };
 
-            /* methods */
+            // methods
             this.getState = function() {
                 var originX = this.__state__.originX;
                 var originY = this.__state__.originY;
@@ -1486,7 +1482,7 @@
                 var pivotX = typeof(this.__state__.pivotX) === "number" ? this.__state__.pivotX : centerX;
                 var pivotY = typeof(this.__state__.pivotY) === "number" ? this.__state__.pivotY : centerY;
                 
-                /* calc */
+                // calc
                 var area = w*h;
                 var diagonal = getDiagonal(w, h);
                 var vertexA = getVertex(pivotX, pivotY, x1, y1, degree, degreeX, degreeY);
@@ -1561,8 +1557,8 @@
             };
             this.fit = function(type, w, h) {
                 var ar = this.__state__.rectangleWidth / this.__state__.rectangleHeight;
-                var nw = this.__state__.rectangleWidth < 0; /* is negative */
-                var nh = this.__state__.rectangleHeight < 0; /* is negative */
+                var nw = this.__state__.rectangleWidth < 0; // is negative
+                var nh = this.__state__.rectangleHeight < 0; // is negative
                 var o = h * ar < w;
                 if (type === "cover") {
                     this.__state__.rectangleWidth = Math.abs(o ? w : h*ar);
@@ -1745,12 +1741,12 @@
          * @param {Number} delay 
          */
         MyAnimation: function(func, delay) {
-            /* constructor */
+            // constructor
             this.function = null;
             this.isStarted = false;
             this.count = 0;
 
-            /* methods */
+            // methods
             this.init = function(f, d) {
                 var self = this;
                 this.function = setInterval(function() {
@@ -1785,11 +1781,11 @@
                 return this;
             };
             this.callback = null;
-            /* alias */
+            // alias
             this.go = this.start;
             this.pause = this.stop;
             this.end = this.stop;
-            /* initialize */
+            // initialize
             if (func && delay) {
                 this.init(func, delay);
             }
@@ -2024,19 +2020,48 @@
             canvas.width = width;
             canvas.height = height;
 
-            /* constructor */
+            // constructor
             this.canvas = canvas;
             this.context = ctx;
             this.width = canvas.width;
             this.height = canvas.height;
 
-            /* methods */
+            // methods
             this.getCanvas = function() {
                 return canvas;
             };
             this.setCanvas = function(w, h) {
                 canvas.width = w;
                 canvas.height = h;
+                this.width = canvas.width;
+                this.height = canvas.height;
+                return this;
+            };
+            this.fit = function(type, w, h) {
+                var ar = canvas.width / canvas.height;
+                var nw = w < 0; // is negative
+                var nh = h < 0; // is negative
+                var o = h * ar < w;
+                var rw, rh;
+                if (type === "cover") {
+                    rw = Math.abs(o ? w : h*ar);
+                    rh = Math.abs(o ? w/ar : h);
+                } else if (type === "contain") {
+                    rw = Math.abs(o ? h*ar : w);
+                    rh = Math.abs(o ? h : w/ar);
+                } else {
+                    var err = new Error('invalid argument type');
+                    err.name = "TypeError";
+                    throw err;
+                }
+                if (nw) {
+                    rw = -rw;
+                }
+                if (nh) {
+                    rh = -rh;
+                }
+                canvas.width = rw;
+                canvas.height = rh;
                 this.width = canvas.width;
                 this.height = canvas.height;
                 return this;
@@ -2062,8 +2087,8 @@
                 setRotateX(cx, cy, options);
                 setRotateY(cx, cy, options);
                 ctx.beginPath();
-                ctx.moveTo(sx+0.5, sy+0.5); /* fix starting half pixel */
-                ctx.lineTo(dx+0.5, dy+0.5); /* fix starting half pixel */
+                ctx.moveTo(sx+0.5, sy+0.5); // fix starting half pixel
+                ctx.lineTo(dx+0.5, dy+0.5); // fix starting half pixel
                 ctx.stroke();
                 ctx.closePath();
                 unsetStyle();
@@ -2078,9 +2103,9 @@
                 setRotateX(cx, cy, options);
                 setRotateY(cx, cy, options);
                 if (options && options.fill) {
-                    ctx.fillRect(x, y, w+1, h+1); /* fix starting half pixel */
+                    ctx.fillRect(x, y, w+1, h+1); // fix starting half pixel
                 } else {
-                    ctx.strokeRect(x+0.5, y+0.5, w, h); /* fix starting half pixel */
+                    ctx.strokeRect(x+0.5, y+0.5, w, h); // fix starting half pixel
                 }
                 unsetStyle();
                 return this;
@@ -2095,10 +2120,10 @@
                 setRotateY(cx, cy, options);
                 ctx.beginPath();
                 if (options && options.fill) {
-                    ctx.arc(cx+0.5, cy+0.5, rad+0.5, 0, 2*Math.PI); /* fix starting half pixel */
+                    ctx.arc(cx+0.5, cy+0.5, rad+0.5, 0, 2*Math.PI); // fix starting half pixel
                     ctx.fill();
                 } else {
-                    ctx.arc(cx+0.5, cy+0.5, rad, 0, 2*Math.PI); /* fix starting half pixel */
+                    ctx.arc(cx+0.5, cy+0.5, rad, 0, 2*Math.PI); // fix starting half pixel
                     ctx.stroke();
                 }
                 ctx.closePath();
@@ -2155,16 +2180,33 @@
                 unsetStyle();
                 return this;
             };
+            this.loadImage = function(blob, cb) {
+                var img = new Image();
+                img.onload = function() {
+                    return cb(null, img);
+                };
+                img.onerror = function(err) {
+                    return cb(err);
+                };
+                if (blob instanceof Blob) {
+                    try {
+                        img.src = URL.createObjectURL(blob);
+                    } catch(err) {
+                        return cb(err);
+                    }
+                } else {
+                    img.src = src;
+                };
+            };
             this.getImageData = function(x, y, w, h) {
                 return ctx.getImageData(x || 0, y || 0, w || canvas.width, h || canvas.height);
             };
-            this.putImageData = function(data) {
-                return ctx.putImageData(data, 0, 0);
+            this.putImageData = function(x, y, imageData) {
+                return ctx.putImageData(imageData, x || 0, y || 0);
             };
             this.slice = function(x, y, w, h) {
                 var __canvas = document.createElement("canvas");
                 var __ctx = __canvas.getContext("2d");
-
                 var sx = x;
                 var sy = y;
                 var sw = w;
@@ -2173,26 +2215,23 @@
                 var dy = 0;
                 var dw = w;
                 var dh = h;
-
                 __canvas.width = dw;
                 __canvas.height = dh;
-
                 __ctx.drawImage(canvas, sx, sy, sw, sh, dx, dy, dw, dh);
-
                 return __canvas;
             };
             this.clear = function() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 return this;
             };
-            /* alias */
+            // alias
             this.drawRect = this.drawRectangle;
             this.drawImg = this.drawImage;
 
-            /* initialize */
+            // initialize
             ctx.strokeStyle = "#000000";
             ctx.fillStyle = "#000000";
-            ctx.width = 1;
+            ctx.lineWidth = 1;
             ctx.font = "10px serif";
             ctx.textAlign = "left";
             ctx.textBaseline = "alphabetic";
@@ -2253,11 +2292,11 @@
         },
         /**
          * 
-         * @param {File} src File or String
+         * @param {Blob} blob
          * @param {Function} cb Callback
          * @returns 
          */
-        loadImage: function(src, cb) {
+        loadImage: function(blob, cb) {
             var img = new Image();
             img.onload = function() {
                 return cb(null, img);
@@ -2265,22 +2304,22 @@
             img.onerror = function(err) {
                 return cb(err);
             };
-            if (src instanceof Blob) {
+            if (blob instanceof Blob) {
                 try {
-                    img.src = URL.createObjectURL(src);
+                    img.src = URL.createObjectURL(blob);
                 } catch(err) {
                     return cb(err);
                 }
             } else {
-                img.src = src;
+                img.src = blob;
             }
         },
         /**
          * 
-         * @param {File} src File or String
+         * @param {Blob} blob
          * @returns Promise
          */
-        loadImagePromise: function(src) {
+        loadImagePromise: function(blob) {
             return new Promise(function(resolve, reject) {
                 var img = new Image();
                 img.onload = function() {
@@ -2293,13 +2332,13 @@
                 }
                 if (src instanceof Blob) {
                     try {
-                        img.src = URL.createObjectURL(src);
+                        img.src = URL.createObjectURL(blob);
                     } catch(err) {
                         reject(err);
                         return;
                     }
                 } else {
-                    img.src = src;
+                    img.src = blob;
                 }
             });
         },
@@ -3110,6 +3149,155 @@
             return arr.map(function(hex) {
                 return parseInt(hex, 16).toString(2);
             });
+        },
+        /**
+         * 
+         * @param {Number} value 
+         * @param {Number} mn1 
+         * @param {Number} mx1 
+         * @param {Number} mn2 
+         * @param {Number} mx2 
+         * @returns 
+         */
+        boundNumber: function(value, mn1, mx1, mn2, mx2) {
+            if (value < mn1) {
+                value = mn1;
+            }
+            if (value > mx1) {
+                value = mx1;
+            }
+            return (value/(mx1-mn1)) * (mx2-mn2) + mn2;
+        },
+        /**
+         * 
+         * @param {Object} imageData 
+         * @returns 
+         */
+        setGrayscaleFilter: function(imageData) {
+            var data = imageData.data;
+            var len = data.length;
+            var i = 0;
+            var r, g, b, a;
+            var avg;
+
+            while(i < len) {
+                r = data[i];
+                g = data[i+1];
+                b = data[i+2];
+                a = data[i+3];
+                avg = r*0.3 + g*0.59 + b*0.11;
+                data[i] = avg;
+                data[i+1] = avg;
+                data[i+2] = avg;
+                data[i+3] = 255;
+                i += 4;
+            }
+
+            return imageData;
+        },
+        /**
+         * 
+         * @param {Object} imageData from canvas.context('2d').getImageData()
+         * @returns imageData
+         */
+        setSobelFilter: function(imageData) {
+            // x-direciton kernel
+            var kx = [[-1, 0, 1],
+                      [-2, 0, 2],
+                      [-1, 0, 1]];
+            // y-direction kernel
+            var ky = [[-1,-2,-1],
+                      [0, 0, 0],
+                      [1, 2, 1]];
+
+            var map = function(value, mn1, mx1, mn2, mx2) {
+                if (value < mn1) {
+                    value = mn1;
+                }
+                if (value > mx1) {
+                    value = mx1;
+                }
+                return (value/(mx1-mn1)) * (mx2-mn2) + mn2;
+            }
+
+            var w = imageData.width;
+            var h = imageData.height;
+            var data1 = imageData.data;
+            var data2 = [];
+
+            var len = data1.length;
+            var i = 0;
+            var r, g, b, a;
+            var avg;
+
+            // grayscale
+            while(i < len) {
+                r = data1[i];
+                g = data1[i+1];
+                b = data1[i+2];
+                a = data1[i+3];
+                avg = r*0.3 + g*0.59 + b*0.11;
+                data1[i] = avg;
+                data1[i+1] = avg;
+                data1[i+2] = avg;
+                data1[i+3] = 255;
+                i += 4;
+            }
+
+            var x, y;
+            var ul, um, ur, ml, mc, mr, ll, lm, lr;
+            var p0, p1, p2, p3, p4, p5, p6, p7, p8;
+            var res, r1, r2;
+            for (x = 0; x < w; x++) {
+                for (y = 0; y < h; y++) {
+                    // index position in pixel list
+                    ul = ((x-1+w)%w + w*((y-1+h)%h))*4; // location of the UPPER LEFT
+                    um = ((x-0+w)%w + w*((y-1+h)%h))*4; // location of the UPPER MID
+                    ur = ((x+1+w)%w + w*((y-1+h)%h))*4; // location of the UPPER RIGHT
+                    ml = ((x-1+w)%w + w*((y+0+h)%h))*4; // location of the MIDDLE LEFT
+                    mc = ((x-0+w)%w + w*((y+0+h)%h))*4; // location of the MIDDLE CENTER
+                    mr = ((x+1+w)%w + w*((y+0+h)%h))*4; // location of the MIDDLE RIGHT
+                    ll = ((x-1+w)%w + w*((y+1+h)%h))*4; // location of the LOWER LEFT
+                    lm = ((x-0+w)%w + w*((y+1+h)%h))*4; // location of the LOWER MID
+                    lr = ((x+1+w)%w + w*((y+1+h)%h))*4; // location of the LOWER RIGHT
+
+                    // green channel only
+                    p0 = data1[ul+1]*kx[0][0]; // upper left
+                    p1 = data1[um+1]*kx[0][1]; // upper mid
+                    p2 = data1[ur+1]*kx[0][2]; // upper right
+                    p3 = data1[ml+1]*kx[1][0]; // middle left
+                    p4 = data1[mc+1]*kx[1][1]; // middle center
+                    p5 = data1[mr+1]*kx[1][2]; // middle right
+                    p6 = data1[ll+1]*kx[2][0]; // lower left
+                    p7 = data1[lm+1]*kx[2][1]; // lower mid
+                    p8 = data1[lr+1]*kx[2][2]; // lower right
+                    r1 = p0+p1+p2+p3+p4+p5+p6+p7+p8; 
+
+                    p0 = data1[ul+1]*ky[0][0]; // upper left
+                    p1 = data1[um+1]*ky[0][1]; // upper mid
+                    p2 = data1[ur+1]*ky[0][2]; // upper right
+                    p3 = data1[ml+1]*ky[1][0]; // middle left
+                    p4 = data1[mc+1]*ky[1][1]; // middle center
+                    p5 = data1[mr+1]*ky[1][2]; // middle right
+                    p6 = data1[ll+1]*ky[2][0]; // lower left
+                    p7 = data1[lm+1]*ky[2][1]; // lower mid
+                    p8 = data1[lr+1]*ky[2][2]; // lower right
+                    r2 = p0+p1+p2+p3+p4+p5+p6+p7+p8; 
+
+                    // r1 = Gradient in x-direction
+                    // r2 = Gradient in y-direction
+                    // 0 = minumim possible result
+                    // 1414 = maximum possible result
+                    res = map(Math.sqrt(r1*r1+r2*r2), 0, 1414, 0, 255);
+
+                    data2[mc] = res;     // r
+                    data2[mc+1] = res;   // g
+                    data2[mc+2] = res;   // b
+                    data2[mc+3] = 255;   // a
+                }
+            }
+
+            return new ImageData(new Uint8ClampedArray(data2), w, h);
         },
 
 

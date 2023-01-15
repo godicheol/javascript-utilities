@@ -41,6 +41,16 @@
         },
         /**
          * 
+         * @param {Number} min 
+         * @param {Number} max 
+         * @param {Number} value 
+         * @returns 
+         */
+        between: function(min, max, value) {
+            return Math.min(max, Math.max(min, value));
+        },
+        /**
+         * 
          * @param {Boolean} bool 
          * @returns 
          */
@@ -1411,7 +1421,7 @@
         MyRectangle: function(width, height) {
             var Rect = this;
             var getDiagonal = function(w, h) {
-                return Math.sqrt(w*w+h*h);
+                return Math.sqrt(Math.pow(w, 2) + Math.pow(h, 2));
             };
             var getScale = function(deg) {
                 return Math.sin((deg+90)*Math.PI/180);
@@ -1723,7 +1733,7 @@
          * @returns 
          */
         getDiagonal: function(w, h) {
-            return Math.sqrt(w*w + h*h);
+            return Math.sqrt(Math.pow(w, 2) + Math.pow(h, 2));
         },
         /**
          * 
@@ -3240,6 +3250,36 @@
             return new ImageData(new Uint8ClampedArray(data2), w, h);
         },
         /**
+         * 
+         * @param {ImageData} imageData 
+         * @returns ImageData
+         */
+        setMonochromeFilter: function(imageData) {
+            var data1 = imageData.data;
+            var len = data1.length;
+            var w = imageData.width;
+            var h = imageData.height;
+            var data2 = [];
+            var i = 0;
+            var r, g, b, a;
+            var avg;
+
+            while(i < len) {
+                r = data1[i];
+                g = data1[i+1];
+                b = data1[i+2];
+                a = data1[i+3];
+                avg = r+g+b > 383 ? 255 : 0;
+                data2[i] = avg;
+                data2[i+1] = avg;
+                data2[i+2] = avg;
+                data2[i+3] = 255;
+                i += 4;
+            }
+
+            return new ImageData(new Uint8ClampedArray(data2), w, h);
+        },
+        /**
          * Not tested
          * @param {ImageData} _imageData 
          * @param {Number} _sigma 
@@ -3407,7 +3447,7 @@
                     // r2 = Gradient in y-direction
                     // 0 = minumim possible result
                     // 1414 = maximum possible result
-                    res = map(Math.sqrt(r1*r1+r2*r2), 0, 1414, 0, 255);
+                    res = map(Math.sqrt(Math.pow(r1, 2)+Math.pow(r2, 2)), 0, 1414, 0, 255);
 
                     data2[mc] = res;     // r
                     data2[mc+1] = res;   // g
@@ -3422,6 +3462,11 @@
             // Harris Operator
 
         },
+        /**
+         * 
+         * @param {Element} element 
+         * @param {Function} cb 
+         */
         setPinchGesture: function(element, cb) {
             var caches = [];
             var prevDiff = -1;
@@ -3451,7 +3496,7 @@
             var getDiff = function(a, b) {
                 var w = Math.abs(a.clientX - b.clientX);
                 var h = Math.abs(a.clientY - b.clientY);
-                return Math.sqrt(w*w+h*h);
+                return Math.sqrt(Math.pow(w, 2)+Math.pow(h, 2));
             };
             element.addEventListener("pointerdown", saveCache);
             element.addEventListener("pointermove", function(e) {
@@ -3460,7 +3505,7 @@
                 if (caches.length === 2) {
                     currDiff = getDiff(caches[0], caches[1]);
                     if (prevDiff > 0) {
-                        return cb(currDiff - prevDiff)
+                        return cb(currDiff - prevDiff);
                         if (currDiff > prevDiff) {
                             // zoom in
                         }

@@ -3422,6 +3422,61 @@
             // Harris Operator
 
         },
+        setPinchGesture: function(element, cb) {
+            var caches = [];
+            var prevDiff = -1;
+            var getCacheIndex = function(e) {
+                return caches.findIndex(function(c) {
+                    return c.pointerId === e.pointerId;
+                });
+            };
+            var saveCache = function(c) {
+                caches.push(c);
+            };
+            var updateCache = function(e) {
+                var i = getCacheIndex(e);
+                if (i > -1) {
+                    caches[i] = e;
+                }
+            };
+            var removeCache = function(e) {
+                var i = getCacheIndex(e);
+                if (i > -1) {
+                    caches.splice(i, 1);
+                }
+                if (caches.length < 2) {
+                    prevDiff = -1;
+                }
+            };
+            var getDiff = function(a, b) {
+                var w = Math.abs(a.clientX - b.clientX);
+                var h = Math.abs(a.clientY - b.clientY);
+                return Math.sqrt(w*w+h*h);
+            };
+            element.addEventListener("pointerdown", saveCache);
+            element.addEventListener("pointermove", function(e) {
+                updateCache(e);
+                var currDiff;
+                if (caches.length === 2) {
+                    currDiff = getDiff(caches[0], caches[1]);
+                    if (prevDiff > 0) {
+                        if (currDiff > prevDiff) {
+                            // zoom in
+                            return cb(currDiff, prevDiff);
+                        }
+                        if (currDiff < prevDiff) {
+                            // zoom out
+                            return cb(currDiff, prevDiff);
+                        }
+                    }
+                    prevDiff = currDiff;
+                }
+            });
+            element.addEventListener("pointerup", removeCache);
+            element.addEventListener("pointercancel", removeCache);
+            element.addEventListener("pointerout", removeCache);
+            element.addEventListener("pointerleave", removeCache);
+        },
 
     }
 });

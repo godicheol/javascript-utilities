@@ -3460,13 +3460,12 @@
                 if (caches.length === 2) {
                     currDiff = getDiff(caches[0], caches[1]);
                     if (prevDiff > 0) {
+                        return cb(currDiff - prevDiff)
                         if (currDiff > prevDiff) {
                             // zoom in
-                            return cb(currDiff, prevDiff);
                         }
                         if (currDiff < prevDiff) {
                             // zoom out
-                            return cb(currDiff, prevDiff);
                         }
                     }
                     prevDiff = currDiff;

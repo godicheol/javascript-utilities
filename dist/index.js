@@ -3170,8 +3170,8 @@
         },
         /**
          * 
-         * @param {Object} imageData 
-         * @returns 
+         * @param {ImageData} imageData 
+         * @returns ImageData
          */
         setGrayscaleFilter: function(imageData) {
             var data = imageData.data;
@@ -3197,8 +3197,8 @@
         },
         /**
          * 
-         * @param {Object} imageData from canvas.context('2d').getImageData()
-         * @returns imageData
+         * @param {ImageData} imageData from canvas.context('2d').getImageData()
+         * @returns ImageData
          */
         setSobelFilter: function(imageData) {
             // x-direciton kernel

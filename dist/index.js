@@ -3174,26 +3174,29 @@
          * @returns ImageData
          */
         setGrayscaleFilter: function(imageData) {
-            var data = imageData.data;
-            var len = data.length;
+            var w = imageData.width;
+            var h = imageData.height;
+            var data1 = imageData.data;
+            var len = data1.length;
             var i = 0;
             var r, g, b, a;
             var avg;
+            var data2 = [];
 
             while(i < len) {
-                r = data[i];
-                g = data[i+1];
-                b = data[i+2];
-                a = data[i+3];
+                r = data1[i];
+                g = data1[i+1];
+                b = data1[i+2];
+                a = data1[i+3];
                 avg = r*0.3 + g*0.59 + b*0.11;
-                data[i] = avg;
-                data[i+1] = avg;
-                data[i+2] = avg;
-                data[i+3] = 255;
+                data2[i] = avg;
+                data2[i+1] = avg;
+                data2[i+2] = avg;
+                data2[i+3] = 255;
                 i += 4;
             }
 
-            return imageData;
+            return new ImageData(new Uint8ClampedArray(data2), w, h);
         },
         /**
          * 

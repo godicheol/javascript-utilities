@@ -1,7 +1,18 @@
-(function() {
+// universal module definition
+(function(root, factory) {
+    if (typeof define === 'function' && define.amd) {
+      // AMD
+      define([], factory);
+    } else if (typeof module === 'object' && module.exports) {
+      // CommonJS
+      module.exports = factory();
+    } else {
+      // browser window
+      root.utils = factory();
+    }
+})(this, function() {
     'use strict';
-
-    var mainObject = {
+    return {
         /**
          * 
          * @param {Number} n 
@@ -149,7 +160,7 @@
          */
         isUrl: function(str) {
             return /^((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)$/.test(str);
-            /* /^(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})$/.test(str); */
+            // /^(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})$/.test(str);
         },
         /**
          * 
@@ -803,7 +814,7 @@
         },
         /**
          * 
-         * @param {Array} arr 
+         * @param {Array} arr [String, String]
          * @param {String} header 
          * @param {String} footer 
          * @returns 
@@ -815,10 +826,10 @@
         },
         /**
          * 
-         * @param {Array} arr [[1,2], [3,4]]
+         * @param {Array} arr [Array, Array]
          * @returns 
          */
-        joinArrayInArray: function(arr) {
+        joinArray: function(arr) {
             return arr.reduce(function(prev, curr) {
                 return prev.concat(curr);
             }, []);
@@ -3153,20 +3164,50 @@
         /**
          * 
          * @param {Number} value 
-         * @param {Number} mn1 
-         * @param {Number} mx1 
-         * @param {Number} mn2 
-         * @param {Number} mx2 
+         * @param {Number} minSrc 
+         * @param {Number} maxSrc 
+         * @param {Number} minDst 
+         * @param {Number} maxDst 
          * @returns 
          */
-        boundNumber: function(value, mn1, mx1, mn2, mx2) {
-            if (value < mn1) {
-                value = mn1;
+        fitNumber: function(value, minSrc, maxSrc, minDst, maxDst) {
+            if (value < minSrc) {
+                value = minSrc;
             }
-            if (value > mx1) {
-                value = mx1;
+            if (value > maxSrc) {
+                value = maxSrc;
             }
-            return (value/(mx1-mn1)) * (mx2-mn2) + mn2;
+            return (value/(maxSrc-minSrc)) * (maxDst-minDst) + minDst;
+        },
+        /**
+         * 
+         * @param {ImageData} imageData 
+         * @param {Number} x 
+         * @param {Number} y 
+         * @returns
+         */
+        getPixel: function(imageData, x, y) {
+            var w = imageData.width;
+            var h = imageData.height;
+            var i = ((x-1+w)%w+w*((y-1+h)%h))*4;
+            return [
+                imageData.data[i],
+                imageData.data[i+1],
+                imageData.data[i+2],
+                imageData.data[i+3],
+            ];
+        },
+        /**
+         * 
+         * @param {Number} x 
+         * @param {Number} y 
+         * @param {Number} w 
+         * @param {Number} h 
+         * @returns 
+         */
+        getPixelIndex: function(x, y, w, h) {
+            return ((x-1+w)%w+w*((y-1+h)%h))*4;
+            // return (x+y*w)*4;
         },
         /**
          * 
@@ -3174,14 +3215,14 @@
          * @returns ImageData
          */
         setGrayscaleFilter: function(imageData) {
-            var w = imageData.width;
-            var h = imageData.height;
             var data1 = imageData.data;
             var len = data1.length;
+            var w = imageData.width;
+            var h = imageData.height;
+            var data2 = [];
             var i = 0;
             var r, g, b, a;
             var avg;
-            var data2 = [];
 
             while(i < len) {
                 r = data1[i];
@@ -3197,6 +3238,81 @@
             }
 
             return new ImageData(new Uint8ClampedArray(data2), w, h);
+        },
+        /**
+         * Not tested
+         * @param {ImageData} _imageData 
+         * @param {Number} _sigma 
+         * @returns 
+         */
+        setGaussianFilter: function(_imageData, _sigma) {
+            var getGaussKernel = function(sigma) {
+                var GAUSSKERN = 6.0;
+                var dim = parseInt(Math.max(3.0, GAUSSKERN * sigma));
+                var sqrtSigmaPi2 = Math.sqrt(Math.PI*2.0)*sigma;
+                var s2 = 2.0 * sigma * sigma;
+                var sum = 0.0;
+                
+                var kernel = new Float32Array(dim - !(dim & 1)); // Make it odd number
+                var half = parseInt(kernel.length / 2);
+                for (var j = 0, i = -half; j < kernel.length; i++, j++) {
+                    kernel[j] = Math.exp(-(i*i)/(s2)) / sqrtSigmaPi2;
+                    sum += kernel[j];
+                }
+                // Normalize the gaussian kernel to prevent image darkening/brightening
+                for (var i = 0; i < dim; i++) {
+                    kernel[i] /= sum;
+                }
+                return kernel;
+            }
+
+            var setGaussKernel = function(imageData, kernel, ch, gray) {
+                var data = imageData.data;
+                var w = imageData.width;
+                var h = imageData.height;
+                var buff = new Uint8Array(w*h);
+                var mk = Math.floor(kernel.length / 2);
+                var kl = kernel.length;
+    
+                // First step process columns
+                for (var j = 0, hw = 0; j < h; j++, hw += w) {
+                    for (var i = 0; i < w; i++) {
+                        var sum = 0;
+                        for (var k = 0; k < kl; k++) {
+                            var col = i + (k - mk);
+                            col = (col < 0) ? 0 : ((col >= w) ? w - 1 : col);
+                            sum += data[(hw + col)*4 + ch]*kernel[k];
+                        }
+                        buff[hw + i] = sum;
+                    }
+                }
+                
+                // Second step process rows
+                for (var j = 0, offset = 0; j < h; j++, offset += w) {
+                    for (var i = 0; i < w; i++) {
+                        var sum = 0;
+                        for (k = 0; k < kl; k++) {
+                            var row = j + (k - mk);
+                            row = (row < 0) ? 0 : ((row >= h) ? h - 1 : row);
+                            sum += buff[(row*w + i)]*kernel[k];
+                        }
+                        var off = (j*w + i)*4;
+                        if (!gray) {
+                            data[off + ch] = sum;
+                        } else {
+                            data[off] = data[off + 1] = data[off + 2] = sum;
+                        }
+                    }
+                }
+            }
+
+            var _kernel = getGaussKernel(_sigma);
+            
+            // Blur a cahnnel (RGB or Grayscale)
+            for (var _ch = 0; _ch < 3; _ch++){
+                setGaussKernel(_imageData, _kernel, _ch, false);
+            }
+            return _imageData;
         },
         /**
          * 
@@ -3220,12 +3336,12 @@
                 if (value > mx1) {
                     value = mx1;
                 }
-                return (value/(mx1-mn1)) * (mx2-mn2) + mn2;
+                return (value/(mx1-mn1))*(mx2-mn2)+mn2;
             }
 
+            var data1 = imageData.data;
             var w = imageData.width;
             var h = imageData.height;
-            var data1 = imageData.data;
             var data2 = [];
 
             var len = data1.length;
@@ -3254,15 +3370,15 @@
             for (x = 0; x < w; x++) {
                 for (y = 0; y < h; y++) {
                     // index position in pixel list
-                    ul = ((x-1+w)%w + w*((y-1+h)%h))*4; // location of the UPPER LEFT
-                    um = ((x-0+w)%w + w*((y-1+h)%h))*4; // location of the UPPER MID
-                    ur = ((x+1+w)%w + w*((y-1+h)%h))*4; // location of the UPPER RIGHT
-                    ml = ((x-1+w)%w + w*((y+0+h)%h))*4; // location of the MIDDLE LEFT
-                    mc = ((x-0+w)%w + w*((y+0+h)%h))*4; // location of the MIDDLE CENTER
-                    mr = ((x+1+w)%w + w*((y+0+h)%h))*4; // location of the MIDDLE RIGHT
-                    ll = ((x-1+w)%w + w*((y+1+h)%h))*4; // location of the LOWER LEFT
-                    lm = ((x-0+w)%w + w*((y+1+h)%h))*4; // location of the LOWER MID
-                    lr = ((x+1+w)%w + w*((y+1+h)%h))*4; // location of the LOWER RIGHT
+                    ul = ((x-1+w)%w+w*((y-1+h)%h))*4; // location of the UPPER LEFT
+                    um = ((x-0+w)%w+w*((y-1+h)%h))*4; // location of the UPPER MID
+                    ur = ((x+1+w)%w+w*((y-1+h)%h))*4; // location of the UPPER RIGHT
+                    ml = ((x-1+w)%w+w*((y+0+h)%h))*4; // location of the MIDDLE LEFT
+                    mc = ((x-0+w)%w+w*((y+0+h)%h))*4; // location of the MIDDLE CENTER
+                    mr = ((x+1+w)%w+w*((y+0+h)%h))*4; // location of the MIDDLE RIGHT
+                    ll = ((x-1+w)%w+w*((y+1+h)%h))*4; // location of the LOWER LEFT
+                    lm = ((x-0+w)%w+w*((y+1+h)%h))*4; // location of the LOWER MID
+                    lr = ((x+1+w)%w+w*((y+1+h)%h))*4; // location of the LOWER RIGHT
 
                     // green channel only
                     p0 = data1[ul+1]*kx[0][0]; // upper left
@@ -3302,11 +3418,10 @@
 
             return new ImageData(new Uint8ClampedArray(data2), w, h);
         },
+        getCorner: function(imageData) {
+            // Harris Operator
 
+        },
 
     }
-
-    if (typeof(window.utils) === "undefined") {
-        window.utils = mainObject;
-    }
-})();
+});

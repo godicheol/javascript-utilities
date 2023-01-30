@@ -860,14 +860,17 @@
          * @param {Array} arr array of object
          */
         joinObject: function(arr) {
-            return arr.reduce(function(prev, curr) {
-                for (var prop in curr) {
-                    if (!prev.hasProperty(prop) || prev[prop] === undefined) {
-                        prev[prop] = [curr[prop]];
+            var func = function(a, b) {
+                for (var k in b) {
+                    if (typeof(a[k]) !== "object" && typeof(b[k]) !== "object") {
+                        a[k] = b[k];
                     } else {
-                        prev[prop].push(curr[prop])
+                        func(a[k], b[k]);
                     }
                 }
+            }
+            return arr.reduce(function(prev, curr) {
+                func(prev, curr);
                 return prev;
             }, {});
         },
@@ -1967,7 +1970,7 @@
                         ctx.direction = "inherit";
                     }
                 }
-            }
+            };
             var setRotate = function(x, y, options) {
                 if (!options || typeof(options.rotate) === "undefined") {
                     return;
@@ -1990,7 +1993,7 @@
                 ctx.translate(px, py);
                 ctx.rotate(rad);
                 ctx.translate(-px, -py); 
-            }
+            };
             var setRotateX = function(x, y, options) {
                 if (!options || typeof(options.rotateX) === "undefined") {
                     return;
@@ -2013,7 +2016,7 @@
                 ctx.translate(px, py);
                 ctx.scale(1, scale);
                 ctx.translate(-px, -py);
-            }
+            };
             var setRotateY = function(x, y, options) {
                 if (!options || typeof(options.rotateY) === "undefined") {
                     return;
@@ -2036,7 +2039,7 @@
                 ctx.translate(px, py);
                 ctx.scale(scale, 1);
                 ctx.translate(-px, -py);
-            }
+            };
 
             canvas.width = width;
             canvas.height = height;
@@ -3521,6 +3524,37 @@
             element.addEventListener("pointerout", removeCache);
             element.addEventListener("pointerleave", removeCache);
         },
+        convEnglishToKoreanKey: function(str) {
+            var a = /r|s|e|f|a|q|t|d|w|c|z|x|v|g|R|E|Q|T|W/; // ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎㄲㄸㅃㅆㅉ
+            var b = /(hk|ho|hl|nj|np|nl|ml)|(k|o|i|O|j|p|u|P|h|y|n|b|m|l)/;
+            var c = /(rt|sw|sg|fr|fa|fq|ft|fx|fv|fg|qt)|(r|s|e|f|a|q|t|d|w|c|z|x|v|g|R|T)/;
+        },
+        /**
+         * 
+         * @returns 
+         */
+        getHost: function() {
+            return window.location;
+        },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
+        isHexString: function(str) {
+            var i = 0;
+            var len = str.length;
+            var re = /^(?:0x)?[0-9A-Fa-f]{2}$/;
+            var ch;
+            while(i < len) {
+                ch = str[i++]+str[i++];
+                if (!re.test(ch)) {
+                    return false;
+                }
+            }
+            return true;
+        },
+
 
     }
 });

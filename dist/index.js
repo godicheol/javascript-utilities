@@ -3554,6 +3554,27 @@
             }
             return true;
         },
+        /**
+         * 
+         * @param {Event} prevEvt 
+         * @param {Event} currEvt 
+         * @returns 
+         */
+        getVelocity: function(prevEvt, currEvt) {
+            var delay = currEvt.timeStamp - prevEvt.timeStamp;
+            var x = currEvt.scrollTop - prevEvt.scrollTop;
+            var y = currEvt.scrollLeft - prevEvt.scrollLeft;
+            return {
+                x: Math.abs(x / delay),
+                y: Math.abs(y / delay),
+            }
+        },
+
+        calcAccelate: function(prevEvt, currEvt) {
+            var FRICTION = 0.7; // 1 - 0.3
+            var ACCELEATION = 0.04;
+            var velocity = 0;
+        }
 
 
     }

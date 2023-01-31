@@ -51,6 +51,24 @@
         },
         /**
          * 
+         * @param {Number} value 
+         * @param {Number} minSrc 
+         * @param {Number} maxSrc 
+         * @param {Number} minDst 
+         * @param {Number} maxDst 
+         * @returns 
+         */
+        mapping: function(value, minSrc, maxSrc, minDst, maxDst) {
+            if (value < minSrc) {
+                value = minSrc;
+            }
+            if (value > maxSrc) {
+                value = maxSrc;
+            }
+            return (value/(maxSrc-minSrc))*(maxDst-minDst)+minDst;
+        },
+        /**
+         * 
          * @param {Boolean} bool 
          * @returns 
          */
@@ -3176,24 +3194,6 @@
         },
         /**
          * 
-         * @param {Number} value 
-         * @param {Number} minSrc 
-         * @param {Number} maxSrc 
-         * @param {Number} minDst 
-         * @param {Number} maxDst 
-         * @returns 
-         */
-        fitNumber: function(value, minSrc, maxSrc, minDst, maxDst) {
-            if (value < minSrc) {
-                value = minSrc;
-            }
-            if (value > maxSrc) {
-                value = maxSrc;
-            }
-            return (value/(maxSrc-minSrc)) * (maxDst-minDst) + minDst;
-        },
-        /**
-         * 
          * @param {ImageData} imageData 
          * @param {Number} x 
          * @param {Number} y 
@@ -3461,10 +3461,6 @@
 
             return new ImageData(new Uint8ClampedArray(data2), w, h);
         },
-        getCorner: function(imageData) {
-            // Harris Operator
-
-        },
         /**
          * 
          * @param {Element} element 
@@ -3509,25 +3505,15 @@
                     currDiff = getDiff(caches[0], caches[1]);
                     if (prevDiff > 0) {
                         return cb(currDiff - prevDiff);
-                        if (currDiff > prevDiff) {
-                            // zoom in
-                        }
-                        if (currDiff < prevDiff) {
-                            // zoom out
-                        }
+                    } else {
+                        prevDiff = currDiff;
                     }
-                    prevDiff = currDiff;
                 }
             });
             element.addEventListener("pointerup", removeCache);
             element.addEventListener("pointercancel", removeCache);
             element.addEventListener("pointerout", removeCache);
             element.addEventListener("pointerleave", removeCache);
-        },
-        convEnglishToKoreanKey: function(str) {
-            var a = /r|s|e|f|a|q|t|d|w|c|z|x|v|g|R|E|Q|T|W/; // ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎㄲㄸㅃㅆㅉ
-            var b = /(hk|ho|hl|nj|np|nl|ml)|(k|o|i|O|j|p|u|P|h|y|n|b|m|l)/;
-            var c = /(rt|sw|sg|fr|fa|fq|ft|fx|fv|fg|qt)|(r|s|e|f|a|q|t|d|w|c|z|x|v|g|R|T)/;
         },
         /**
          * 
@@ -3545,14 +3531,38 @@
             var i = 0;
             var len = str.length;
             var re = /^(?:0x)?[0-9A-Fa-f]{2}$/;
-            var ch;
+            var hex, ch1, ch2;
             while(i < len) {
-                ch = str[i++]+str[i++];
-                if (!re.test(ch)) {
+                ch1 = str[i++];
+                ch2 = str[i++];
+                hex = ch1+ch2;
+                if (!ch2 || !re.test(hex)) {
                     return false;
                 }
             }
             return true;
+        },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
+        splitHexString: function(str) {
+            var i = 0;
+            var len = str.length;
+            var re = /^(?:0x)?[0-9A-Fa-f]{2}$/;
+            var hex, ch1, ch2;
+            var res = [];
+            while(i < len) {
+                ch1 = str[i++];
+                ch2 = str[i++];
+                hex = ch1+ch2;
+                if (!ch2 || !re.test(hex)) {
+                    res.push(hex);
+                }
+                res.push(hex);
+            }
+            return res;
         },
         /**
          * 
@@ -3599,6 +3609,16 @@
             return passiveSupported;
         },
 
+
+        getCorner: function(imageData) {
+            // Harris Operator
+
+        },
+        convEnglishToKoreanKey: function(str) {
+            var a = /r|s|e|f|a|q|t|d|w|c|z|x|v|g|R|E|Q|T|W/; // ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎㄲㄸㅃㅆㅉ
+            var b = /(hk|ho|hl|nj|np|nl|ml)|(k|o|i|O|j|p|u|P|h|y|n|b|m|l)/;
+            var c = /(rt|sw|sg|fr|fa|fq|ft|fx|fv|fg|qt)|(r|s|e|f|a|q|t|d|w|c|z|x|v|g|R|T)/;
+        },
 
     }
 });

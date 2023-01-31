@@ -3560,7 +3560,7 @@
          * @param {Event} currEvt 
          * @returns 
          */
-        getVelocity: function(prevEvt, currEvt) {
+        getScrollVelocity: function(prevEvt, currEvt) {
             var delay = currEvt.timeStamp - prevEvt.timeStamp;
             var x = currEvt.scrollTop - prevEvt.scrollTop;
             var y = currEvt.scrollLeft - prevEvt.scrollLeft;
@@ -3569,12 +3569,35 @@
                 y: Math.abs(y / delay),
             }
         },
-
-        calcAccelate: function(prevEvt, currEvt) {
-            var FRICTION = 0.7; // 1 - 0.3
-            var ACCELEATION = 0.04;
-            var velocity = 0;
-        }
+        /**
+         * 
+         * @param {Number} a 
+         * @param {Number} b 
+         * @returns 
+         */
+        getDistance: function(a, b) {
+            return Math.abs(a - b);
+        },
+        /**
+         * 
+         * @returns 
+         */
+        isPassiveSupported: function() {
+            var passiveSupported = false;
+            try {
+                var options = {
+                    get passive() {
+                        passiveSupported = true;
+                        return false;
+                    }
+                };
+                window.addEventListener("test", null, options);
+                window.removeEventListener("test", null, options);
+            } catch(err) {
+                passiveSupported = false;
+            }
+            return passiveSupported;
+        },
 
 
     }

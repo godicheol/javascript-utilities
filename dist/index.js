@@ -1758,6 +1758,16 @@
         },
         /**
          * 
+         * @param {Number} x1 
+         * @param {Number} y1 
+         * @param {Number} x2 
+         * @param {Number} y2 
+         */
+        getDistance: function(x1, y1, x2, y2) {
+            return Math.sqrt(Math.pow(Math.abs(x1 - x2), 2) + Math.pow(Math.abs(y1 - y2), 2));
+        },
+        /**
+         * 
          * @param {Array} dataArray 
          * @param {Function} promiseFunc 
          * @param {Any} initialValue 

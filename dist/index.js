@@ -58,7 +58,7 @@
          * @param {Number} maxDst 
          * @returns 
          */
-        mapping: function(value, minSrc, maxSrc, minDst, maxDst) {
+        map: function(value, minSrc, maxSrc, minDst, maxDst) {
             if (value < minSrc) {
                 value = minSrc;
             }
@@ -635,7 +635,7 @@
          * @param {String} str 
          * @returns 
          */
-        genHash: function(str) {
+        genHashCode: function(str) {
             var hash = 0;
             var i;
             var char;
@@ -645,6 +645,17 @@
                 hash |= 0; // convert to 32bit integer
             }
             return hash;
+        },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
+        genHashString: function(str) {
+            return str.split("").reduce(function(p, c) {
+                p = (( p << 5 ) - p) + c.charCodeAt(0);
+                return p & p;
+            }, 0).toString(16);
         },
         /**
          * 
@@ -3589,6 +3600,15 @@
                 y: Math.abs(y / delay),
             }
         },
+        /**
+         * 
+         * @param {Number} distance px
+         * @param {Number} delay ms
+         * @returns 
+         */
+        getVelocity: function(distance, delay) {
+            return distance / delay;
+        }
         /**
          * 
          * @param {Number} a 

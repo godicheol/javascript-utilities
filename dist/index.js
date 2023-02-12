@@ -3608,7 +3608,7 @@
          */
         getVelocity: function(distance, delay) {
             return distance / delay;
-        }
+        },
         /**
          * 
          * @param {Number} a 

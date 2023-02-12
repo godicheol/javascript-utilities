@@ -3638,6 +3638,95 @@
             }
             return passiveSupported;
         },
+        /**
+         * 
+         * @param {Array} arr 
+         * @returns 
+         */
+        reverseArray: function(arr) {
+            var res = [];
+            for (var i = arr.length - 1; i >= 0; i--) {
+                res.push(arr[i]);
+            }
+            return res;
+        },
+        /**
+         * 
+         * @param {String} a 
+         * @param {String} b 
+         * @param {Boolean} caseSensitive 
+         * @returns 
+         */
+        compare: function(a, b, caseSensitive) {
+            var aa = typeof(a) === "number" ?
+                [a] : (caseSensitive ? a.toLowerCase().split(/(\d+)/) : a.split(/(\d+)/));
+            var bb = typeof(b) === "number" ?
+                [b] : (caseSensitive ? b.toLowerCase().split(/(\d+)/) : b.split(/(\d+)/));
+            var i = 0;
+            var len = Math.max(aa.length, bb.length);
+            var ch1, ch2;
+            var isNumber = function(n) {
+                return !isNaN(parseFloat(n)) && isFinite(n);
+            }
+
+            while(i < len) {
+                ch1 = isNumber(aa[i]) ? parseInt(aa[i]) : aa[i];
+                ch2 = isNumber(bb[i]) ? parseInt(bb[i]) : bb[i];
+                if (typeof(ch2) === "undefined") {
+                    return 1;
+                }
+                if (typeof(ch1) === "undefined") {
+                    return -1;
+                }
+                if (ch1 > ch2) {
+                    return 1;
+                }
+                if (ch1 < ch2) {
+                    return -1;
+                }
+                i++;
+            }
+        },
+        /**
+         * 
+         * @param {Array} arr 
+         * @param {Boolean} descending 
+         * @returns 
+         */
+        sort: function(arr, descending) {
+            var ORDER = descending ? -1 : 1; // default Ascending
+            var compareFunc = function(a, b, caseSensitive) {
+                var aa = typeof(a) === "number" ?
+                    [a] : (caseSensitive ? a.toLowerCase().split(/(\d+)/) : a.split(/(\d+)/));
+                var bb = typeof(b) === "number" ?
+                    [b] : (caseSensitive ? b.toLowerCase().split(/(\d+)/) : b.split(/(\d+)/));
+                var i = 0;
+                var len = Math.max(aa.length, bb.length);
+                var ch1, ch2;
+                var isNumber = function(n) {
+                    return !isNaN(parseFloat(n)) && isFinite(n);
+                }
+    
+                while(i < len) {
+                    ch1 = isNumber(aa[i]) ? parseInt(aa[i]) : aa[i];
+                    ch2 = isNumber(bb[i]) ? parseInt(bb[i]) : bb[i];
+                    if (typeof(ch2) === "undefined") {
+                        return 1 * ORDER;
+                    }
+                    if (typeof(ch1) === "undefined") {
+                        return -1 * ORDER;
+                    }
+                    if (ch1 > ch2) {
+                        return 1 * ORDER;
+                    }
+                    if (ch1 < ch2) {
+                        return -1 * ORDER;
+                    }
+                    i++;
+                }
+            }
+            return arr.slice(0).sort(compareFunc);
+        },
 
 
         getCorner: function(imageData) {

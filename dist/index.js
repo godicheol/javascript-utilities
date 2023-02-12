@@ -1779,6 +1779,17 @@
         },
         /**
          * 
+         * @param {Number} centerX 
+         * @param {Number} centerY 
+         * @param {Number} pointX 
+         * @param {Number} pointY 
+         * @returns 
+         */
+        getDegreeFromPoint: function(centerX, centerY, pointX, pointY) {
+            return Math.atan2(pointX-centerX, pointY-centerY)*(180/Math.PI);
+        },
+        /**
+         * 
          * @param {Array} dataArray 
          * @param {Function} promiseFunc 
          * @param {Any} initialValue 

@@ -3731,7 +3731,29 @@
                 }
             });
         },
+        /**
+         * 
+         * @param {Function} func 
+         * @returns 
+         */
+        getArgumentNames: function(func) {
+            var str = func.toString();
+            str = str.replace(/\/\*[\s\S]*?\*\//g, '') 
+                    .replace(/\/\/(.)*/g, '')         
+                    .replace(/{[\s\S]*}/, '')
+                    .replace(/=>/g, '')
+                    .trim();
 
+            var start = str.indexOf("(") + 1;
+            var end = str.indexOf(")");
+            var result = str.substring(start, end).split(", ");
+            
+            return result.map(function(e) {
+                return e.replace(/=[\s\S]*/g, '').trim();
+            }).filter(function(e) {
+                return e.length > 0;
+            });
+        },
 
         getCorner: function(imageData) {
             // Harris Operator

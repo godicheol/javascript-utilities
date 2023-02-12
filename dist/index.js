@@ -3690,7 +3690,7 @@
          * @param {Boolean} caseSensitive 
          * @returns 
          */
-        sort: function(arr, descending, caseSensitive) {
+        sortArray: function(arr, descending, caseSensitive) {
             var ORDER = descending ? -1 : 1; // default Ascending
             var CASE_SENSITIVE = caseSensitive ? true : false;
             return arr.slice(0).sort(function(a, b) {

@@ -3657,21 +3657,17 @@
          * @param {Boolean} caseSensitive 
          * @returns 
          */
-        compare: function(a, b, caseSensitive) {
+        compareString: function(a, b, caseSensitive) {
             var aa = typeof(a) === "number" ?
-                [a] : (caseSensitive ? a.toLowerCase().split(/(\d+)/) : a.split(/(\d+)/));
+                [a] : (caseSensitive ? a.split(/(\d+)/) : a.toLowerCase().split(/(\d+)/));
             var bb = typeof(b) === "number" ?
-                [b] : (caseSensitive ? b.toLowerCase().split(/(\d+)/) : b.split(/(\d+)/));
+                [b] : (caseSensitive ? b.split(/(\d+)/) : b.toLowerCase().split(/(\d+)/));
             var i = 0;
             var len = Math.max(aa.length, bb.length);
             var ch1, ch2;
-            var isNumber = function(n) {
-                return !isNaN(parseFloat(n)) && isFinite(n);
-            }
-
             while(i < len) {
-                ch1 = isNumber(aa[i]) ? parseInt(aa[i]) : aa[i];
-                ch2 = isNumber(bb[i]) ? parseInt(bb[i]) : bb[i];
+                ch1 = !isNaN(parseFloat(aa[i])) && isFinite(aa[i]) ? parseInt(aa[i]) : aa[i];
+                ch2 = !isNaN(parseFloat(bb[i])) && isFinite(bb[i]) ? parseInt(bb[i]) : bb[i];
                 if (typeof(ch2) === "undefined") {
                     return 1;
                 }
@@ -3691,25 +3687,23 @@
          * 
          * @param {Array} arr 
          * @param {Boolean} descending 
+         * @param {Boolean} caseSensitive 
          * @returns 
          */
-        sort: function(arr, descending) {
+        sort: function(arr, descending, caseSensitive) {
             var ORDER = descending ? -1 : 1; // default Ascending
-            var compareFunc = function(a, b, caseSensitive) {
+            var CASE_SENSITIVE = caseSensitive ? true : false;
+            return arr.slice(0).sort(function(a, b) {
                 var aa = typeof(a) === "number" ?
-                    [a] : (caseSensitive ? a.toLowerCase().split(/(\d+)/) : a.split(/(\d+)/));
+                    [a] : (CASE_SENSITIVE ? a.split(/(\d+)/) : a.toLowerCase().split(/(\d+)/));
                 var bb = typeof(b) === "number" ?
-                    [b] : (caseSensitive ? b.toLowerCase().split(/(\d+)/) : b.split(/(\d+)/));
+                    [b] : (CASE_SENSITIVE ? b.split(/(\d+)/) : b.toLowerCase().split(/(\d+)/));
                 var i = 0;
                 var len = Math.max(aa.length, bb.length);
                 var ch1, ch2;
-                var isNumber = function(n) {
-                    return !isNaN(parseFloat(n)) && isFinite(n);
-                }
-    
                 while(i < len) {
-                    ch1 = isNumber(aa[i]) ? parseInt(aa[i]) : aa[i];
-                    ch2 = isNumber(bb[i]) ? parseInt(bb[i]) : bb[i];
+                    ch1 = !isNaN(parseFloat(aa[i])) && isFinite(aa[i]) ? parseInt(aa[i]) : aa[i];
+                    ch2 = !isNaN(parseFloat(bb[i])) && isFinite(bb[i]) ? parseInt(bb[i]) : bb[i];
                     if (typeof(ch2) === "undefined") {
                         return 1 * ORDER;
                     }
@@ -3724,8 +3718,7 @@
                     }
                     i++;
                 }
-            }
-            return arr.slice(0).sort(compareFunc);
+            });
         },
 
 

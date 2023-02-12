@@ -1,1 +1,1 @@
-## [List](https://godicheol.github.io/javascript-utilities/)
+## [List of methods](https://godicheol.github.io/javascript-utilities/)

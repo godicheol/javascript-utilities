@@ -375,6 +375,31 @@
         },
         /**
          * 
+         * @param {Any} any 
+         * @param {Array} types 
+         * @returns 
+         */
+        typeIs: function(any, types) {
+            var t;
+            if (typeof(any) === "object") {
+                if (Object.prototype.toString.call(any) === '[object Array]') {
+                    t = "array";
+                } else if (any === null) {
+                    t = "null";
+                } else {
+                    t = "object";
+                }
+            } else {
+                if (typeof(any) === "string" && !isNaN(parseFloat(any)) && isFinite(any)) {
+                    t = "numberstring";
+                } else {
+                    t = typeof(any);
+                }
+            }
+            return (Object.prototype.toString.call(types) === '[object Array]' ? types : [types]).map(function(e) {return e.toLowerCase()}).indexOf(t) > -1;
+        },
+        /**
+         * 
          * @returns 
          */
         getOs: function() {

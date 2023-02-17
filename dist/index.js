@@ -3779,6 +3779,25 @@
                 return e.length > 0;
             });
         },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
+        splitPath: function(str) {
+            return str.replace(/\\+/g, "/").replace(/\/+$/, "/").split(/\//);
+        },
+        /**
+         * 
+         * @param {String} a 
+         * @param {String} b 
+         * @returns 
+         */
+        joinPath: function(a, b) {
+            return a.replace(/\\+/g, "/").replace(/\/$/, "").split(/\//).concat(
+                b.replace(/\\+/g, "/").replace(/\/+$/, "/").split(/\//)
+            ).join("/");
+        },
 
         getCorner: function(imageData) {
             // Harris Operator

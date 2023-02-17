@@ -3794,10 +3794,20 @@
          * @returns 
          */
         joinPath: function(a, b) {
-            return a.replace(/\\+/g, "/").replace(/\/$/, "").split(/\//).concat(
+            return a.replace(/\\+/g, "/").replace(/\/+$/, "").split(/\//).concat(
                 b.replace(/\\+/g, "/").replace(/\/+$/, "/").split(/\//)
             ).join("/");
         },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
+        getPreviousPath: function(str) {
+            var a = str.replace(/\\+/g, "/").replace(/\/+$/, "").split(/\//);
+            return a.slice(0, a.length - Math.min(a.length, 1));
+        },
+        
 
         getCorner: function(imageData) {
             // Harris Operator

@@ -3807,7 +3807,26 @@
             var a = str.replace(/\\+/g, "/").replace(/\/+$/, "").split(/\//);
             return a.slice(0, a.length - Math.min(a.length, 1));
         },
-        
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
+        getPreviousDir: function(str) {
+            var a = str.split(/\//).replace(/\\+/g, "/").replace(/\/+$/, "");
+            return a[a.length - Math.min(a.length, 1)];
+        },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
+        getCurrentDir: function(str) {
+            var a = str.split(/\//).replace(/\\+/g, "/").replace(/\/+$/, "\/");
+            var b = a[a.length];
+            var i = a.length - (b === "" || b.indexOf("\.") > -1 ? 1 : 0);
+            return a[i];
+        },
 
         getCorner: function(imageData) {
             // Harris Operator

@@ -3824,7 +3824,7 @@
         getCurrentDir: function(str) {
             var a = str.split(/\//).replace(/\\+/g, "/").replace(/\/+$/, "\/");
             var b = a[a.length];
-            var i = a.length - (b === "" || b.indexOf("\.") > -1 ? 1 : 0);
+            var i = a.length - ((b === "" || (b.indexOf("\.") > -1)) ? 1 : 0);
             return a[i];
         },
 

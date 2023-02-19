@@ -3827,6 +3827,82 @@
             var i = a.length - ((b === "" || (b.indexOf("\.") > -1)) ? 1 : 0);
             return a[i];
         },
+        /**
+         * 
+         * @param {String} str 
+         * @param {String} lb CR, LF, CRLF
+         * @returns 
+         */
+        convLineBreaker: function(str, lb) {
+            var a = {
+                "CR": "\\r", // Mac(1~9) 0x0D
+                "LF": "\\n", // Unix/Linux, Mac(10~) 0x0A
+                "CRLF": "\\r\\n" // windows 0x0D 0x0A
+            }
+            return str.replace(/(\\r\\n|\\r|\\n)/g, (lb ? a[lb] : a["CRLF"]));
+        },
+        /**
+         * 
+         * @param {Array} arr FileArray
+         * @param {String} encoding utf-8...
+         * @param {Function} cb 
+         */
+        readTextFiles: function(arr, encoding, cb) {
+            var len = arr.length;
+            var i = 0;
+            var res = [];
+            var recursiveFunc = function() {
+                if (i < len) {
+                    var file = arr[i];
+                    if ((file instanceof File || file instanceof Blob) && /^text\//i.test(file.type)) {
+                        var reader = new FileReader();
+                        reader.onload = function(e) {
+                            res.push(e.target.result);
+                            i++;
+                            recursiveFunc();
+                        };
+                        reader.onerror = function(err) {
+                            return cb(err);
+                        };
+                        reader.readAsText(elem, encoding || "UTF-8");
+                    }
+                } else {
+                    return cb(null, res);
+                }
+            }
+            recursiveFunc();
+        },
+        /**
+         * 
+         * @param {String} str 
+         * @param {String} filename 
+         * @param {String} type text/plain
+         * @param {String} endings transparent, native
+         */
+        saveTextFile: function(str, filename, type, endings) {
+            var blob = new Blob([str], {
+                type: type || 'text/plain',
+                endings: endings || "transparent"
+            });
+            var a = document.createElement('a');
+            var url = URL.createObjectURL(blob);
+            a.href = url;
+            a.download = filename || "download";
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
+        getTextSize: function(str) {
+            var blob = new Blob([str], { type: 'text/plain', endings: "transparent" });
+            return blob.size;
+        },
 
         getCorner: function(imageData) {
             // Harris Operator

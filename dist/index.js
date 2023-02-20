@@ -3899,9 +3899,48 @@
          * @param {String} str 
          * @returns 
          */
-        getTextSize: function(str) {
+        getTextFileSize: function(str) {
             var blob = new Blob([str], { type: 'text/plain', endings: "transparent" });
             return blob.size;
+        },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
+        parseMarkdown: function(str) {
+            var rules = [
+                // header
+                [/^###### (.*$)/gim, "<h6>$1</h6>"],
+                [/^##### (.*$)/gim, "<h5>$1</h5>"],
+                [/^#### (.*$)/gim, "<h4>$1</h4>"],
+                [/^### (.*$)/gim, "<h3>$1</h3>"],
+                [/^## (.*$)/gim, "<h2>$1</h2>"],
+                [/^# (.*$)/gim, "<h1>$1</h1>"],
+                // bold
+                [/\*\*(.*)\*\*/gim, '<b>$1</b>'],
+                [/\_\_(.*)\_\_/gim, "<b>$1</b>"],
+                // italics
+                [/\*(.*)\*/gim, "<i>$1</i>"],
+                [/\_(.*)\_/gim, "<i>$1</i>"],
+                // paragragh
+                [/(^[^\n]+\n?$)/gim, "<p>$1</p>"],
+                // code
+                [/\`\`\`(.*)\`\`\`/g, '<pre>$1</pre>'],
+                // link
+                [/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color:#2A5DB0;text-decoration: none;">$1</a>'],
+                // highlights
+                [/(`)(\s?[^\n,]+\s?)(`)/g, '<a style="background-color:grey;color:black;text-decoration: none;border-radius: 3px;padding:0 2px;">$2</a>'],
+                // list
+                [/([^\n]+)(\+)([^\n]+)/g, "<ul><li>$3</li></ul>"],
+                [/([^\n]+)(\*)([^\n]+)/g, "<ul><li>$3</li></ul>"],
+                // image
+                [/!\[([^\]]+)\]\(([^)]+)\s"([^")]+)"\)/g, '<img src="$2" alt="$1" title="$3" />'],
+            ];
+
+            return rules.reduce(function(prev, [regexp, dest]) {
+                return prev.replace(regexp, dest);
+            }, str).trim();
         },
 
         getCorner: function(imageData) {

@@ -3928,9 +3928,18 @@
                 // code
                 [/\`\`\`(.*)\`\`\`/g, '<pre>$1</pre>'],
                 // link
-                [/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color:#2A5DB0;text-decoration: none;">$1</a>'],
+                [/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>', {
+                    color: "#2A5DB0",
+                    "text-decoration": "none"
+                }],
                 // highlights
-                [/(`)(\s?[^\n,]+\s?)(`)/g, '<a style="background-color:grey;color:black;text-decoration: none;border-radius: 3px;padding:0 2px;">$2</a>'],
+                [/(`)(\s?[^\n,]+\s?)(`)/g, '<a>$2</a>', {
+                    "background-color": "grey",
+                    color: "black",
+                    "text-decoration": "none",
+                    "border-radius": "3px",
+                    padding: "0 2px"
+                }],
                 // list
                 [/([^\n]+)(\+)([^\n]+)/g, "<ul><li>$3</li></ul>"],
                 [/([^\n]+)(\*)([^\n]+)/g, "<ul><li>$3</li></ul>"],
@@ -3938,8 +3947,20 @@
                 [/!\[([^\]]+)\]\(([^)]+)\s"([^")]+)"\)/g, '<img src="$2" alt="$1" title="$3" />'],
             ];
 
-            return rules.reduce(function(prev, [regexp, dest]) {
-                return prev.replace(regexp, dest);
+            var setStyle = function(html, style) {
+                if (typeof(style) !== "object") {
+                    return html;
+                }
+
+                style = Object.entries(style).reduce(function(prev, [key, value]) {
+                    return prev+key+"\:"+value+"\;";
+                }, "");
+
+                return html.replace(/^\<([^>]+)\>/, "\<$1 style=\""+style+"\"\>");
+            }
+
+            return rules.reduce(function(prev, [regexp, html, style]) {
+                return prev.replace(regexp, setStyle(html, style));
             }, str).trim();
         },
 

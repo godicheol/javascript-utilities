@@ -3963,6 +3963,28 @@
                 return prev.replace(regexp, setStyle(html, style));
             }, str).trim();
         },
+        /**
+         * 
+         * @param {String} html "<span>abcd</span>"
+         * @param {Object} style 
+         * @returns 
+         */
+        setStyle: function(html, style) {
+            if (typeof(html) !== "string" || typeof(style) !== "object") {
+                var err = new Error('invalid argument type');
+                err.name = "TypeError";
+                throw err;
+            }
+
+            style = Object.entries(style).reduce(function(prev, [key, value]) {
+                return prev+key+"\:"+value+"\;";
+            }, "");
+
+            return html.replace(/^\<([^>]+)\>/, "\<$1 style=\""+style+"\"\>");
+        },
+        replaceString: function(str, rules) {
+
+        },
 
         getCorner: function(imageData) {
             // Harris Operator

@@ -4062,7 +4062,7 @@
             var s;
             for (i = 0; i < l; i++) {
                 s = false;
-                for (j = 0; j < l; j++) {
+                for (j = 0; j < l-i-1; j++) {
                     a = arr[j];
                     b = arr[j+1];
                     c = compareFunc(a, b);

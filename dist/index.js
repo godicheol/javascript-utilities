@@ -69,6 +69,22 @@
         },
         /**
          * 
+         * @param {String} str 
+         * @returns 
+         */
+        escape: function(str) {
+            return str.replace(/([\!\@\#\$\%\^\&\*\)\(\+\=\.\<\>\{\}\[\]\:\;\'\"\|\~\`\_\-])/g, "\\$1");
+        },
+        /**
+         * 
+         * @param {Number} n 
+         * @returns 1, 0, -1
+         */
+        compose: function(n) {
+            return Math.sign(n);
+        },
+        /**
+         * 
          * @param {Boolean} bool 
          * @returns 
          */
@@ -3969,7 +3985,7 @@
          * @param {Object} style 
          * @returns 
          */
-        setStyle: function(html, style) {
+        setStyleToElement: function(html, style) {
             if (typeof(html) !== "string" || typeof(style) !== "object") {
                 var err = new Error('invalid argument type');
                 err.name = "TypeError";
@@ -3982,8 +3998,166 @@
 
             return html.replace(/^\<([^>]+)\>/, "\<$1 style=\""+style+"\"\>");
         },
-        replaceString: function(str, rules) {
+        /**
+         * 
+         * @param {String} str 
+         * @param {String} from 
+         * @param {String} to 
+         * @returns 
+         */
+        replaceString: function(str, from, to) {
+            from = from.replace(/([\!\@\#\$\%\^\&\*\)\(\+\=\.\<\>\{\}\[\]\:\;\'\"\|\~\`\_\-])/g, "\\$1");
+            return str.replace(new RegExp(from, "g"), to);
+        },
+        /**
+         * 
+         * @param {String} str 
+         * @param {Object} data 
+         * @returns 
+         */
+        replaceAllString: function(str, data) {
+            if (typeof(data) !== "object") {
+                data = {};
+            }
+            var rules = Object.entries(data).reduce(function(prev, [key, value]) {
+                var k = key.replace(/([\!\@\#\$\%\^\&\*\)\(\+\=\.\<\>\{\}\[\]\:\;\'\"\|\~\`\_\-])/g, "\\$1");
+                prev.push([new RegExp(k, "g"), value]);
+                return prev;
+            }, []);
+        
+            return rules.reduce(function(prev, [regexp, value]) {
+                return prev.replace(regexp, value);
+            }, str);
+        },
+        /**
+         * 
+         * @param {String} str 
+         * @param {String} data 
+         * @returns 
+         */
+        searchString: function(str, data) {
+            var res = [];
+            var i = str.indexOf(data);
+            var len = data.length;
+            while(i > -1) {
+                res.push(i);
+                str = str.slice(i + len);
+                i = str.indexOf(data);
+            }
+            return res;
+        },
+        /**
+         * 
+         * @param {Array} arr 
+         * @param {Function} compareFunc 
+         * @returns 
+         */
+        bubbleSort: function(arr, compareFunc) {
+            var l = arr.length;
+            var i;
+            var j;
+            var a;
+            var b;
+            var c;
+            var s;
+            for (i = 0; i < l; i++) {
+                s = false;
+                for (j = 0; j < l; j++) {
+                    a = arr[j];
+                    b = arr[j+1];
+                    c = compareFunc(a, b);
+                    if (c > 0) {
+                        arr[j] = b;
+                        arr[j+1] = a;
+                        s = true;
+                    }
+                }
+                if (!s) {
+                    break;
+                }
+            }
+            return arr;
+        },
+        /**
+         * 
+         * @param {Array} arr 
+         * @param {Function} compareFunc 
+         * @returns 
+         */
+        insertionSort: function(arr, compareFunc) {
+            var len = arr.length;
+            var i;
+            var j;
+            var a;
+            var b;
+            var c;
+            for (i = 0; i < len; i++) {
+                for (j = (i-1); j > -1; j--) {
+                    a = arr[j];
+                    b = arr[j+1];
+                    c = compareFunc(a, b);
+                    if (c > 0) {
+                        arr[j] = b;
+                        arr[j+1] = a;
+                    }
+                }
+            }
+            return arr;
+        },
+        /**
+         * 
+         * @param {Array} arr 
+         * @param {Function} compareFunc left > right (a-b) ASC / right > left (b-a) DESC
+         * @returns 
+         */
+        mergeSort: function(arr, compareFunc) {
+            var sort = function(arr) {
+                if (arr.length === 1) {
+                    return arr;
+                }
 
+                var middle = Math.floor(arr.length / 2);
+                var left = arr.slice(0, middle);
+                var right = arr.slice(middle, arr.length);
+
+                return merge(
+                    sort(left),
+                    sort(right),
+                );
+            }
+
+            var merge = function(left, right) {
+                var result = [];
+                var i = 0;
+                var j = 0;
+                var l;
+                var r;
+                while(i < left.length && j < right.length) {
+                    l = left[i];
+                    r = right[j];
+                    if (!compose(compareFunc(l, r))) {
+                        result.push(l);
+                        i++;
+                    } else {
+                        result.push(r);
+                        j++;
+                    }
+                }
+                return result.concat(left.slice(i, left.length)).concat(right.slice(j, right.length));
+            }
+
+            var compose = function(result) {
+                var n = Math.sign(result);
+                if (n == -1) {
+                    return false;
+                } else if (n == 1) {
+                    return true;
+                } else if (n == 0) {
+                    return false;
+                }
+            }
+
+            return sort(arr);
         },
 
         getCorner: function(imageData) {

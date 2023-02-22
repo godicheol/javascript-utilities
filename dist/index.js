@@ -3846,16 +3846,16 @@
         /**
          * 
          * @param {String} str 
-         * @param {String} lb CR, LF, CRLF
+         * @param {String} linebreak CR, LF, CRLF
          * @returns 
          */
-        convLineBreaker: function(str, lb) {
+        replaceLinebreaks: function(str, linebreak) {
             var a = {
                 "CR": "\\r", // Mac(1~9) 0x0D
                 "LF": "\\n", // Unix/Linux, Mac(10~) 0x0A
                 "CRLF": "\\r\\n" // windows 0x0D 0x0A
             }
-            return str.replace(/(\\r\\n|\\r|\\n)/g, (lb ? a[lb] : a["CRLF"]));
+            return str.replace(/(\\r\\n|\\r|\\n)/g, (linebreak ? a[linebreak.toUpperCase()] : a["CRLF"]));
         },
         /**
          * 
@@ -4125,7 +4125,6 @@
                     sort(right),
                 );
             }
-
             var merge = function(left, right) {
                 var result = [];
                 var i = 0;
@@ -4145,7 +4144,6 @@
                 }
                 return result.concat(left.slice(i, left.length)).concat(right.slice(j, right.length));
             }
-
             var compose = function(result) {
                 var n = Math.sign(result);
                 if (n == -1) {

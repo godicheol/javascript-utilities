@@ -3855,7 +3855,23 @@
                 "LF": "\\n", // Unix/Linux, Mac(10~) 0x0A
                 "CRLF": "\\r\\n" // windows 0x0D 0x0A
             }
-            return str.replace(/(\\r\\n|\\r|\\n)/g, (linebreak ? a[linebreak.toUpperCase()] : a["CRLF"]));
+            return str.replace(/(\\r\\n|\\r|\\n)/gm, (linebreak ? a[linebreak.toUpperCase()] : a["CRLF"]));
+        },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
+        removeLinebreaks: function(str) {
+            return str.replace(/(\\r\\n|\\r|\\n)/gm, "");
+        },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
+        removeDoubleSpace: function(str) {
+            return str.replace(/\\s+/g, " ");
         },
         /**
          * 

@@ -4207,6 +4207,13 @@
             };
             reader.readAsDataURL(blob);
         },
+        /**
+         * 
+         * @returns 
+         */
+        getArgumentsToArray: function() {
+            return Array.prototype.slice.call(arguments);
+        },
 
         getCorner: function(imageData) {
             // Harris Operator

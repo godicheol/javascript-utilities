@@ -3816,10 +3816,17 @@
                     .split(/\//)
                     .reduce(function(p, c) {
                         if (c === "\.") {
-                            return p;
-                        }
-                        if (c === "\.\.") {
-                            p.pop();
+                            if (p.length > 0) {
+                                return p;
+                            } else {
+                                p.push(c);
+                            }
+                        } else if (c === "\.\.") {
+                            if (p.length > 0) {
+                                p.pop();
+                            } else {
+                                p.push(c);
+                            }
                         } else {
                             p.push(c);
                         }

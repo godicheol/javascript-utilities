@@ -3806,36 +3806,26 @@
             return str.replace(/\\+/g, "/").replace(/\/+$/, "/").split(/\//);
         },
         /**
-         * @param {String} arguments
+         * @param {String} args
          * @returns 
          */
-        joinPath: function() {
-            var arr = [];
-            var res = [];
-            var i;
-            var l = arguments.length;
-            var p;
-            for (i = 0; i < l; i++) {
-                arr = arr.concat(arguments[i].replace(/\\+/g, "/").split(/\//));
-            };
-            l = arr.length;
-            for (i = 0; i < l; i++) {
-                p = arr[i];
-                if (!p || p === "\.") {
-                    continue;
-                }
-                if (p === "\.\.") {
-                    res.pop();
-                } else {
-                    res.push(p);
-                }
-            };
-            if (arr[0] === "") {
-                res.unshift("");
-            };
-            return res.join("\/") || (
-                res.length === 0 ? "\." : "\/"
-            );
+        joinPath: function(...args) {
+            return args.reduce(function(prev, curr) {
+                return curr.replace(/\\+/g, "/")
+                    .replace(/\/+/g, "/")
+                    .split(/\//)
+                    .reduce(function(p, c) {
+                        if (c === "\.") {
+                            return p;
+                        }
+                        if (c === "\.\.") {
+                            p.pop();
+                        } else {
+                            p.push(c);
+                        }
+                        return p;
+                    }, prev);
+            }, []).join("\/") || "\.";
         },
         /**
          * 

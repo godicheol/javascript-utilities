@@ -403,72 +403,110 @@
             return str.replace(/[\{\}\[\].,;:|\)*~`!^<>@\$%\\\(\'\"\s]/g, char || "_");
         },
         /**
-         * developing...
-         * @param {Any} any 
+         * 
+         * @param {Any} src 
          * @returns 
          */
-        getTypes: function(any) {
-            var get = function(a) {
-                if (typeof(a) === "object") {
-                    if (Object.prototype.toString.call(a) === '[object Array]') {
-                        return ["array"];
-                    } else if (a === null) {
-                        return ["null"];
-                    } else {
-                        return ["object"];
+        getTypes: function(src) {
+            var types = [];
+            if (typeof(src) === "object") {
+                if (Object.prototype.toString.call(src) === '[object Array]') {
+                    types.push("array");
+                    if (src.length === 0) {
+                        types.push("empty");
                     }
+                } else if (src === null) {
+                    types.push("null");
                 } else {
-                    if (typeof(a) === "string" && !isNaN(parseFloat(a)) && isFinite(a)) {
-                        return ["string", "stringnumber"];
-                    } else {
-                        return [typeof(a)];
+                    types.push("object");
+                    if (Object.keys(src).length === 0) {
+                        types.push("empty");
                     }
                 }
-            }
-
-            var isIncluded = function(a, b) {
-                if (typeof(a) !== "object" || Object.prototype.toString.call(a) !== '[object Array]') {
-                    var err = new Error('invalid argument type');
-                    err.name = "TypeError";
-                    throw err;
+            } else if (typeof(src) === "string") {
+                types.push("string");
+                if (!isNaN(parseFloat(src)) && isFinite(src)) {
+                    types.push("number");
+                } else if (src === "null") {
+                    types.push("null");
+                } else if (src === "undefined") {
+                    types.push("undefined");
                 }
-                b = (typeof(b) === "object" && Object.prototype.toString.call(b) === '[object Array]') ? b : [b];
-                var al = a.length;
-                var bl = b.length;
-                var i;
-                var j;
-                var is;
-                for (j = 0; j < bl; j++) {
-                    is = false;
-                    for (i = 0; i < al; i++) {
-                        if (b[j] === a[i]) {
-                            is = true;
-                        }
-                    }
-                    if (!is) {
-                        return false;
-                    }
+            } else if (typeof(src) === "number") {
+                types.push("number");
+                if (src === 1 || src === 0 || src === -1) {
+                    types.push("boolean");
+                } else if (isNaN(src)) {
+                    types.push("NaN");
                 }
-                return true;
-            }
-
-            var types = get(any);
-            if (isIncluded(types, "array")) {
-                var i = 0;
-                var l = any.length;
-                var t = get(any[i++]);
-                while(i < l) {
-                    if (!isIncluded(t, get(any[i++]))) {
-                        return types;
-                    }
-                }
-                i = 0;
-                l = t.length;
-                while(i < l) {
-                    types.push(t[i++]+"array");
-                }
+            } else if (typeof(src) === "undefined") {
+                types.push("undefined");
+                types.push("empty");
+            } else {
+                types.push(typeof(src));
             }
             return types;
+        },
+        /**
+         * developing...
+         * @param {Any} src 
+         * @param {String} dst string, number, empty
+         * @returns 
+         */
+        setType: function(src, dst) {
+            var types = [];
+            if (typeof(src) === "object") {
+                if (Object.prototype.toString.call(src) === '[object Array]') {
+                    types.push("array");
+                    if (src.length === 0) {
+                        types.push("empty");
+                    }
+                } else if (src === null) {
+                    types.push("null");
+                } else {
+                    types.push("object");
+                    if (Object.keys(src).length === 0) {
+                        types.push("empty");
+                    }
+                }
+            } else if (typeof(src) === "string") {
+                types.push("string");
+                if (!isNaN(parseFloat(src)) && isFinite(src)) {
+                    types.push("number");
+                } else if (src === "null") {
+                    types.push("null");
+                } else if (src === "undefined") {
+                    types.push("undefined");
+                }
+            } else if (typeof(src) === "number") {
+                types.push("number");
+                if (src === 1 || src === 0 || src === -1) {
+                    types.push("boolean");
+                } else if (isNaN(src)) {
+                    types.push("NaN");
+                }
+            } else if (typeof(src) === "undefined") {
+                types.push("undefined");
+                types.push("empty");
+            } else {
+                types.push(typeof(src));
+            }
+            switch(dst) {
+                case "string":
+                    if (types.indexOf("string") > -1) {
+                        return src;
+                    } else if (types.indexOf("number") > -1) {
+                        return src.toString(10);
+                    } else if (types.indexOf("null") > -1) {
+                        return "null";
+                    } else if (types.indexOf("array") > -1) {
+                        return JSON.stringify(src);
+                    } else if (types.indexOf("object") > -1) {
+                        return JSON.stringify(src);
+                    } else if (types.indexOf("undefined") > -1) {
+                        return "undefined";
+                    }
+            }
         },
         /**
          * developing...

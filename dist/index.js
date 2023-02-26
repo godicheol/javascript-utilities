@@ -515,6 +515,220 @@
         },
         /**
          * 
+         * @param {Any} src 
+         * @param {String} dst string, number, object, array
+         * @param {Object} options null, undefined
+         * @returns 
+         */
+        setType: function(src, dst, options) {
+            var types = [];
+            if (typeof(src) === "object") {
+                if (Object.prototype.toString.call(src) === '[object Array]') {
+                    types.push("array");
+                    if (src.length === 0) {
+                        types.push("empty");
+                    }
+                } else if (src === null) {
+                    types.push("null");
+                } else {
+                    types.push("object");
+                    if (Object.keys(src).length === 0) {
+                        types.push("empty");
+                    }
+                }
+            } else if (typeof(src) === "string") {
+                types.push("string");
+                if (!isNaN(parseFloat(src)) && isFinite(src)) {
+                    types.push("number");
+                    if (parseFloat(src) % 1 === 0) {
+                        types.push("int");
+                    } else {
+                        types.push("float");
+                    }
+                }
+                if (
+                    src === "true" || 
+                    src === "false" ||
+                    src === "1" ||
+                    src === "0"
+                ) {
+                    types.push("boolean");
+                } else if (src === "null") {
+                    types.push("null");
+                } else if (src === "undefined") {
+                    types.push("undefined");
+                }
+            } else if (typeof(src) === "number") {
+                if (isNaN(src)) {
+                    types.push("NaN");
+                } else {
+                    types.push("number");
+                    if (src % 1 === 0) {
+                        types.push("int");
+                    } else {
+                        types.push("float");
+                    }
+                    if (src === 1 || src === 0) {
+                        types.push("boolean");
+                    }
+                }
+            } else if (typeof(src) === "undefined") {
+                types.push("undefined");
+                types.push("empty");
+            } else {
+                types.push(typeof(src));
+            }
+
+            if (!options) {
+                options = {
+                    null: true,
+                    undefined: true,
+                }
+            }
+
+            var chk = function(b) {
+                var a = types;
+                b = (typeof(b) === "object" && Object.prototype.toString.call(b) === '[object Array]') ? b : [b];
+                var al = a.length;
+                var bl = b.length;
+                var i;
+                var j;
+                var is;
+                for (j = 0; j < bl; j++) {
+                    is = false;
+                    for (i = 0; i < al; i++) {
+                        if (b[j] === a[i]) {
+                            is = true;
+                        }
+                    }
+                    if (!is) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            switch(dst) {
+                case "boolean":
+                    if (chk(["string", "boolean"])) {
+                        return src === "true";
+                    } else if (chk(["number", "boolean"])) {
+                        return src === 1;
+                    } else if (chk(["boolean"])) {
+                        return src;
+                    } else if (chk(["object", "null"])) {
+                        if (options.null) {
+                            return null;
+                        }
+                    } else if (chk(["undefined"])) {
+                        if (options.undefined) {
+                            return undefined;
+                        }
+                    }
+                    break;
+                case "string":
+                    if (chk(["string"])) {
+                        return src;
+                    } else if (chk(["number"])) {
+                        return src.toString(10);
+                    } else if (chk(["boolean"])) {
+                        return src ? "true" : "false";
+                    } else if (chk(["object", "null"])) {
+                        if (options.null) {
+                            return null;
+                        } else {
+                            return "null";
+                        }
+                    } else if (chk(["undefined"])) {
+                        if (options.undefined) {
+                            return undefined;
+                        } else {
+                            return "undefined";
+                        }
+                    }
+                    break;
+                case "number":
+                    if (chk(["string"])) {
+                        if (chk(["number"])) {
+                            return parseFloat(src);
+                        }
+                    } else if (chk(["number"])) {
+                        return src;
+                    } else if (chk(["boolean"])) {
+                        return src ? 1 : 0;
+                    } else if (chk(["object", "null"])) {
+                        if (options.null) {
+                            return null;
+                        }
+                    } else if (chk(["undefined"])) {
+                        if (options.undefined) {
+                            return undefined;
+                        }
+                    }
+                    break;
+                case "array":
+                    if (chk(["string"])) {
+                        return [src];
+                    } else if (chk(["number"])) {
+                        return [src];
+                    } else if (chk(["array"])) {
+                        return src;
+                    } else if (chk(["object"])) {
+                        if (chk(["null"])) {
+                            if (options.null) {
+                                return null;
+                            }
+                        } else {
+                            return Object.entries(src);
+                        }
+                    } else if (chk(["undefined"])) {
+                        if (options.undefined) {
+                            return undefined;
+                        }
+                    }
+                    break;
+                case "object":
+                    if (chk(["array"])) {
+                        return src.reduce(function(prev, curr, i) {
+                            prev[i] = curr;
+                            return prev;
+                        }, {});
+                    } else if (chk(["object"])) {
+                        if (chk(["null"])) {
+                            if (options.null) {
+                                return null;
+                            }
+                        } else {
+                            return src;
+                        }
+                    } else if (chk(["undefined"])) {
+                        if (options.undefined) {
+                            return undefined;
+                        }
+                    }
+                    break;
+                case "null":
+                    if (chk(["null"])) {
+                        return null;
+                    }
+                    break;
+                case "NaN":
+                    if (chk(["NaN"])) {
+                        return NaN;
+                    }
+                    break;
+                case "undefined":
+                    if (chk(["undefined"])) {
+                        return undefined;
+                    }
+                    break;
+            }
+            var err = new Error('invalid argument type');
+            err.name = "TypeError";
+            throw err;
+        },
+        /**
+         * 
          * @returns 
          */
         getOs: function() {

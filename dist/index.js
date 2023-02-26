@@ -427,6 +427,11 @@
                 types.push("string");
                 if (!isNaN(parseFloat(src)) && isFinite(src)) {
                     types.push("number");
+                    if (parseFloat(src) % 1 === 0) {
+                        types.push("int");
+                    } else {
+                        types.push("float");
+                    }
                 } else if (src === "null") {
                     types.push("null");
                 } else if (src === "undefined") {
@@ -434,10 +439,15 @@
                 }
             } else if (typeof(src) === "number") {
                 types.push("number");
+                if (isNaN(src)) {
+                    types.push("NaN");
+                } else if (src % 1 === 0) {
+                    types.push("int");
+                } else {
+                    types.push("float");
+                }
                 if (src === 1 || src === 0 || src === -1) {
                     types.push("boolean");
-                } else if (isNaN(src)) {
-                    types.push("NaN");
                 }
             } else if (typeof(src) === "undefined") {
                 types.push("undefined");
@@ -449,11 +459,11 @@
         },
         /**
          * developing...
-         * @param {Any} src 
-         * @param {String} dst string, number, empty
+         * @param {Any} any 
+         * @param {String} type 
          * @returns 
          */
-        setType: function(src, dst) {
+        checkType: function(src, type) {
             var types = [];
             if (typeof(src) === "object") {
                 if (Object.prototype.toString.call(src) === '[object Array]') {
@@ -473,6 +483,11 @@
                 types.push("string");
                 if (!isNaN(parseFloat(src)) && isFinite(src)) {
                     types.push("number");
+                    if (parseFloat(src) % 1 === 0) {
+                        types.push("int");
+                    } else {
+                        types.push("float");
+                    }
                 } else if (src === "null") {
                     types.push("null");
                 } else if (src === "undefined") {
@@ -480,10 +495,15 @@
                 }
             } else if (typeof(src) === "number") {
                 types.push("number");
+                if (isNaN(src)) {
+                    types.push("NaN");
+                } else if (src % 1 === 0) {
+                    types.push("int");
+                } else {
+                    types.push("float");
+                }
                 if (src === 1 || src === 0 || src === -1) {
                     types.push("boolean");
-                } else if (isNaN(src)) {
-                    types.push("NaN");
                 }
             } else if (typeof(src) === "undefined") {
                 types.push("undefined");
@@ -491,54 +511,7 @@
             } else {
                 types.push(typeof(src));
             }
-            switch(dst) {
-                case "string":
-                    if (types.indexOf("string") > -1) {
-                        return src;
-                    } else if (types.indexOf("number") > -1) {
-                        return src.toString(10);
-                    } else if (types.indexOf("null") > -1) {
-                        return "null";
-                    } else if (types.indexOf("array") > -1) {
-                        return JSON.stringify(src);
-                    } else if (types.indexOf("object") > -1) {
-                        return JSON.stringify(src);
-                    } else if (types.indexOf("undefined") > -1) {
-                        return "undefined";
-                    }
-            }
-        },
-        /**
-         * developing...
-         * @param {Any} any 
-         * @param {Array} types 
-         * @returns 
-         */
-        checkType: function(any, types) {
-            var get = function(a) {
-                if (typeof(a) === "object") {
-                    if (Object.prototype.toString.call(a) === '[object Array]') {
-                        return "array";
-                    } else if (a === null) {
-                        return "null";
-                    } else {
-                        return "object";
-                    }
-                } else {
-                    if (typeof(a) === "string" && !isNaN(parseFloat(a)) && isFinite(a)) {
-                        return "stringnumber";
-                    } else {
-                        return typeof(a);
-                    }
-                }
-            }
-
-            var t = get(any);
-            return (
-                Object.prototype.toString.call(types) === '[object Array]' ? types : [types]
-            ).map(function(e) {
-                return e.toLowerCase();
-            }).indexOf(t) > -1;
+            return types.indexOf(type) > -1;
         },
         /**
          * 

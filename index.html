@@ -316,21 +316,21 @@
             console.log("utils.MySchema", res2);
         })();
 
-        /* execPromises */
+        /* reducePromises */
         (async function() {
             var arr = [1,2,3,4,5];
             var initialValue = 0;
             var func = function(prev, curr, index) {
                 return new Promise(function(resolve, reject) {
                     setTimeout(function() {
-                        console.log("utils.execPromises", prev, curr, index);
+                        console.log("utils.reducePromises", prev, curr, index);
                         resolve(prev + curr);
                     }, 1000);
                 });
             }
 
-            var res = await utils.execPromises(arr, func, initialValue);
-            console.log("utils.execPromises", res, "END", "END");
+            var res = await utils.reducePromises(arr, func, initialValue);
+            console.log("utils.reducePromises", res, "END", "END");
         })();
        
         /* hasKorean */
@@ -411,6 +411,8 @@
         
         /* test */
         (function() {
+            var arr = ["1", "a"];
+            console.log(utils.getTypes(arr));
         })();
     </script>
 </body>

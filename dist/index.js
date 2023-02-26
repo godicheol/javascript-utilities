@@ -240,6 +240,37 @@
         },
         /**
          * 
+         * @param {Array} a 
+         * @param {Any} b 
+         * @returns 
+         */
+        isIncluded: function(a, b) {
+            if (typeof(a) !== "object" || Object.prototype.toString.call(a) !== '[object Array]') {
+                var err = new Error('invalid argument type');
+                err.name = "TypeError";
+                throw err;
+            }
+            b = (typeof(b) === "object" && Object.prototype.toString.call(b) === '[object Array]') ? b : [b];
+            var al = a.length;
+            var bl = b.length;
+            var i;
+            var j;
+            var is;
+            for (j = 0; j < bl; j++) {
+                is = false;
+                for (i = 0; i < al; i++) {
+                    if (b[j] === a[i]) {
+                        is = true;
+                    }
+                }
+                if (!is) {
+                    return false;
+                }
+            }
+            return true;
+        },
+        /**
+         * 
          * @param {Boolean} bool 
          * @returns 
          */
@@ -372,47 +403,104 @@
             return str.replace(/[\{\}\[\].,;:|\)*~`!^<>@\$%\\\(\'\"\s]/g, char || "_");
         },
         /**
-         * 
+         * developing...
          * @param {Any} any 
          * @returns 
          */
-        getType: function(any) {
-            if (typeof(any) === "object") {
-                if (Object.prototype.toString.call(any) === '[object Array]') {
-                    return "array";
-                } else if (any === null) {
-                    return "null";
+        getTypes: function(any) {
+            var get = function(a) {
+                if (typeof(a) === "object") {
+                    if (Object.prototype.toString.call(a) === '[object Array]') {
+                        return ["array"];
+                    } else if (a === null) {
+                        return ["null"];
+                    } else {
+                        return ["object"];
+                    }
                 } else {
-                    return "object";
+                    if (typeof(a) === "string" && !isNaN(parseFloat(a)) && isFinite(a)) {
+                        return ["string", "stringnumber"];
+                    } else {
+                        return [typeof(a)];
+                    }
                 }
-            } else {
-                return typeof(any);
             }
+
+            var isIncluded = function(a, b) {
+                if (typeof(a) !== "object" || Object.prototype.toString.call(a) !== '[object Array]') {
+                    var err = new Error('invalid argument type');
+                    err.name = "TypeError";
+                    throw err;
+                }
+                b = (typeof(b) === "object" && Object.prototype.toString.call(b) === '[object Array]') ? b : [b];
+                var al = a.length;
+                var bl = b.length;
+                var i;
+                var j;
+                var is;
+                for (j = 0; j < bl; j++) {
+                    is = false;
+                    for (i = 0; i < al; i++) {
+                        if (b[j] === a[i]) {
+                            is = true;
+                        }
+                    }
+                    if (!is) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            var types = get(any);
+            if (isIncluded(types, "array")) {
+                var i = 0;
+                var l = any.length;
+                var t = get(any[i++]);
+                while(i < l) {
+                    if (!isIncluded(t, get(any[i++]))) {
+                        return types;
+                    }
+                }
+                i = 0;
+                l = t.length;
+                while(i < l) {
+                    types.push(t[i++]+"array");
+                }
+            }
+            return types;
         },
         /**
-         * 
+         * developing...
          * @param {Any} any 
          * @param {Array} types 
          * @returns 
          */
-        typeIs: function(any, types) {
-            var t;
-            if (typeof(any) === "object") {
-                if (Object.prototype.toString.call(any) === '[object Array]') {
-                    t = "array";
-                } else if (any === null) {
-                    t = "null";
+        checkType: function(any, types) {
+            var get = function(a) {
+                if (typeof(a) === "object") {
+                    if (Object.prototype.toString.call(a) === '[object Array]') {
+                        return "array";
+                    } else if (a === null) {
+                        return "null";
+                    } else {
+                        return "object";
+                    }
                 } else {
-                    t = "object";
-                }
-            } else {
-                if (typeof(any) === "string" && !isNaN(parseFloat(any)) && isFinite(any)) {
-                    t = "numberstring";
-                } else {
-                    t = typeof(any);
+                    if (typeof(a) === "string" && !isNaN(parseFloat(a)) && isFinite(a)) {
+                        return "stringnumber";
+                    } else {
+                        return typeof(a);
+                    }
                 }
             }
-            return (Object.prototype.toString.call(types) === '[object Array]' ? types : [types]).map(function(e) {return e.toLowerCase()}).indexOf(t) > -1;
+
+            var t = get(any);
+            return (
+                Object.prototype.toString.call(types) === '[object Array]' ? types : [types]
+            ).map(function(e) {
+                return e.toLowerCase();
+            }).indexOf(t) > -1;
         },
         /**
          * 
@@ -1836,7 +1924,7 @@
          * @param {Any} initialValue 
          * @returns 
          */
-        execPromises: function(dataArray, promiseFunc, initialValue) {
+        reducePromises: function(dataArray, promiseFunc, initialValue) {
             var promises = function() {
                 return dataArray.reduce(function(prev, curr, index) {
                     return prev.then(function(res) {
@@ -3981,18 +4069,18 @@
                 [/\`\`\`(.*)\`\`\`/g, '<pre>$1</pre>'],
                 // link
                 [/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>', {
-                    color: "#2A5DB0",
+                    "color": "#2A5DB0",
                     "text-decoration": "none"
                 }],
                 // highlights
                 [/(`)(\s?[^\n,]+\s?)(`)/g, '<a>$2</a>', {
                     "background-color": "grey",
-                    color: "black",
+                    "color": "black",
                     "text-decoration": "none",
                     "border-radius": "3px",
-                    padding: "0 2px"
+                    "padding": "0 2px"
                 }],
-                // list
+                // list 
                 [/([^\n]+)(\+)([^\n]+)/g, "<ul><li>$3</li></ul>"],
                 [/([^\n]+)(\*)([^\n]+)/g, "<ul><li>$3</li></ul>"],
                 // image

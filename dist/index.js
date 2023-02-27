@@ -4527,6 +4527,16 @@
         getArgumentsToArray: function() {
             return Array.prototype.slice.call(arguments);
         },
+        /**
+         * 
+         * @param {String} base64 
+         * @returns 
+         */
+        getBase64Size: function(base64) {
+            var l = base64.length - base64.indexOf('\,') + 1;
+            var p = (base64.charAt(base64.length - 2) === "\=") ? 2 : ((base64.charAt(base64.length - 1) === "\=") ? 1 : 0);
+            return l * 0.75 - p;
+        },
 
         getCorner: function(imageData) {
             // Harris Operator

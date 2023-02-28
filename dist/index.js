@@ -404,6 +404,83 @@
         },
         /**
          * 
+         * @param {Any} any 
+         * @returns 
+         */
+        getType: function(any) {
+            if (typeof(any) === "object") {
+                if (Object.prototype.toString.call(any) === '[object Array]') {
+                    return "array";
+                } else if (any === null) {
+                    return "null";
+                } else {
+                    return "object";
+                }
+            } else if (typeof(any) === "number") {
+                if (isNaN(any)) {
+                    return "NaN";
+                } else {
+                    return "number";
+                }
+            } else {
+                return typeof(any);
+            }
+        },
+        /**
+         * deprecated
+         * @param {Any} src 
+         * @param {String} type string, number, array, object, null, undefined, NaN, number-array, string-array, object-array
+         * @returns 
+         */
+        chkType: function(src, type) {
+            var getType = function(x) {
+                if (typeof(x) === "object") {
+                    if (Object.prototype.toString.call(x) === '[object Array]') {
+                        return "array";
+                    } else if (x === null) {
+                        return "null";
+                    } else {
+                        return "object";
+                    }
+                } else if (typeof(x) === "number") {
+                    if (isNaN(x)) {
+                        return "NaN";
+                    } else {
+                        return "number";
+                    }
+                } else {
+                    return typeof(x);
+                }
+            }
+
+            var types = type.split(/[\!\@\#\$\%\^\&\*\)\(\+\=\.\<\>\{\}\[\]\:\;\'\"\|\~\`\_\-\s]/);
+            var type1 = getType(src);
+            var type2;
+            var i;
+            var l;
+            if (type1 === "array") {
+                type2 = getType(src[0]);
+                i = 1;
+                l = src.length;
+                while(i < l) {
+                    if (type2 !== getType(src[i++])) {
+                        type2 = undefined;
+                        break;
+                    }
+                }
+            } else if (type1 === "string") {
+                if (!isNaN(parseFloat(src)) && isFinite(src)) {
+                    type2 = "number";
+                }
+            }
+
+            return types.length === 2 ? 
+                (type1 === types[1] && type2 === types[0]) || 
+                (type1 !== types[1] && type2 === types[0]) :
+                (type1 === types[0]);
+        },
+        /**
+         * deprecated
          * @param {Any} src 
          * @returns 
          */
@@ -458,7 +535,7 @@
             return types;
         },
         /**
-         * developing...
+         * ddeprecated
          * @param {Any} any 
          * @param {String} type 
          * @returns 
@@ -514,7 +591,7 @@
             return types.indexOf(type) > -1;
         },
         /**
-         * 
+         * deprecated
          * @param {Any} src 
          * @param {String} dst string, number, object, array
          * @param {Object} options null, undefined
@@ -4152,8 +4229,8 @@
          */
         joinPath: function(...args) {
             return args.reduce(function(prev, curr) {
-                return curr.replace(/\\+/g, "/")
-                    .replace(/\/+/g, "/")
+                return curr.replace(/\\+/g, "\/")
+                    .replace(/\/+/g, "\/")
                     .split(/\//)
                     .reduce(function(p, c) {
                         if (c === "\.") {
@@ -4564,6 +4641,177 @@
             var l = base64.length - base64.indexOf('\,') + 1;
             var p = (base64.charAt(base64.length - 2) === "\=") ? 2 : ((base64.charAt(base64.length - 1) === "\=") ? 1 : 0);
             return l * 0.75 - p;
+        },
+        /**
+         * test 
+         * @param {Object} object 
+         */
+        parseObject: function(object) {
+            var getType = function(src) {
+                if (typeof(src) === "object") {
+                    if (Object.prototype.toString.call(src) === '[object Array]') {
+                        return "array";
+                    } else if (src === null) {
+                        return "null";
+                    } else {
+                        return "object";
+                    }
+                } else if (typeof(src) === "number") {
+                    if (isNaN(src)) {
+                        return "NaN";
+                    } else {
+                        return "number";
+                    }
+                } else {
+                    return typeof(src);
+                }
+            }
+            var join = function(arr) {
+                return arr.reduce(function(prev, curr) {
+                    return curr ? curr.split(/\./)
+                        .filter(Boolean)
+                        .reduce(function(p, c) {
+                            p.push(c);
+                            return p;
+                        }, prev) : prev;
+                }, []).join("\.") || "";
+            }
+            var parseObject = function(path, obj) {
+                return Object.entries(obj).reduce(function(prev, [key, value]) {
+                    if (getType(value) === "array") {
+                        // path, [1,2,3,4]
+                        // path, [{a: 1}, {b: 2}]
+                        parseArray(key, value).forEach(function([_key, _value]) {
+                            // console.log(path, _key)
+                            prev.push([join([path, _key]), _value]);
+                        });
+                    } else if (getType(value) === "object") {
+                        // path, {w: 1, h: 2}
+                        parseObject(key, value).forEach(function([_key, _value]) {
+                            prev.push([join([path, _key]), _value]);
+                        });
+                    } else {
+                        // path, 1
+                        var operator = /^\$[^.]*$/.test(key) ? null : "$eq";
+                        prev.push([join([path, key, operator]), value]);
+                    }
+                    return prev;
+                }, []);
+            }
+            var parseArray = function(path, arr) {
+                var type = getType(arr[0]);
+                return arr.reduce(function(prev, curr) {
+                    if (type !== getType(curr)) {
+                        var err = new Error('invalid argument type');
+                        err.name = "TypeError";
+                        throw err;
+                    }
+                    if (getType(curr) === "object") {
+                        if (!(/\$[^.]*$/.test(path))) {
+                            var err = new Error('invalid argument type');
+                            err.name = "TypeError";
+                            throw err;
+                        }
+                        // [{a: 1}, {b: 2}]
+                        parseObject(path, curr).forEach(function([_key, _value]) {
+                            prev.push([_key, _value]);
+                        });
+                    } else {
+                        // ["1","2","3","4"]
+                        // [1,2,3,4]
+                        prev.push([path, curr]);
+                    }
+                    return prev;
+                }, []);
+            }
+            return parseObject("", object);
+        },
+        /**
+         * 
+         * @param {Object} query 
+         * @returns 
+         */
+        getQuery: function(query) {
+            var SCHEMA = {
+                $eq: "*",
+                $ne: "*",
+                $and: "array",
+                $or: "array",
+                $nor: "array",
+                $in: "*",
+                $nin: "*",
+                $gt: "number",
+                $gte: "number",
+                $lt: "number",
+                $lte: "number",
+                $exists: "boolean",
+            }
+            var isOperator = function(str) {
+                return /^\$(and|or|nor|not|eq|ne|in|nin|gt|gte|lt|lte|exists)$/.test(str);
+            }
+            var getType = function(any) {
+                if (typeof(any) === "object") {
+                    if (Object.prototype.toString.call(any) === '[object Array]') {
+                        return "array";
+                    } else if (any === null) {
+                        return "null";
+                    } else {
+                        return "object";
+                    }
+                } else if (typeof(any) === "number") {
+                    if (isNaN(any)) {
+                        return "NaN";
+                    } else {
+                        return "number";
+                    }
+                } else {
+                    return typeof(any);
+                }
+            }
+            var chkKeyValue = function(key, value) {
+                if (/\.?\$(and|or|nor|not|eq|ne|in|nin|gt|gte|lt|lte|exists)$/.test(key)) {
+                    var tmp = key.split("\.").pop();
+                    return SCHEMA[tmp] === "*" || SCHEMA[tmp] === getType(value);
+                } else {
+                    return true;
+                }
+            }
+            var parseQuery = function(obj) {
+                return Object.entries(obj).reduce(function(prev, [key, value]) {
+                    if (!chkKeyValue(key, value)) {
+                        var err = new Error('invalid argument type');
+                        err.name = "TypeError";
+                        throw err;
+                    }
+
+                    if (getType(value) === "object") {
+                        value = parseQuery(value);
+                    } else if (getType(value) === "array") {
+                        value = value.map(function(e) {
+                            return parseQuery(e);
+                        });
+                    } else if (!isOperator(key)) {
+                        value = {
+                            "$eq": value
+                        }
+                    }
+
+                    var keys = key.split("\.");
+                    var i = keys.length-1;
+                    var tmp = value;
+                    while(i > 0) {
+                        tmp = {
+                            [keys[i--]]: tmp
+                        }
+                    }
+
+                    prev[keys[i]] = tmp;
+
+                    return prev;
+                }, {});
+            }
+
+            return parseQuery(query);
         },
 
         getCorner: function(imageData) {

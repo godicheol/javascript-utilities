@@ -357,6 +357,84 @@
         
         /* test */
         (function() {
+            var obj = {
+                id: 1,
+                attr: {
+                    width: 33,
+                    height: 66,
+                },
+                arr: [1,2,3]
+            }
+
+            var query = {
+                id: 1,
+                attr: {
+                    "width.up": 5
+                },
+                $and: [{
+                    $or: [{
+                        width: 5
+                    }, {
+                        width: {
+                            $gt: 5
+                        }
+                    }]
+                }, {
+                    height: 30
+                }]
+                // attr: {
+                //     $and: [{
+                //         $or: [{
+                //             width: 33
+                //         }, {
+                //             width: 66
+                //         }]
+                //     }, {
+                //         $or: [{
+                //             height: {
+                //                 $gt: 33
+                //             }
+                //         }, {
+                //             height: 66
+                //         }]
+                //     }]
+                // },
+                // $or: [{
+                //     $and: [{
+                //         attr: {
+                //             width: 33
+                //         },
+                //     }, {
+                //         attr: {
+                //             height: {
+                //                 $gt: 55
+                //             }
+                //         }
+                //     }],
+                // }, {
+                //     $and: [{
+                //         attr: {
+                //             width: 33
+                //         },
+                //     }, {
+                //         attr: {
+                //             height: {
+                //                 $gt: 55
+                //             }
+                //         }
+                //     }],
+                // }]
+            }
+
+            // var query = {
+            //     arr: [{
+            //         width: 1,
+            //     }, {
+            //         height: 1
+            //     }]
+            // }
+
+            var res = utils.query(obj, query);
         })();
     </script>
 </body>

@@ -1,4 +1,4 @@
-## [List of methods](https://godicheol.github.io/javascript-utilities/)
+[DEMO](https://godicheol.github.io/javascript-utilities/)
 
 ### utils.compare(a, b)
 ```js

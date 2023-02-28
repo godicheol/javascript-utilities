@@ -396,13 +396,18 @@
                 });
             })
         })();
+
+        /* sort */
+        (function() {
+            var arr = ["!@","A","C","B","1D", "E", "a-6", "a 7", "한글", "a", "1", "#5", "2", 36,"35", 34, "a-3", "a 45", "a 23", 1, undefined, null];
+            console.log(
+                "utils.compare",
+                arr.sort(utils.compare)
+            )
+        })();
         
         /* test */
         (function() {
-            var arr = false;
-            console.log(
-                utils.setType(arr, "boolean")
-            );
         })();
     </script>
 </body>

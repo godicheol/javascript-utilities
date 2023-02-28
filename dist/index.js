@@ -4019,31 +4019,50 @@
          * 
          * @param {String} a 
          * @param {String} b 
-         * @param {Boolean} caseSensitive 
          * @returns 
          */
-        compareString: function(a, b, caseSensitive) {
-            var aa = typeof(a) === "number" ?
-                [a] : (caseSensitive ? a.split(/(\d+)/) : a.toLowerCase().split(/(\d+)/));
-            var bb = typeof(b) === "number" ?
-                [b] : (caseSensitive ? b.split(/(\d+)/) : b.toLowerCase().split(/(\d+)/));
+        compare: function(a, b) {
+            var aa = (typeof(a) !== "string") ? [a] : a.split(/(\d+|[\!\@\#\$\%\^\&\*\)\(\+\=\.\<\>\{\}\[\]\:\;\'\"\|\~\`\_\-]+)/).filter(Boolean);
+            var bb = (typeof(b) !== "string") ? [b] : b.split(/(\d+|[\!\@\#\$\%\^\&\*\)\(\+\=\.\<\>\{\}\[\]\:\;\'\"\|\~\`\_\-]+)/).filter(Boolean);
             var i = 0;
-            var len = Math.max(aa.length, bb.length);
-            var ch1, ch2;
-            while(i < len) {
-                ch1 = !isNaN(parseFloat(aa[i])) && isFinite(aa[i]) ? parseInt(aa[i]) : aa[i];
-                ch2 = !isNaN(parseFloat(bb[i])) && isFinite(bb[i]) ? parseInt(bb[i]) : bb[i];
-                if (typeof(ch2) === "undefined") {
-                    return 1;
+            var l = Math.max(aa.length, bb.length);
+            var str1, str2, type1, type2;
+            while(i < l) {
+                str1 = (!isNaN(parseFloat(aa[i])) && isFinite(aa[i])) ? parseInt(aa[i]) : aa[i];
+                str2 = (!isNaN(parseFloat(bb[i])) && isFinite(bb[i])) ? parseInt(bb[i]) : bb[i];
+                type1 = typeof(str1);
+                type2 = typeof(str2);
+                if (type1 !== type2) {
+                    if (type1 === "undefined") {
+                        return 1;
+                    } else if (type2 === "undefined") {
+                        return -1;
+                    } else if (type1 === "object") {
+                        return 1;
+                    } else if (type2 === "object") {
+                        return -1;
+                    } else if (type1 === "number") {
+                        str1 = str1.toString(10);
+                        type1 = typeof(str1);
+                    } else if (type2 === "number") {
+                        str2 = str2.toString(10);
+                        type2 = typeof(str2);
+                    }
                 }
-                if (typeof(ch1) === "undefined") {
-                    return -1;
-                }
-                if (ch1 > ch2) {
-                    return 1;
-                }
-                if (ch1 < ch2) {
-                    return -1;
+                if (type1 === "number") {
+                    if (str1 > str2) {
+                        return 1;
+                    }
+                    if (str1 < str2) {
+                        return -1;
+                    }
+                } else if (type1 === "string") {
+                    if (str1.localeCompare(str2, "en", {sensitivity: "base"}) > 0) {
+                        return 1;
+                    }
+                    if (str2.localeCompare(str1, "en", {sensitivity: "base"}) > 0) {
+                        return -1;
+                    }
                 }
                 i++;
             }

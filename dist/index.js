@@ -1677,21 +1677,30 @@
                     case "$exists":
                         return dvt !== "undefined" || dvt !== "null";
                     default:
+                        if (dvt === "array") {
+                            if (qvt === "array") {
+                                if (dv.length !== qv.length) {
+                                    return false;
+                                }
+                                for (i = 0; i < dv.length; i++) {
+                                    if (!matchValue(null, dv[i], qv[i])) {
+                                        return false;
+                                    }
+                                }
+                                return true;
+                            } else {
+                                for (i = 0; i < dv.length; i++) {
+                                    if (matchValue(null, dv[i], qv)) {
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            }
+                        }
                         if (dvt !== qvt) {
                             return false;
                         }
-                        if (dvt === "array") {
-                            if (dv.length !== qv.length) {
-                                return false;
-                            }
-                            for (i = 0; i < dv.length; i++) {
-                                if (!matchValue(null, dv[i], qv[i])) {
-                                    return false;
-                                }
-                            }
-                            return true;
-                        }
-                        if (dvt === "object") {
+                        if (dvt === "object" && qvt === "object") {
                             return JSON.stringify(dv) === JSON.stringify(qv);
                         }
                         return dv === qv;

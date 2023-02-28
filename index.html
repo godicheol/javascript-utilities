@@ -250,22 +250,20 @@
             };
             var query = {
                 $and: [{
-                    $and: [{
-                        $and: [{
-                            id: 1
-                        }, {
-                            $or: [{
-                                key: {
-                                    $gt: 1,
-                                    $lt: 3
-                                },
-                            }, {
-                                width: {
-                                    $gt: 5
-                                }
-                            }]
-                        }],
+                    id: 1
+                }, {
+                    $or: [{
+                        key: {
+                            $gt: 1,
+                            $lt: 3
+                        },
+                    }, {
+                        width: {
+                            $gt: 5
+                        }
                     }]
+                }, {
+                    array: 3
                 }],
                 attr: {
                     width: {
@@ -278,10 +276,6 @@
                         $lt: 15
                     }
                 },
-                $and: [{
-                    array: [1,2,3,4,5],
-                    array: [1,2,3,4,5],
-                }]
             }
             var res = utils.queryObject(obj, query);
 

@@ -1555,7 +1555,7 @@
             }
         },
         /**
-         * 
+         * deprecated
          * @param {Object} dataObject 
          * @param {Object} queryObject 
          * @returns 

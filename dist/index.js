@@ -465,13 +465,7 @@
                     arr.push("array"); // ["str"]
                 }
             } else if (typeof(any) === "number") {
-                if (isNaN(any)) {
-                    arr.push("boolean"); // false
-                    arr.push("number"); // 0
-                    arr.push("string"); // "NaN"
-                    arr.push("object"); // {}
-                    arr.push("array"); // []
-                } else {
+                if (!isNaN(any) && isFinite(any)) {
                     arr.push("boolean"); // false, true
                     arr.push("number"); // ?
                     arr.push("string"); // "?"
@@ -551,15 +545,7 @@
                     }
                 }
             } else if (typeof(any) === "number") {
-                if (isNaN(any)) {
-                    switch(type) {
-                        case "boolean": return false;
-                        case "number": return 0;
-                        case "string": return "NaN";
-                        case "object": return {};
-                        case "array": return [];
-                    }
-                } else {
+                if (!isNaN(any) && isFinite(any)) {
                     switch(type) {
                         case "boolean": return any > 0;
                         case "number": return any;
@@ -583,11 +569,10 @@
                     case "object": return {};
                     case "array": return [];
                 }
-            } else {
-                var err = new Error('invalid argument type');
-                err.name = "TypeError";
-                throw err;
             }
+            var err = new Error('invalid argument type');
+            err.name = "TypeError";
+            throw err;
         },
         /**
          * deprecated

@@ -4846,16 +4846,16 @@
             }
             var parse = function(obj) {
                 return Object.entries(obj).reduce(function(prev, [key, value]) {
+                    var lastKey = key.split("\.").pop();
+                    var valueType = getType(value);
+
                     if (!isValidValue(key, value)) {
                         var err = new Error('invalid argument type');
                         err.name = "TypeError";
                         throw err;
                     }
-
-                    var lastKey = key.split("\.").pop();
-                    var type = getType(value);
                     if (!isOperator(lastKey)) {
-                        if (type === "object") {
+                        if (valueType === "object") {
                             value = parse(value);
                         } else {
                             value = {
@@ -4884,10 +4884,13 @@
 
             return parse(query);
         },
+        /**
+         * 
+         * @param {Object} data 
+         * @param {Object} query 
+         * @returns 
+         */
         execQuery: function(data, query) {
-            var isOperator = function(str) {
-                return /^\$(and|or|nor|not|eq|ne|in|nin|gt|gte|lt|lte|exists)$/.test(str);
-            }
             var getType = function(any) {
                 if (typeof(any) === "object") {
                     if (Object.prototype.toString.call(any) === '[object Array]') {
@@ -4907,88 +4910,137 @@
                     return typeof(any);
                 }
             }
-            var calc1 = function(a, b, operator) {
-                var t1 = getType(a);
-                var t2 = getType(b);
-                switch(operator) {
-                    case "$eq": 
-                    case "$ne": 
-                    case "$gt":
-                    case "$gte": 
-                    case "$lt": 
-                    case "$lte": 
-                        if (t1 !== t2) {
-                            var err = new Error('invalid argument type');
-                            err.name = "TypeError";
-                            throw err;
-                        }
-                        break;
-                    case "$in": 
-                    case "$nin":
-                        if (t2 !== "array") {
-                            var err = new Error('invalid argument type');
-                            err.name = "TypeError";
-                            throw err;
-                        }
-                        break;
-                    case "$exists":
-                        if (t2 !== "boolean") {
-                            var err = new Error('invalid argument type');
-                            err.name = "TypeError";
-                            throw err;
-                        }
-                        break;
+            var isOperator = function(str) {
+                return /^\$(and|or|nor|not|eq|ne|in|nin|gt|gte|lt|lte|exists)$/.test(str);
+            }
+            var chkArrayValues = function(arr, types) {
+                var type = getType(arr[0]);
+                var i = 1;
+                var l = arr.length;
+                if (l < 1) {
+                    return true;
                 }
+                if (types.indexOf(type) < 0) {
+                    return false;
+                }
+                while(i < l) {
+                    if (type !== getType(arr[i++])) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            var isValidValue = function(key, value) {
+                var valueType = getType(value);
+                if (/^\$(and|or|nor)$/.test(key)) {
+                    if (valueType !== "array") {
+                        return false;
+                    } else {
+                        return chkArrayValues(value, ["object"]);
+                    }
+                } else if (/^\$(not)$/.test(key)) {
+                    if (valueType !== "object") {
+                        return false;
+                    }
+                } else if (/^\$(in|nin)$/.test(key)) {
+                    if (valueType !== "array") {
+                        return false;
+                    } else {
+                        return chkArrayValues(value, ["number", "string"]);
+                    }
+                } else if (/^\$(gt|gte|lt|lte)$/.test(key)) {
+                    if (valueType !== "number") {
+                        return false;
+                    }
+                } else if (/^\$(eq|ne)$/.test(key)) {
+                    if (valueType === "object") {
+                        return false;
+                    }
+                } else if (/^\$(exists)$/.test(key)) {
+                    if (valueType !== "boolean") {
+                        return false;
+                    }
+                } else if (valueType === "array") {
+                    return chkArrayValues(value, ["number", "string"]);
+                }
+                return true;
+            }
+            var equals = function(a, b) {
+                var dataType = getType(a);
+                var queryType = getType(b);
+                if (dataType !== queryType) {
+                    return false;
+                }
+                switch(dataType) {
+                    case "string":
+                    case "number":
+                        return a === b;
+                    case "object":
+                        return exec(a, b);
+                    case "array":
+                        if (a.length !== b.length) {
+                            return false;
+                        }
+                        var i = 0;
+                        var l = a.length;
+                        while(i < l) {
+                            if (a[i] !== b[i]) {
+                                return false;
+                            }
+                            i++;
+                        }
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+            var calc = function(a, b, operator) {
                 switch(operator) {
-                    case "$eq": return a === b;
-                    case "$ne": return a !== b;
+                    case "$and": return b.reduce(function(p, c) {
+                            return p && exec(a, c);
+                        }, true);
+                    case "$or": return b.reduce(function(p, c) {
+                            return p || exec(a, c);
+                        }, false);
+                    case "$nor": return b.reduce(function(p, c) {
+                            return p && !exec(a, c);
+                        }, true);
+                    case "$not": return !exec(a, b);
+                    case "$eq": return equals(a, b);
+                    case "$ne": return !equals(a, b);
                     case "$in": return b.indexOf(a) > -1;
                     case "$nin": return b.indexOf(a) < 0;
                     case "$gt": return a > b;
                     case "$gte": return a >= b;
                     case "$lt": return a < b;
                     case "$lte": return a <= b;
-                    case "$exists": return b ? (getType(a) !== "null" || getType(a) !== "undefined") : 
-                                            (getType(a) === "null" || getType(a) === "undefined");
-                    default:
-                        var err = new Error('invalid argument type');
-                        err.name = "TypeError";
-                        throw err;
-                }
-            }
-            var calc2 = function(a, b, operator) {
-                var t1 = getType(a);
-                var t2 = getType(b);
-                switch(operator) {
-                    case "$and":
-                    case "$or":
-                    case "$nor":
-                        if (t2 !== "array") {
-                            var err = new Error('invalid argument type');
-                            err.name = "TypeError";
-                            throw err;
-                        }
-                        break;
-                    case "$not":
-                        if (t2 !== "object") {
-                            var err = new Error('invalid argument type');
-                            err.name = "TypeError";
-                            throw err;
-                        }
-                        break;
-                }
-                switch(operator) {
-                    case "$and": break;
-                    case "$or": break;
-                    case "$nor": break;
-                    case "$not": break;
+                    case "$exists": return b ? (getType(a) !== "null" && getType(a) !== "undefined") : 
+                                               (getType(a) === "null" || getType(a) === "undefined");
+                    default: return false;
                 }
             }
             var exec = function(a, b) {
-                Object.entries(b).forEach(function([key, value]) {
-                    
-                })
+                return Object.entries(b).reduce(function(prev, [key, value]) {
+                    if (!isValidValue(key, value)) {
+                        var err = new Error('invalid argument type');
+                        err.name = "TypeError";
+                        throw err;
+                    }
+
+                    var res;
+                    if (isOperator(key)) {
+                        res = calc(a, value, key);
+                    } else if (typeof(a[key]) !== "undefined") {
+                        res = exec(a[key], value);
+                    } else {
+                        res = false;
+                    }
+                
+                    return prev && res;
+                }, true);
             }
+
+            return exec(data, query);
         },
         
 

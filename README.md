@@ -19,4 +19,49 @@ utils.reducePromises([1,2,3,4,5], function(prev, curr, index) {
 });
 ```
 
+### utils.parseQuery(object)
+### utils.execQuery(data, query)
+```js
+var data = {
+    id: 1,
+    name: "raccoon",
+    size: {
+        height: 20,
+        weight: 100,
+    },
+    array: [1,2,3]
+}
+var query = {
+    id: {
+        $lt: 2
+    },
+    name: {
+        $in: ["raccoon", "abcdefg"]
+    },
+    $and: [{
+        size: {
+            height: {
+                $ne: 19
+            }
+        }
+    }, {
+        size: {
+            $or: [{
+                weight: {
+                    $lt: 120
+                }
+            }, {
+                height: {
+                    $gt: 9999
+                }
+            }]
+        }
+    }],
+    array: [1,2,3]
+}
+
+query = utils.parseQuery(query);
+var res = utils.execQuery(data, query);
+// res === true
+```
 

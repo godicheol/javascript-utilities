@@ -359,47 +359,25 @@
         (function() {
             var obj = {
                 id: 1,
-                attr: {
-                    width: 33,
-                    height: 66,
+                name: "raccoon",
+                size: {
+                    height: 20,
+                    weight: 100,
                 },
-                arr: [1,2,3]
+                array: [1,2,3]
             }
-
             var query = {
                 id: 1,
-                attr: {
-                    "width.up": 5
-                },
-                $and: [{
-                    $or: [{
-                        width: 5
-                    }, {
-                        width: {
-                            $gt: 5
-                        }
-                    }]
-                }, {
-                    height: {
-                        $not: {
-                            up: {
-                                $gt: 1
-                            }
-                        }
-                    }
-                }],
-                arr2: {
-                    $in: [1,2,3]
-                }
+                array: [1,2,3]
             }
 
-            var res = utils.parseQuery(query);
+            query = utils.parseQuery(query);
 
-            console.log("utils.parseQuery", res);
+            console.log("utils.parseQuery", query);
 
-            var res2 = utils.execQuery(obj, query);
+            var res = utils.execQuery(obj, query);
 
-            console.log("utils.execQuery", res2);
+            console.log("utils.execQuery", res);
 
         })();
     </script>

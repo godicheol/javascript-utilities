@@ -367,17 +367,22 @@
                 array: [1,2,3]
             }
             var query = {
-                id: 1,
+                id: {
+                    $lt: 2
+                },
+                $and: [{
+                    name: "raccoon"
+                }, {
+                    name: {
+                        $in: ["raccoon", "abcd"]
+                    }
+                }],
                 array: [1,2,3]
             }
 
-            query = utils.parseQuery(query);
+            var res2 = utils.execQuery(obj, query);
 
-            console.log("utils.parseQuery", query);
-
-            var res = utils.execQuery(obj, query);
-
-            console.log("utils.execQuery", res);
+            console.log("utils.execQuery", res2);
 
         })();
     </script>

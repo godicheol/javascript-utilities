@@ -4679,91 +4679,7 @@
             var l = base64.length - base64.indexOf('\,') + 1;
             var p = (base64.charAt(base64.length - 2) === "\=") ? 2 : ((base64.charAt(base64.length - 1) === "\=") ? 1 : 0);
             return l * 0.75 - p;
-        },
-        /**
-         * test 
-         * @param {Object} object 
-         */
-        parseObject: function(object) {
-            var getType = function(src) {
-                if (typeof(src) === "object") {
-                    if (Object.prototype.toString.call(src) === '[object Array]') {
-                        return "array";
-                    } else if (src === null) {
-                        return "null";
-                    } else {
-                        return "object";
-                    }
-                } else if (typeof(src) === "number") {
-                    if (isNaN(src)) {
-                        return "NaN";
-                    } else {
-                        return "number";
-                    }
-                } else {
-                    return typeof(src);
-                }
-            }
-            var join = function(arr) {
-                return arr.reduce(function(prev, curr) {
-                    return curr ? curr.split(/\./)
-                        .filter(Boolean)
-                        .reduce(function(p, c) {
-                            p.push(c);
-                            return p;
-                        }, prev) : prev;
-                }, []).join("\.") || "";
-            }
-            var parseObject = function(path, obj) {
-                return Object.entries(obj).reduce(function(prev, [key, value]) {
-                    if (getType(value) === "array") {
-                        // path, [1,2,3,4]
-                        // path, [{a: 1}, {b: 2}]
-                        parseArray(key, value).forEach(function([_key, _value]) {
-                            // console.log(path, _key)
-                            prev.push([join([path, _key]), _value]);
-                        });
-                    } else if (getType(value) === "object") {
-                        // path, {w: 1, h: 2}
-                        parseObject(key, value).forEach(function([_key, _value]) {
-                            prev.push([join([path, _key]), _value]);
-                        });
-                    } else {
-                        // path, 1
-                        var operator = /^\$[^.]*$/.test(key) ? null : "$eq";
-                        prev.push([join([path, key, operator]), value]);
-                    }
-                    return prev;
-                }, []);
-            }
-            var parseArray = function(path, arr) {
-                var type = getType(arr[0]);
-                return arr.reduce(function(prev, curr) {
-                    if (type !== getType(curr)) {
-                        var err = new Error('invalid argument type');
-                        err.name = "TypeError";
-                        throw err;
-                    }
-                    if (getType(curr) === "object") {
-                        if (!(/\$[^.]*$/.test(path))) {
-                            var err = new Error('invalid argument type');
-                            err.name = "TypeError";
-                            throw err;
-                        }
-                        // [{a: 1}, {b: 2}]
-                        parseObject(path, curr).forEach(function([_key, _value]) {
-                            prev.push([_key, _value]);
-                        });
-                    } else {
-                        // ["1","2","3","4"]
-                        // [1,2,3,4]
-                        prev.push([path, curr]);
-                    }
-                    return prev;
-                }, []);
-            }
-            return parseObject("", object);
-        },
+        }, 
         /**
          * 
          * @param {Object} query 
@@ -4994,6 +4910,43 @@
                         return false;
                 }
             }
+            var parse = function(obj) {
+                return Object.entries(obj).reduce(function(prev, [key, value]) {
+                    var lastKey = key.split("\.").pop();
+                    var valueType = getType(value);
+
+                    if (!isValidValue(key, value)) {
+                        var err = new Error('invalid argument type');
+                        err.name = "TypeError";
+                        throw err;
+                    }
+                    if (!isOperator(lastKey)) {
+                        if (valueType === "object") {
+                            value = parse(value);
+                        } else {
+                            value = {
+                                "$eq": value
+                            }
+                        }
+                    } else if (/^\$(and|or|nor)$/.test(lastKey)) {
+                        value = value.map(function(e) {
+                            return parse(e);
+                        });
+                    }
+
+                    var keys = key.split("\.");
+                    var i = keys.length-1;
+                    while(i > 0) {
+                        value = {
+                            [keys[i--]]: value
+                        }
+                    }
+
+                    prev[keys[i]] = value;
+
+                    return prev;
+                }, {});
+            }
             var calc = function(a, b, operator) {
                 switch(operator) {
                     case "$and": return b.reduce(function(p, c) {
@@ -5040,7 +4993,7 @@
                 }, true);
             }
 
-            return exec(data, query);
+            return exec(data, parse(query));
         },
         
 

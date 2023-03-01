@@ -4714,7 +4714,6 @@
                 $ne: [/^.*$/],
                 $exists: [/^(?!object|array).*$/],
                 $regexp: [/^regexp$/],
-                // type
                 boolean: [/^boolean*$/],
                 number: [/^number*$/],
                 string: [/^string*$/],

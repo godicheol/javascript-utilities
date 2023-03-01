@@ -19,8 +19,7 @@ utils.reducePromises([1,2,3,4,5], function(prev, curr, index) {
 });
 ```
 
-### utils.parseQuery(object)
-### utils.execQuery(data, query)
+### utils.parseQuery(object), utils.execQuery(data, query)
 ```js
 var data = {
     id: 1,

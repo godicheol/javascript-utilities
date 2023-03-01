@@ -4773,6 +4773,25 @@
             var isOperator = function(str) {
                 return /^\$(and|or|nor|not|eq|ne|in|nin|gt|gte|lt|lte|exists)$/.test(str);
             }
+            var getType = function(any) {
+                if (typeof(any) === "object") {
+                    if (Object.prototype.toString.call(any) === '[object Array]') {
+                        return "array";
+                    } else if (any === null) {
+                        return "null";
+                    } else {
+                        return "object";
+                    }
+                } else if (typeof(any) === "number") {
+                    if (isNaN(any)) {
+                        return "NaN";
+                    } else {
+                        return "number";
+                    }
+                } else {
+                    return typeof(any);
+                }
+            }
             var chkArrayValues = function(arr, types) {
                 var type = getType(arr[0]);
                 var i = 1;
@@ -4825,25 +4844,6 @@
                 }
                 return true;
             }
-            var getType = function(any) {
-                if (typeof(any) === "object") {
-                    if (Object.prototype.toString.call(any) === '[object Array]') {
-                        return "array";
-                    } else if (any === null) {
-                        return "null";
-                    } else {
-                        return "object";
-                    }
-                } else if (typeof(any) === "number") {
-                    if (isNaN(any)) {
-                        return "NaN";
-                    } else {
-                        return "number";
-                    }
-                } else {
-                    return typeof(any);
-                }
-            }
             var parse = function(obj) {
                 return Object.entries(obj).reduce(function(prev, [key, value]) {
                     var lastKey = key.split("\.").pop();
@@ -4891,6 +4891,9 @@
          * @returns 
          */
         execQuery: function(data, query) {
+            var isOperator = function(str) {
+                return /^\$(and|or|nor|not|eq|ne|in|nin|gt|gte|lt|lte|exists)$/.test(str);
+            }
             var getType = function(any) {
                 if (typeof(any) === "object") {
                     if (Object.prototype.toString.call(any) === '[object Array]') {
@@ -4909,9 +4912,6 @@
                 } else {
                     return typeof(any);
                 }
-            }
-            var isOperator = function(str) {
-                return /^\$(and|or|nor|not|eq|ne|in|nin|gt|gte|lt|lte|exists)$/.test(str);
             }
             var chkArrayValues = function(arr, types) {
                 var type = getType(arr[0]);

@@ -56,7 +56,11 @@ var query = {
             }]
         }
     }],
-    array: [1,2,3]
+    array: {
+        $not: {
+            $eq: [1,2]
+        }
+    }
 }
 
 var res = utils.execQuery(data, query);

@@ -358,7 +358,7 @@
         /* test */
         (function() {
             var obj = {
-                id: 1,
+                id: 12,
                 name: "raccoon",
                 size: {
                     height: 20,
@@ -367,14 +367,9 @@
                 array: [1,2,3]
             }
             var query = {
-                name: {
-                    $in: ["raccoon", "abcdefg"],
-                    $nin: ["a", "racoon"]
-                },
-                size: {
-                    height: {
-                        $gt: 10,
-                        $lt: 30
+                array: {
+                    $not: {
+                        $length: 3
                     }
                 }
             }

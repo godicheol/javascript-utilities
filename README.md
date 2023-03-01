@@ -24,6 +24,7 @@ utils.reducePromises([1,2,3,4,5], function(prev, curr, index) {
 var data = {
     id: 1,
     name: "raccoon",
+    type: "animal",
     size: {
         height: 20,
         weight: 100,
@@ -34,8 +35,10 @@ var query = {
     id: 1,
     name: {
         $in: ["raccoon", "abcdefg"],
-        $nin: ["dog", "cat"]
+        $nin: ["dog", "cat"],
+        $regexp: /raccoon/
     },
+    type: /^ani/,
     $and: [{
         size: {
             height: {
@@ -60,7 +63,11 @@ var query = {
     array: {
         $not: {
             $eq: [1,2]
-        }
+        },
+        $length: 3,
+        $length$gt: 2,
+        $length$lt: 4,
+        $element: 3,
     }
 }
 

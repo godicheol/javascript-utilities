@@ -31,11 +31,10 @@ var data = {
     array: [1,2,3]
 }
 var query = {
-    id: {
-        $lt: 2
-    },
+    id: 1,
     name: {
-        $in: ["raccoon", "abcdefg"]
+        $in: ["raccoon", "abcdefg"],
+        $nin: ["dog", "cat"]
     },
     $and: [{
         size: {
@@ -47,11 +46,13 @@ var query = {
         size: {
             $or: [{
                 weight: {
-                    $lt: 120
+                    $gt: 90,
+                    $lt: 110
                 }
             }, {
                 height: {
-                    $gt: 9999
+                    $gte: 20,
+                    $lte: 20
                 }
             }]
         }

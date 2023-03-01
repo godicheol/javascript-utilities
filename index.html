@@ -367,9 +367,14 @@
                 array: [1,2,3]
             }
             var query = {
-                array: {
-                    $not: {
-                        $eq: [1,2,3]
+                name: {
+                    $in: ["raccoon", "abcdefg"],
+                    $nin: ["a", "racoon"]
+                },
+                size: {
+                    height: {
+                        $gt: 10,
+                        $lt: 30
                     }
                 }
             }

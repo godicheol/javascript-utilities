@@ -427,57 +427,167 @@
             }
         },
         /**
-         * deprecated
-         * @param {Any} src 
-         * @param {String} type string, number, array, object, null, undefined, NaN, number-array, string-array, object-array
+         * With setType()
+         * @param {Any} any 
+         * @param {String} type string, number, array, object, null, undefined
          * @returns 
          */
-        chkType: function(src, type) {
-            var getType = function(x) {
-                if (typeof(x) === "object") {
-                    if (Object.prototype.toString.call(x) === '[object Array]') {
-                        return "array";
-                    } else if (x === null) {
-                        return "null";
-                    } else {
-                        return "object";
+        chkType: function(any, type) {
+            var arr = [];
+            if (typeof(any) === "object") {
+                if (Object.prototype.toString.call(any) === '[object Array]') {
+                    arr.push("boolean"); // false, true
+                    arr.push("number"); // any.length
+                    arr.push("object"); // {}
+                    arr.push("array"); // []
+                } else if (any === null) {
+                    arr.push("null"); // null
+                    arr.push("boolean"); // false
+                    arr.push("number"); // 0
+                    arr.push("string"); // "null"
+                    arr.push("array"); // [null]
+                } else {
+                    arr.push("boolean"); // false, true
+                    arr.push("number"); // Object.keys({}).length
+                    arr.push("string"); // key=value;key=value
+                    arr.push("object"); // {}
+                    arr.push("array"); // [[key, value]]
+                }
+            } else if (typeof(any) === "string") {
+                if (!isNaN(parseFloat(any)) && isFinite(any)) {
+                    arr.push("boolean"); // false, true
+                    arr.push("number"); // 0
+                    arr.push("string"); // "str"
+                    arr.push("array"); // ["str"]
+                } else {
+                    arr.push("boolean"); // false, true
+                    arr.push("string"); // "str"
+                    arr.push("array"); // ["str"]
+                }
+            } else if (typeof(any) === "number") {
+                if (isNaN(any)) {
+                    arr.push("boolean"); // false
+                    arr.push("number"); // 0
+                    arr.push("string"); // "NaN"
+                    arr.push("object"); // {}
+                    arr.push("array"); // []
+                } else {
+                    arr.push("boolean"); // false, true
+                    arr.push("number"); // ?
+                    arr.push("string"); // "?"
+                    arr.push("array"); // []
+                }
+            } else if (typeof(any) === "boolean") {
+                arr.push("boolean"); // false, true
+                arr.push("number"); // 0, 1
+                arr.push("string"); // "false", "true"
+                arr.push("array"); // [true]
+            } else if (typeof(any) === "undefined") {
+                arr.push("null"); // null
+                arr.push("boolean"); // false
+                arr.push("number"); // 0
+                arr.push("string"); // ""
+                arr.push("object"); // {}
+                arr.push("array"); // []
+            } else {
+                var err = new Error('invalid argument type');
+                err.name = "TypeError";
+                throw err;
+            }
+
+            return arr.indexOf(type.toLowerCase()) > -1;
+        },
+        /**
+         *
+         * @param {Any} any 
+         * @param {String} type string, number, array, object, null, undefined
+         * @returns 
+         */
+        setType: function(any, type) {
+            var arr = [];
+            if (typeof(any) === "object") {
+                if (Object.prototype.toString.call(any) === '[object Array]') {
+                    switch(type) {
+                        case "boolean": return any.length > 0;
+                        case "number": return any.length;
+                        case "object": return any.reduce(function(p, c, i) {
+                                p[i] = c;
+                                return p;
+                            }, {});
+                        case "array": return any;
                     }
-                } else if (typeof(x) === "number") {
-                    if (isNaN(x)) {
-                        return "NaN";
-                    } else {
-                        return "number";
+                } else if (any === null) {
+                    switch(type) {
+                        case "null": return null;
+                        case "boolean": return false;
+                        case "number": return 0;
+                        case "string": return "null";
+                        case "array": return [null];
                     }
                 } else {
-                    return typeof(x);
-                }
-            }
-
-            var types = type.split(/[\!\@\#\$\%\^\&\*\)\(\+\=\.\<\>\{\}\[\]\:\;\'\"\|\~\`\_\-\s]/);
-            var type1 = getType(src);
-            var type2;
-            var i;
-            var l;
-            if (type1 === "array") {
-                type2 = getType(src[0]);
-                i = 1;
-                l = src.length;
-                while(i < l) {
-                    if (type2 !== getType(src[i++])) {
-                        type2 = undefined;
-                        break;
+                    switch(type) {
+                        case "boolean": return Object.keys(any).length !== 0;
+                        case "number": return Object.keys(any).length;
+                        case "string": return Object.entries(any).reduce(function(p, [k, v]) {
+                                return p+k+"\="+v+"\;";
+                            }, "");
+                        case "object": return any;
+                        case "array": return Object.entries(any);
                     }
                 }
-            } else if (type1 === "string") {
-                if (!isNaN(parseFloat(src)) && isFinite(src)) {
-                    type2 = "number";
+            } else if (typeof(any) === "string") {
+                if (!isNaN(parseFloat(any)) && isFinite(any)) {
+                    switch(type) {
+                        case "boolean": return parseFloat(any) > 0;
+                        case "number": return parseFloat(any);
+                        case "string": return any;
+                        case "array": return [any];
+                    }
+                } else {
+                    switch(type) {
+                        case "boolean": return (any === "true" || any === "false") ? any === "true" : any !== "";
+                        case "string": return any;
+                        case "array": return [any];
+                    }
                 }
+            } else if (typeof(any) === "number") {
+                if (isNaN(any)) {
+                    switch(type) {
+                        case "boolean": return false;
+                        case "number": return 0;
+                        case "string": return "NaN";
+                        case "object": return {};
+                        case "array": return [];
+                    }
+                } else {
+                    switch(type) {
+                        case "boolean": return any > 0;
+                        case "number": return any;
+                        case "string": return any.toString(10);
+                        case "array": return [any];
+                    }
+                }
+            } else if (typeof(any) === "boolean") {
+                switch(type) {
+                    case "boolean": return any;
+                    case "number": return any ? 1 : 0;
+                    case "string": return any ? "true" : "false";
+                    case "array": return [any];
+                }
+            } else if (typeof(any) === "undefined") {
+                switch(type) {
+                    case "null": return null;
+                    case "boolean": return false;
+                    case "number": return 0;
+                    case "string": return "";
+                    case "object": return {};
+                    case "array": return [];
+                }
+            } else {
+                var err = new Error('invalid argument type');
+                err.name = "TypeError";
+                throw err;
             }
-
-            return types.length === 2 ? 
-                (type1 === types[1] && type2 === types[0]) || 
-                (type1 !== types[1] && type2 === types[0]) :
-                (type1 === types[0]);
         },
         /**
          * deprecated
@@ -535,69 +645,13 @@
             return types;
         },
         /**
-         * ddeprecated
-         * @param {Any} any 
-         * @param {String} type 
-         * @returns 
-         */
-        checkType: function(src, type) {
-            var types = [];
-            if (typeof(src) === "object") {
-                if (Object.prototype.toString.call(src) === '[object Array]') {
-                    types.push("array");
-                    if (src.length === 0) {
-                        types.push("empty");
-                    }
-                } else if (src === null) {
-                    types.push("null");
-                } else {
-                    types.push("object");
-                    if (Object.keys(src).length === 0) {
-                        types.push("empty");
-                    }
-                }
-            } else if (typeof(src) === "string") {
-                types.push("string");
-                if (!isNaN(parseFloat(src)) && isFinite(src)) {
-                    types.push("number");
-                    if (parseFloat(src) % 1 === 0) {
-                        types.push("int");
-                    } else {
-                        types.push("float");
-                    }
-                } else if (src === "null") {
-                    types.push("null");
-                } else if (src === "undefined") {
-                    types.push("undefined");
-                }
-            } else if (typeof(src) === "number") {
-                types.push("number");
-                if (isNaN(src)) {
-                    types.push("NaN");
-                } else if (src % 1 === 0) {
-                    types.push("int");
-                } else {
-                    types.push("float");
-                }
-                if (src === 1 || src === 0 || src === -1) {
-                    types.push("boolean");
-                }
-            } else if (typeof(src) === "undefined") {
-                types.push("undefined");
-                types.push("empty");
-            } else {
-                types.push(typeof(src));
-            }
-            return types.indexOf(type) > -1;
-        },
-        /**
          * deprecated
          * @param {Any} src 
          * @param {String} dst string, number, object, array
          * @param {Object} options null, undefined
          * @returns 
          */
-        setType: function(src, dst, options) {
+        setType2: function(src, dst, options) {
             var types = [];
             if (typeof(src) === "object") {
                 if (Object.prototype.toString.call(src) === '[object Array]') {
@@ -4731,13 +4785,14 @@
          * @param {Object} query 
          * @returns 
          */
-        getQuery: function(query) {
+        parseQuery: function(query) {
             var SCHEMA = {
-                $eq: "*",
-                $ne: "*",
                 $and: "array",
                 $or: "array",
                 $nor: "array",
+                $not: "object",
+                $eq: "*",
+                $ne: "*",
                 $in: "*",
                 $nin: "*",
                 $gt: "number",
@@ -4748,6 +4803,14 @@
             }
             var isOperator = function(str) {
                 return /^\$(and|or|nor|not|eq|ne|in|nin|gt|gte|lt|lte|exists)$/.test(str);
+            }
+            var isValid = function(key, value) {
+                if (/\.?\$(and|or|nor|not|eq|ne|in|nin|gt|gte|lt|lte|exists)$/.test(key)) {
+                    var tmp = key.split("\.").pop();
+                    return SCHEMA[tmp] === "*" || SCHEMA[tmp] === getType(value);
+                } else {
+                    return true;
+                }
             }
             var getType = function(any) {
                 if (typeof(any) === "object") {
@@ -4768,31 +4831,26 @@
                     return typeof(any);
                 }
             }
-            var chkKeyValue = function(key, value) {
-                if (/\.?\$(and|or|nor|not|eq|ne|in|nin|gt|gte|lt|lte|exists)$/.test(key)) {
-                    var tmp = key.split("\.").pop();
-                    return SCHEMA[tmp] === "*" || SCHEMA[tmp] === getType(value);
-                } else {
-                    return true;
-                }
-            }
-            var parseQuery = function(obj) {
+            var parse = function(obj) {
                 return Object.entries(obj).reduce(function(prev, [key, value]) {
-                    if (!chkKeyValue(key, value)) {
+                    if (!isValid(key, value)) {
                         var err = new Error('invalid argument type');
                         err.name = "TypeError";
                         throw err;
                     }
 
-                    if (getType(value) === "object") {
-                        value = parseQuery(value);
-                    } else if (getType(value) === "array") {
-                        value = value.map(function(e) {
-                            return parseQuery(e);
-                        });
-                    } else if (!isOperator(key)) {
-                        value = {
-                            "$eq": value
+                    var type = getType(value);
+                    if (!isOperator(key)) {
+                        if (type === "object") {
+                            value = parse(value);
+                        } else if (type === "array") {
+                            value = value.map(function(e) {
+                                return parse(e);
+                            });
+                        } else {
+                            value = {
+                                "$eq": value
+                            }
                         }
                     }
 
@@ -4811,8 +4869,110 @@
                 }, {});
             }
 
-            return parseQuery(query);
+            return parse(query);
         },
+        execQuery: function(data, query) {
+            var getType = function(any) {
+                if (typeof(any) === "object") {
+                    if (Object.prototype.toString.call(any) === '[object Array]') {
+                        return "array";
+                    } else if (any === null) {
+                        return "null";
+                    } else {
+                        return "object";
+                    }
+                } else if (typeof(any) === "number") {
+                    if (isNaN(any)) {
+                        return "NaN";
+                    } else {
+                        return "number";
+                    }
+                } else {
+                    return typeof(any);
+                }
+            }
+            var calc1 = function(a, b, operator) {
+                var t1 = getType(a);
+                var t2 = getType(b);
+                switch(operator) {
+                    case "$eq": 
+                    case "$ne": 
+                    case "$gt":
+                    case "$gte": 
+                    case "$lt": 
+                    case "$lte": 
+                        if (t1 !== t2) {
+                            var err = new Error('invalid argument type');
+                            err.name = "TypeError";
+                            throw err;
+                        }
+                        break;
+                    case "$in": 
+                    case "$nin":
+                        if (t2 !== "array") {
+                            var err = new Error('invalid argument type');
+                            err.name = "TypeError";
+                            throw err;
+                        }
+                        break;
+                    case "$exists":
+                        if (t2 !== "boolean") {
+                            var err = new Error('invalid argument type');
+                            err.name = "TypeError";
+                            throw err;
+                        }
+                        break;
+                }
+                switch(operator) {
+                    case "$eq": return a === b;
+                    case "$ne": return a !== b;
+                    case "$in": return b.indexOf(a) > -1;
+                    case "$nin": return b.indexOf(a) < 0;
+                    case "$gt": return a > b;
+                    case "$gte": return a >= b;
+                    case "$lt": return a < b;
+                    case "$lte": return a <= b;
+                    case "$exists": return b ? (getType(a) !== "null" || getType(a) !== "undefined") : 
+                                            (getType(a) === "null" || getType(a) === "undefined");
+                    default:
+                        var err = new Error('invalid argument type');
+                        err.name = "TypeError";
+                        throw err;
+                }
+            }
+            var calc2 = function(a, b, operator) {
+                var t1 = getType(a);
+                var t2 = getType(b);
+                switch(operator) {
+                    case "$and":
+                    case "$or":
+                    case "$nor":
+                        if (t2 !== "array") {
+                            var err = new Error('invalid argument type');
+                            err.name = "TypeError";
+                            throw err;
+                        }
+                        break;
+                    case "$not":
+                        if (t2 !== "object") {
+                            var err = new Error('invalid argument type');
+                            err.name = "TypeError";
+                            throw err;
+                        }
+                        break;
+                }
+                switch(operator) {
+                    case "$and": break;
+                    case "$or": break;
+                    case "$nor": break;
+                    case "$not": break;
+                }
+            }
+            var exec = function() {
+
+            }
+        },
+        
 
         getCorner: function(imageData) {
             // Harris Operator

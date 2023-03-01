@@ -380,7 +380,11 @@
                         }
                     }]
                 }, {
-                    height: 30
+                    height: {
+                        $not: {
+                            up: 1
+                        }
+                    }
                 }]
                 // attr: {
                 //     $and: [{
@@ -434,7 +438,14 @@
             //     }]
             // }
 
-            var res = utils.query(obj, query);
+            var res = utils.parseQuery(query);
+
+            console.log("utils.parseQuery", res);
+
+            var res2 = utils.execQuery(obj, query);
+
+            console.log("utils.execQuery", res2);
+
         })();
     </script>
 </body>

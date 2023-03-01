@@ -382,61 +382,16 @@
                 }, {
                     height: {
                         $not: {
-                            up: 1
+                            up: {
+                                $gt: 1
+                            }
                         }
                     }
-                }]
-                // attr: {
-                //     $and: [{
-                //         $or: [{
-                //             width: 33
-                //         }, {
-                //             width: 66
-                //         }]
-                //     }, {
-                //         $or: [{
-                //             height: {
-                //                 $gt: 33
-                //             }
-                //         }, {
-                //             height: 66
-                //         }]
-                //     }]
-                // },
-                // $or: [{
-                //     $and: [{
-                //         attr: {
-                //             width: 33
-                //         },
-                //     }, {
-                //         attr: {
-                //             height: {
-                //                 $gt: 55
-                //             }
-                //         }
-                //     }],
-                // }, {
-                //     $and: [{
-                //         attr: {
-                //             width: 33
-                //         },
-                //     }, {
-                //         attr: {
-                //             height: {
-                //                 $gt: 55
-                //             }
-                //         }
-                //     }],
-                // }]
+                }],
+                arr2: {
+                    $in: [1,2,3]
+                }
             }
-
-            // var query = {
-            //     arr: [{
-            //         width: 1,
-            //     }, {
-            //         height: 1
-            //     }]
-            // }
 
             var res = utils.parseQuery(query);
 

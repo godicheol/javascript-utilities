@@ -427,7 +427,7 @@
             }
         },
         /**
-         * With setType()
+         * with setType()
          * @param {Any} any 
          * @param {String} type string, number, array, object, null, undefined
          * @returns 
@@ -492,13 +492,12 @@
             return arr.indexOf(type.toLowerCase()) > -1;
         },
         /**
-         *
+         * with chkType
          * @param {Any} any 
          * @param {String} type string, number, array, object, null, undefined
          * @returns 
          */
         setType: function(any, type) {
-            var arr = [];
             if (typeof(any) === "object") {
                 if (Object.prototype.toString.call(any) === '[object Array]') {
                     switch(type) {
@@ -4771,31 +4770,60 @@
          * @returns 
          */
         parseQuery: function(query) {
-            var SCHEMA = {
-                $and: "array",
-                $or: "array",
-                $nor: "array",
-                $not: "object",
-                $eq: "*",
-                $ne: "*",
-                $in: "*",
-                $nin: "*",
-                $gt: "number",
-                $gte: "number",
-                $lt: "number",
-                $lte: "number",
-                $exists: "boolean",
-            }
             var isOperator = function(str) {
                 return /^\$(and|or|nor|not|eq|ne|in|nin|gt|gte|lt|lte|exists)$/.test(str);
             }
-            var isValid = function(key, value) {
-                if (/\.?\$(and|or|nor|not|eq|ne|in|nin|gt|gte|lt|lte|exists)$/.test(key)) {
-                    var tmp = key.split("\.").pop();
-                    return SCHEMA[tmp] === "*" || SCHEMA[tmp] === getType(value);
-                } else {
+            var chkArrayValues = function(arr, types) {
+                var type = getType(arr[0]);
+                var i = 1;
+                var l = arr.length;
+                if (l < 1) {
                     return true;
                 }
+                if (types.indexOf(type) < 0) {
+                    return false;
+                }
+                while(i < l) {
+                    if (type !== getType(arr[i++])) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            var isValidValue = function(key, value) {
+                var valueType = getType(value);
+                if (/^\$(and|or|nor)$/.test(key)) {
+                    if (valueType !== "array") {
+                        return false;
+                    } else {
+                        return chkArrayValues(value, ["object"]);
+                    }
+                } else if (/^\$(not)$/.test(key)) {
+                    if (valueType !== "object") {
+                        return false;
+                    }
+                } else if (/^\$(in|nin)$/.test(key)) {
+                    if (valueType !== "array") {
+                        return false;
+                    } else {
+                        return chkArrayValues(value, ["number", "string"]);
+                    }
+                } else if (/^\$(gt|gte|lt|lte)$/.test(key)) {
+                    if (valueType !== "number") {
+                        return false;
+                    }
+                } else if (/^\$(eq|ne)$/.test(key)) {
+                    if (valueType === "object") {
+                        return false;
+                    }
+                } else if (/^\$(exists)$/.test(key)) {
+                    if (valueType !== "boolean") {
+                        return false;
+                    }
+                } else if (valueType === "array") {
+                    return chkArrayValues(value, ["number", "string"]);
+                }
+                return true;
             }
             var getType = function(any) {
                 if (typeof(any) === "object") {
@@ -4818,37 +4846,37 @@
             }
             var parse = function(obj) {
                 return Object.entries(obj).reduce(function(prev, [key, value]) {
-                    if (!isValid(key, value)) {
+                    if (!isValidValue(key, value)) {
                         var err = new Error('invalid argument type');
                         err.name = "TypeError";
                         throw err;
                     }
 
+                    var lastKey = key.split("\.").pop();
                     var type = getType(value);
-                    if (!isOperator(key)) {
+                    if (!isOperator(lastKey)) {
                         if (type === "object") {
                             value = parse(value);
-                        } else if (type === "array") {
-                            value = value.map(function(e) {
-                                return parse(e);
-                            });
                         } else {
                             value = {
                                 "$eq": value
                             }
                         }
+                    } else if (/^\$(and|or|nor)$/.test(lastKey)) {
+                        value = value.map(function(e) {
+                            return parse(e);
+                        });
                     }
 
                     var keys = key.split("\.");
                     var i = keys.length-1;
-                    var tmp = value;
                     while(i > 0) {
-                        tmp = {
-                            [keys[i--]]: tmp
+                        value = {
+                            [keys[i--]]: value
                         }
                     }
 
-                    prev[keys[i]] = tmp;
+                    prev[keys[i]] = value;
 
                     return prev;
                 }, {});
@@ -4857,6 +4885,9 @@
             return parse(query);
         },
         execQuery: function(data, query) {
+            var isOperator = function(str) {
+                return /^\$(and|or|nor|not|eq|ne|in|nin|gt|gte|lt|lte|exists)$/.test(str);
+            }
             var getType = function(any) {
                 if (typeof(any) === "object") {
                     if (Object.prototype.toString.call(any) === '[object Array]') {
@@ -4953,8 +4984,10 @@
                     case "$not": break;
                 }
             }
-            var exec = function() {
-
+            var exec = function(a, b) {
+                Object.entries(b).forEach(function([key, value]) {
+                    
+                })
             }
         },
         

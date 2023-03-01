@@ -4699,8 +4699,252 @@
          * @returns 
          */
         execQuery: function(data, query) {
-            var isOperator = function(str) {
-                return /^\$(and|or|nor|not|eq|ne|in|nin|gt|gte|lt|lte|exists|regexp|length(\$(gt|gte|lt|lte)){0,1}|element)$/.test(str);
+            var QUERY_RULES = {
+                $and: [/^array$/, /^object$/],
+                $or: [/^array$/, /^object$/],
+                $nor: [/^array$/, /^object$/],
+                $not: [/^object$/],
+                $in: [/^array$/, /^(boolean|number|string|null|undefined)$/],
+                $nin: [/^array$/, /^(boolean|number|string|null|undefined)$/],
+                $gt: [/^number$/],
+                $gte: [/^number$/],
+                $lt: [/^number$/],
+                $lte: [/^number$/],
+                $eq: [/^.*$/],
+                $ne: [/^.*$/],
+                $exists: [/^(?!object|array).*$/],
+                $regexp: [/^regexp$/],
+                // type
+                boolean: [/^boolean*$/],
+                number: [/^number*$/],
+                string: [/^string*$/],
+                object: [/^object*$/],
+                array: [/^array*$/, /^(boolean|number|string|null|undefined)$/],
+                null: [/^null*$/],
+                regexp: [/^regexp$/],
+                undefined: [/^undefined*$/],
+            }
+            var OPERATORS = {
+                $and: function(a, b) {
+                    var i = 0;
+                    var l = b.length;
+                    while(i < l) {
+                        if (!exec(a, b[i++])) {
+                            return false;
+                        }
+                    }
+                    return true;
+                },
+                $or: function(a, b) {
+                    var i = 0;
+                    var l = b.length;
+                    while(i < l) {
+                        if (exec(a, b[i++])) {
+                            return true;
+                        }
+                    }
+                    return false;
+                },
+                $nor: function(a, b) {
+                    var i = 0;
+                    var l = b.length;
+                    while(i < l) {
+                        if (exec(a, b[i++])) {
+                            return false;
+                        }
+                    }
+                    return true;
+                },
+                $not: function(a, b) {
+                    return !exec(a, b);
+                },
+                $eq: function(a, b) {
+                    var dataType = getType(a);
+                    var queryType = getType(b);
+                    if (dataType !== queryType) {
+                        return false;
+                    }
+                    switch(dataType) {
+                        case "boolean":
+                        case "number":
+                        case "string":
+                        case "null":
+                        case "undefined":
+                            return a === b;
+                        case "object":
+                            return exec(a, b);
+                        case "array":
+                            if (a.length !== b.length) {
+                                return false;
+                            }
+                            var i = 0;
+                            var l = a.length;
+                            while(i < l) {
+                                if (a[i] !== b[i]) {
+                                    return false;
+                                }
+                                i++;
+                            }
+                            return true;
+                        default:
+                            // not allowed types
+                            return false;
+                    }
+                },
+                $ne: function(a, b) {
+                    var dataType = getType(a);
+                    var queryType = getType(b);
+                    if (dataType !== queryType) {
+                        return true;
+                    }
+                    switch(dataType) {
+                        case "boolean":
+                        case "number":
+                        case "string":
+                        case "null":
+                        case "undefined":
+                            return a !== b;
+                        case "object":
+                            return !exec(a, b);
+                        case "array":
+                            if (a.length !== b.length) {
+                                return true;
+                            }
+                            var i = 0;
+                            var l = a.length;
+                            while(i < l) {
+                                if (a[i] === b[i]) {
+                                    return false;
+                                }
+                                i++;
+                            }
+                            return true;
+                        default:
+                            // not allowed types
+                            return false;
+                    }
+                },
+                $in: function(a, b) {
+                    var dataType = getType(a);
+                    switch(dataType) {
+                        case "boolean":
+                        case "number":
+                        case "string":
+                        case "null":
+                            return b.indexOf(a) > -1;
+                        case "array":
+                            var i = 0;
+                            var l = b.length;
+                            while(i < l) {
+                                if (a.indexOf(b[i++]) < 0) {
+                                    return false;
+                                }
+                            }
+                            return true;
+                        default:
+                            return false;
+                    }
+                },
+                $nin: function(a, b) {
+                    var dataType = getType(a);
+                    switch(dataType) {
+                        case "boolean":
+                        case "number":
+                        case "string":
+                        case "null":
+                            return b.indexOf(a) < 0;
+                        case "array":
+                            var i = 0;
+                            var l = b.length;
+                            while(i < l) {
+                                if (a.indexOf(b[i++]) > -1) {
+                                    return false;
+                                }
+                            }
+                            return true;
+                        default:
+                            return false;
+                    }
+                },
+                $gt: function(a, b) {
+                    var dataType = getType(a);
+                    switch(dataType) {
+                        case "number":
+                            return a > b;
+                        case "string":
+                            return a.length > b;
+                        case "array":
+                            return a.length > b;
+                        default:
+                            return false;
+                    }
+                },
+                $gte: function(a, b) {
+                    var dataType = getType(a);
+                    switch(dataType) {
+                        case "number":
+                            return a >= b;
+                        case "string":
+                            return a.length >= b;
+                        case "array":
+                            return a.length >= b;
+                        default:
+                            return false;
+                    }
+                },
+                $lt: function(a, b) {
+                    var dataType = getType(a);
+                    switch(dataType) {
+                        case "number":
+                            return a < b;
+                        case "string":
+                            return a.length < b;
+                        case "array":
+                            return a.length < b;
+                        default:
+                            return false;
+                    }
+                },
+                $lte: function(a, b) {
+                    var dataType = getType(a);
+                    switch(dataType) {
+                        case "number":
+                            return a <= b;
+                        case "string":
+                            return a.length <= b;
+                        case "array":
+                            return a.length <= b;
+                        default:
+                            return false;
+                    }
+                },
+                $exists: function(a, b) {
+                    var dataType = getType(a);
+                    var queryType = getType(b);
+                    switch(queryType) {
+                        case "boolean":
+                            return (dataType !== "null" && dataType !== "undefined") === b;
+                        case "number":
+                            return (dataType !== "null" && dataType !== "undefined") === (b > 0);
+                        case "string":
+                            return (dataType !== "null" && dataType !== "undefined") === (b !== "0" && b !== "false" && b !== "");
+                        default:
+                            return false;
+                    }
+                },
+                $regexp: function(a, b) {
+                    var dataType = getType(a);
+                    switch(dataType) {
+                        case "number":
+                        case "string":
+                            return b.test(a);
+                        default:
+                            return false;
+                    }
+                },
+            }
+            var isOperator = function(key) {
+                return /^\$(and|or|nor|not|eq|ne|in|nin|gt|gte|lt|lte|exists|regexp)$/.test(key);
             }
             var getType = function(any) {
                 if (typeof(any) === "object") {
@@ -4725,174 +4969,93 @@
                     return typeof(any);
                 }
             }
-            var isValidArray = function(arr, types) {
-                var type = getType(arr[0]);
-                var i = 1;
-                var l = arr.length;
-                if (l < 1) {
-                    return true;
-                }
-                if (types.indexOf(type) < 0) {
+            var chkQuery = function(key, value) {
+                var type = getType(value);
+                var rule;
+                if (isOperator(key)) {
+                    rule = QUERY_RULES[key];
+                } else if (QUERY_RULES[type]) {
+                    rule = QUERY_RULES[type];
+                } else {
                     return false;
                 }
-                while(i < l) {
-                    if (type !== getType(arr[i++])) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-            var isValidValue = function(key, value) {
-                var valueType = getType(value);
-                if (/^\$(and|or|nor)$/.test(key)) {
-                    if (valueType !== "array") {
-                        return false;
-                    } else {
-                        return isValidArray(value, ["object"]);
-                    }
-                } else if (/^\$(not)$/.test(key)) {
-                    if (valueType !== "object") {
-                        return false;
-                    }
-                } else if (/^\$(in|nin)$/.test(key)) {
-                    if (valueType !== "array") {
-                        return false;
-                    } else {
-                        return isValidArray(value, ["number", "string"]);
-                    }
-                } else if (/^\$(gt|gte|lt|lte|length(\$(gt|gte|lt|lte)){0,1})$/.test(key)) {
-                    if (valueType !== "number") {
-                        return false;
-                    }
-                } else if (/^\$(eq|ne)$/.test(key)) {
-                    if (valueType === "object") {
-                        return false;
-                    }
-                } else if (/^\$(exists)$/.test(key)) {
-                    if (valueType !== "boolean") {
-                        return false;
-                    }
-                } else if (/^\$(regexp)$/.test(key)) {
-                    if (valueType !== "regexp") {
-                        return false;
-                    }
-                } else if (/^\$(element)$/.test(key)) {
-                    if (valueType !== "number" && valueType !== "string") {
-                        return false;
-                    }
-                } else if (valueType === "array") {
-                    return isValidArray(value, ["number", "string"]);
-                }
-                return true;
-            }
-            var equals = function(a, b) {
-                var dataType = getType(a);
-                var queryType = getType(b);
-                if (dataType !== queryType) {
+                if (!rule[0].test(type)) {
                     return false;
                 }
-                switch(dataType) {
-                    case "string":
-                    case "number":
-                        return a === b;
-                    case "object":
-                        return exec(a, b);
-                    case "array":
-                        if (a.length !== b.length) {
+                if (rule.length > 1) {
+                    // array
+                    var i = 0;
+                    var l = value.length;
+                    while(i < l) {
+                        if (!rule[1].test(getType(value[i++]))) {
                             return false;
                         }
-                        var i = 0;
-                        var l = a.length;
-                        while(i < l) {
-                            if (a[i] !== b[i]) {
-                                return false;
-                            }
-                            i++;
-                        }
-                        return true;
-                    default:
-                        return false;
+                    }
+                }
+                return true;
+            }
+            var setQuery = function(key, value) {
+                var type = getType(value);
+                if (!isOperator(key)) {
+                    switch(type) {
+                        case "object": return parse(value);
+                        case "regexp": return {"$regexp": value};
+                        default: return {"$eq": value};
+                    }
+                } else if (/^\$(and|or|nor)$/.test(key)) {
+                    return value.map(function(elem) {
+                        return parse(elem);
+                    });
+                } else {
+                    return value;
+                }
+            }
+            var setQeury2 = function(keys, value) {
+                var i = keys.length-1;
+                while(i > 0) {
+                    value = {
+                        [keys[i--]]: value
+                    }
+                }
+                return value;
+            }
+            var calc = function(a, b, operator) {
+                switch(operator) {
+                    case "$and": return OPERATORS.$and(a, b);
+                    case "$or": return OPERATORS.$or(a, b);
+                    case "$nor": return OPERATORS.$nor(a, b);
+                    case "$not": return OPERATORS.$not(a, b);
+                    case "$eq": return OPERATORS.$eq(a, b); // equal
+                    case "$ne": return OPERATORS.$ne(a, b); // not equal
+                    case "$in": return OPERATORS.$in(a, b); // include
+                    case "$nin": return OPERATORS.$nin(a, b); // exclude
+                    case "$gt": return OPERATORS.$gt(a, b); // greater than
+                    case "$gte": return OPERATORS.$gte(a, b); // greater than or equal
+                    case "$lt": return OPERATORS.$lt(a, b); // less than or equal
+                    case "$lte": return OPERATORS.$lte(a, b); // less than or equal
+                    case "$exists": return OPERATORS.$exists(a, b);
+                    case "$regexp": return OPERATORS.$regexp(a, b); // RegExp.test()
+                    default: return false;
                 }
             }
             var parse = function(obj) {
                 return Object.entries(obj).reduce(function(prev, [key, value]) {
-                    var lastKey = key.split("\.").pop();
-                    var valueType = getType(value);
-                    if (!isValidValue(key, value)) {
+                    var keys = key.split("\.");
+                    var lastKey = keys[keys.length-1];
+                    var firstKey = keys[0];
+                    if (!chkQuery(lastKey, value)) {
                         var err = new Error('invalid argument type');
                         err.name = "TypeError";
                         throw err;
                     }
-
-                    if (!isOperator(lastKey)) {
-                        if (valueType === "object") {
-                            value = parse(value);
-                        } else if (valueType === "regexp") {
-                            value = {
-                                "$regexp": value
-                            }
-                        } else {
-                            value = {
-                                "$eq": value
-                            }
-                        }
-                    } else if (/^\$(and|or|nor)$/.test(lastKey)) {
-                        value = value.map(function(e) {
-                            return parse(e);
-                        });
-                    }
-
-                    var keys = key.split("\.");
-                    var i = keys.length-1;
-                    while(i > 0) {
-                        value = {
-                            [keys[i--]]: value
-                        }
-                    }
-
-                    prev[keys[i]] = value;
+                    value = setQuery(lastKey, value);
+                    value = setQeury2(keys, value);
+                    prev[firstKey] = value;
                     return prev;
                 }, {});
             }
-            var calc = function(a, b, operator) {
-                switch(operator) {
-                    case "$and": return b.reduce(function(p, c) {
-                            return p && exec(a, c);
-                        }, true);
-                    case "$or": return b.reduce(function(p, c) {
-                            return p || exec(a, c);
-                        }, false);
-                    case "$nor": return b.reduce(function(p, c) {
-                            return p && !exec(a, c);
-                        }, true);
-                    case "$not": return !exec(a, b);
-                    case "$eq": return equals(a, b);
-                    case "$ne": return !equals(a, b);
-                    case "$in": return b.indexOf(a) > -1;
-                    case "$nin": return b.indexOf(a) < 0;
-                    case "$gt": return a > b;
-                    case "$gte": return a >= b;
-                    case "$lt": return a < b;
-                    case "$lte": return a <= b;
-                    case "$exists": return b ? (getType(a) !== "null" && getType(a) !== "undefined") : 
-                                               (getType(a) === "null" || getType(a) === "undefined");
-                    case "$regexp": return b.test(a);
-                    case "$length": return getType(a) === "array" ? a.length === b : false;
-                    case "$length$gt": return getType(a) === "array" ? a.length > b : false;
-                    case "$length$gte": return getType(a) === "array" ? a.length >= b : false;
-                    case "$length$lt": return getType(a) === "array" ? a.length < b : false;
-                    case "$length$lte": return getType(a) === "array" ? a.length <= b : false;
-                    case "$element": return getType(a) === "array" ? a.indexOf(b) > -1 : false;
-                    default: return false;
-                }
-            }
             var exec = function(a, b) {
                 return Object.entries(b).reduce(function(prev, [key, value]) {
-                    if (!isValidValue(key, value)) {
-                        var err = new Error('invalid argument type');
-                        err.name = "TypeError";
-                        throw err;
-                    }
                     var res;
                     if (isOperator(key)) {
                         res = calc(a, value, key);

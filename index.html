@@ -357,24 +357,56 @@
         
         /* test */
         (function() {
-            var obj = {
-                id: 12,
+            var data = {
+                id: 1,
                 name: "raccoon",
+                type: "animal",
                 size: {
                     height: 20,
                     weight: 100,
                 },
-                array: [1,2,3]
+                array: [1,2,3],
+                array2: null
             }
             var query = {
-                array: {
-                    $not: {
-                        $length: 3
+                id: 1,
+                name: {
+                    $in: ["raccoon", "abcdefg"],
+                    $nin: ["dog", "cat"],
+                    $regexp: /raccoon/
+                },
+                type: /^ani/,
+                $and: [{
+                    size: {
+                        height: {
+                            $ne: 19
+                        }
                     }
+                }, {
+                    size: {
+                        $or: [{
+                            weight: {
+                                $gt: 90,
+                                $lt: 110
+                            }
+                        }, {
+                            height: {
+                                $gte: 20,
+                                $lte: 20
+                            }
+                        }]
+                    }
+                }],
+                array: {
+                    $gt: 2,
+                    $lt: 4,
+                },
+                array2: {
+                    $exists: false
                 }
             }
 
-            var res2 = utils.execQuery(obj, query);
+            var res2 = utils.execQuery(data, query);
 
             console.log("utils.execQuery", res2);
 

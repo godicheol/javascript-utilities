@@ -29,7 +29,8 @@ var data = {
         height: 20,
         weight: 100,
     },
-    array: [1,2,3]
+    array: [1,2,3],
+    array2: null
 }
 var query = {
     id: 1,
@@ -61,13 +62,11 @@ var query = {
         }
     }],
     array: {
-        $not: {
-            $eq: [1,2]
-        },
-        $length: 3,
-        $length$gt: 2,
-        $length$lt: 4,
-        $element: 3,
+        $gt: 2,
+        $lt: 4,
+    },
+    array2: {
+        $exists: false
     }
 }
 

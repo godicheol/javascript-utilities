@@ -375,34 +375,33 @@
                     $nin: ["dog", "cat"],
                     $regexp: /raccoon/
                 },
-                type: /^ani/,
+                type: /^ani/, // regexp
                 $and: [{
                     size: {
-                        height: {
-                            $ne: 19
-                        }
+                        $gt: 1, // object keys length
+                        $lt: 3
                     }
                 }, {
                     size: {
                         $or: [{
                             weight: {
-                                $gt: 90,
+                                $gt: 90, // number
                                 $lt: 110
                             }
                         }, {
                             height: {
-                                $gte: 20,
+                                $gte: 20, // number
                                 $lte: 20
                             }
                         }]
                     }
                 }],
                 array: {
-                    $gt: 2,
-                    $lt: 4,
+                    $gt: 2, // array length
+                    $lt: 4
                 },
                 array2: {
-                    $exists: false
+                    $exists: false // null or undefined
                 }
             }
 

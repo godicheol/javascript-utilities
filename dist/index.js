@@ -4712,7 +4712,7 @@
                 $lte: [/^number$/],
                 $eq: [/^.*$/],
                 $ne: [/^.*$/],
-                $exists: [/^(?!object|array).*$/],
+                $exists: [/^(boolean|number|string|null|undefined)$/],
                 $regexp: [/^regexp$/],
                 boolean: [/^boolean*$/],
                 number: [/^number*$/],
@@ -4758,17 +4758,17 @@
                     return !exec(a, b);
                 },
                 $eq: function(a, b) {
-                    var dataType = getType(a);
-                    var queryType = getType(b);
-                    if (dataType !== queryType) {
+                    var aType = getType(a);
+                    var bType = getType(b);
+                    if (aType !== bType) {
                         return false;
                     }
-                    switch(dataType) {
+                    switch(aType) {
+                        case "undefined":
+                        case "null":
                         case "boolean":
                         case "number":
                         case "string":
-                        case "null":
-                        case "undefined":
                             return a === b;
                         case "object":
                             return exec(a, b);
@@ -4791,17 +4791,17 @@
                     }
                 },
                 $ne: function(a, b) {
-                    var dataType = getType(a);
-                    var queryType = getType(b);
-                    if (dataType !== queryType) {
+                    var aType = getType(a);
+                    var bType = getType(b);
+                    if (aType !== bType) {
                         return true;
                     }
-                    switch(dataType) {
+                    switch(aType) {
+                        case "undefined":
+                        case "null":
                         case "boolean":
                         case "number":
                         case "string":
-                        case "null":
-                        case "undefined":
                             return a !== b;
                         case "object":
                             return !exec(a, b);
@@ -4824,12 +4824,14 @@
                     }
                 },
                 $in: function(a, b) {
-                    var dataType = getType(a);
-                    switch(dataType) {
+                    var aType = getType(a);
+                    switch(aType) {
+                        case "undefined":
+                        case "null":
+                            return false;
                         case "boolean":
                         case "number":
                         case "string":
-                        case "null":
                             return b.indexOf(a) > -1;
                         case "array":
                             var i = 0;
@@ -4840,17 +4842,31 @@
                                 }
                             }
                             return true;
+                        case "object":
+                            var keys = Object.keys(a);
+                            var i = 0;
+                            var l = b.length;
+                            while(i < l) {
+                                if (keys.indexOf(b[i++]) < 0) {
+                                    return false;
+                                }
+                            }
+                            return true;
                         default:
-                            return false;
+                            var err = new Error('invalid argument type');
+                            err.name = "TypeError";
+                            throw err;
                     }
                 },
                 $nin: function(a, b) {
-                    var dataType = getType(a);
-                    switch(dataType) {
+                    var aType = getType(a);
+                    switch(aType) {
+                        case "undefined":
+                        case "null":
+                            return false;
                         case "boolean":
                         case "number":
                         case "string":
-                        case "null":
                             return b.indexOf(a) < 0;
                         case "array":
                             var i = 0;
@@ -4861,84 +4877,135 @@
                                 }
                             }
                             return true;
+                        case "object":
+                            var keys = Object.keys(a);
+                            var i = 0;
+                            var l = b.length;
+                            while(i < l) {
+                                if (keys.indexOf(b[i++]) > -1) {
+                                    return false;
+                                }
+                            }
+                            return true;
                         default:
-                            return false;
+                            var err = new Error('invalid argument type');
+                            err.name = "TypeError";
+                            throw err;
                     }
                 },
                 $gt: function(a, b) {
-                    var dataType = getType(a);
-                    switch(dataType) {
+                    var aType = getType(a);
+                    switch(aType) {
+                        case "undefined":
+                        case "null":
+                            return false;
                         case "number":
                             return a > b;
                         case "string":
                             return a.length > b;
+                        case "object":
+                            return Object.keys(a).length > b;
                         case "array":
                             return a.length > b;
                         default:
-                            return false;
+                            var err = new Error('invalid argument type');
+                            err.name = "TypeError";
+                            throw err;
                     }
                 },
                 $gte: function(a, b) {
-                    var dataType = getType(a);
-                    switch(dataType) {
+                    var aType = getType(a);
+                    switch(aType) {
+                        case "undefined":
+                        case "null":
+                            return false;
                         case "number":
                             return a >= b;
                         case "string":
                             return a.length >= b;
+                        case "object":
+                            return Object.keys(a).length >= b;
                         case "array":
                             return a.length >= b;
                         default:
-                            return false;
+                            var err = new Error('invalid argument type');
+                            err.name = "TypeError";
+                            throw err;
                     }
                 },
                 $lt: function(a, b) {
-                    var dataType = getType(a);
-                    switch(dataType) {
+                    var aType = getType(a);
+                    switch(aType) {
+                        case "undefined":
+                        case "null":
+                            return false;
                         case "number":
                             return a < b;
                         case "string":
                             return a.length < b;
+                        case "object":
+                            return Object.keys(a).length < b;
                         case "array":
                             return a.length < b;
                         default:
-                            return false;
+                            var err = new Error('invalid argument type');
+                            err.name = "TypeError";
+                            throw err;
                     }
                 },
                 $lte: function(a, b) {
-                    var dataType = getType(a);
-                    switch(dataType) {
+                    var aType = getType(a);
+                    switch(aType) {
+                        case "undefined":
+                        case "null":
+                            return false;
                         case "number":
                             return a <= b;
                         case "string":
                             return a.length <= b;
+                        case "object":
+                            return Object.keys(a).length <= b;
                         case "array":
                             return a.length <= b;
                         default:
-                            return false;
+                            var err = new Error('invalid argument type');
+                            err.name = "TypeError";
+                            throw err;
                     }
                 },
                 $exists: function(a, b) {
-                    var dataType = getType(a);
-                    var queryType = getType(b);
-                    switch(queryType) {
+                    var aType = getType(a);
+                    var bType = getType(b);
+                    var isExists = (aType !== "null" && aType !== "undefined");
+                    switch(bType) {
+                        case "undefined":
+                        case "null":
+                            return isExists === false;
                         case "boolean":
-                            return (dataType !== "null" && dataType !== "undefined") === b;
+                            return isExists === b;
                         case "number":
-                            return (dataType !== "null" && dataType !== "undefined") === (b > 0);
+                            return isExists === (b > 0);
                         case "string":
-                            return (dataType !== "null" && dataType !== "undefined") === (b !== "0" && b !== "false" && b !== "");
+                            return isExists === (b !== "0" && b !== "false" && b !== "");
                         default:
-                            return false;
+                            var err = new Error('invalid argument type');
+                            err.name = "TypeError";
+                            throw err;
                     }
                 },
                 $regexp: function(a, b) {
                     var dataType = getType(a);
                     switch(dataType) {
-                        case "number":
+                        case "undefined":
+                        case "null":
+                            return b.test(dataType);
                         case "string":
+                        case "number":
                             return b.test(a);
                         default:
-                            return false;
+                            var err = new Error('invalid argument type');
+                            err.name = "TypeError";
+                            throw err;
                     }
                 },
             }

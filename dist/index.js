@@ -4699,7 +4699,7 @@
          * @returns 
          */
         execQuery: function(data, query) {
-            var QUERY_RULES = {
+            var RULES = {
                 $and: [/^array$/, /^object$/],
                 $or: [/^array$/, /^object$/],
                 $nor: [/^array$/, /^object$/],
@@ -5035,13 +5035,14 @@
                     return typeof(any);
                 }
             }
-            var chkQuery = function(key, value) {
+            var chkQuery = function(keys, value) {
+                var key = keys[keys.length-1];
                 var type = getType(value);
                 var rule;
                 if (isOperator(key)) {
-                    rule = QUERY_RULES[key];
-                } else if (QUERY_RULES[type]) {
-                    rule = QUERY_RULES[type];
+                    rule = RULES[key];
+                } else if (RULES[type]) {
+                    rule = RULES[type];
                 } else {
                     return false;
                 }
@@ -5060,23 +5061,21 @@
                 }
                 return true;
             }
-            var setQuery = function(key, value) {
+            var setQuery = function(keys, value) {
+                var key = keys[keys.length-1];
                 var type = getType(value);
                 if (!isOperator(key)) {
                     switch(type) {
-                        case "object": return parse(value);
-                        case "regexp": return {"$regexp": value};
-                        default: return {"$eq": value};
+                        case "object": value = parse(value); break;
+                        case "regexp": value = {"$regexp": value}; break;
+                        default: value = {"$eq": value};
                     }
                 } else if (/^\$(and|or|nor)$/.test(key)) {
-                    return value.map(function(elem) {
+                    value = value.map(function(elem) {
                         return parse(elem);
                     });
-                } else {
-                    return value;
                 }
-            }
-            var setQeury2 = function(keys, value) {
+
                 var i = keys.length-1;
                 while(i > 0) {
                     value = {
@@ -5107,16 +5106,13 @@
             var parse = function(obj) {
                 return Object.entries(obj).reduce(function(prev, [key, value]) {
                     var keys = key.split("\.");
-                    var lastKey = keys[keys.length-1];
-                    var firstKey = keys[0];
-                    if (!chkQuery(lastKey, value)) {
+                    if (!chkQuery(keys, value)) {
                         var err = new Error('invalid argument type');
                         err.name = "TypeError";
                         throw err;
                     }
-                    value = setQuery(lastKey, value);
-                    value = setQeury2(keys, value);
-                    prev[firstKey] = value;
+
+                    prev[keys[0]] = setQuery(keys, value);
                     return prev;
                 }, {});
             }

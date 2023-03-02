@@ -5438,6 +5438,22 @@
 
             return exec(data, parse(query));
         },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
+        stringToJSON: function(str) {
+            return JSON.parse(
+                str.replace(/(\s|\n)/g, "")
+                    .replace(/\,+(\}|\])/g, "$1")
+                    .split(/\:/g)
+                    .map(function(e) {
+                        return e.replace(/([\{\,\}]{1})(?!\"|\')([^\{\}\[\}\,]+)(?!\"|\')$/g, "$1\"$2\"")
+                    })
+                    .join("\:")
+                )
+        }
 
 
         getCorner: function(imageData) {

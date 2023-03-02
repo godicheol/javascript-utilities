@@ -5100,7 +5100,10 @@
                     case "$lte": return OPERATORS.$lte(a, b); // less than or equal
                     case "$exists": return OPERATORS.$exists(a, b);
                     case "$regexp": return OPERATORS.$regexp(a, b); // RegExp.test()
-                    default: return false;
+                    default:
+                        var err = new Error('invalid argument type');
+                        err.name = "TypeError";
+                        throw err;
                 }
             }
             var parse = function(obj) {

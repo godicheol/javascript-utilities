@@ -5453,7 +5453,7 @@
                     })
                     .join("\:")
                 )
-        }
+        },
 
 
         getCorner: function(imageData) {

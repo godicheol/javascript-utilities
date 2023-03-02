@@ -73,7 +73,7 @@
          * @returns 
          */
         escape: function(str) {
-            return str.replace(/([\!\@\#\$\%\^\&\*\)\(\+\=\.\<\>\{\}\[\]\:\;\'\"\|\~\`\_\-])/g, "\\$1");
+            return str.replace(/([\!\@\#\$\%\^\&\*\)\(\+\=\.\<\>\{\}\[\]\:\;\'\"\|\~\`\_\-\/\\])/g, "\\$1");
         },
         /**
          * 
@@ -4427,8 +4427,8 @@
          * @returns 
          */
         compare: function(a, b) {
-            var aa = (typeof(a) !== "string") ? [a] : a.split(/(\d+|[\!\@\#\$\%\^\&\*\)\(\+\=\.\<\>\{\}\[\]\:\;\'\"\|\~\`\_\-]+)/).filter(Boolean);
-            var bb = (typeof(b) !== "string") ? [b] : b.split(/(\d+|[\!\@\#\$\%\^\&\*\)\(\+\=\.\<\>\{\}\[\]\:\;\'\"\|\~\`\_\-]+)/).filter(Boolean);
+            var aa = (typeof(a) !== "string") ? [a] : a.split(/(\d+|[\!\@\#\$\%\^\&\*\)\(\+\=\.\<\>\{\}\[\]\:\;\'\"\|\~\`\_\-\/\\]+)/).filter(Boolean);
+            var bb = (typeof(b) !== "string") ? [b] : b.split(/(\d+|[\!\@\#\$\%\^\&\*\)\(\+\=\.\<\>\{\}\[\]\:\;\'\"\|\~\`\_\-\/\\]+)/).filter(Boolean);
             var i = 0;
             var l = Math.max(aa.length, bb.length);
             var str1, str2, type1, type2;
@@ -4784,7 +4784,7 @@
          * @returns 
          */
         replaceString: function(str, from, to) {
-            from = from.replace(/([\!\@\#\$\%\^\&\*\)\(\+\=\.\<\>\{\}\[\]\:\;\'\"\|\~\`\_\-])/g, "\\$1");
+            from = from.replace(/([\!\@\#\$\%\^\&\*\)\(\+\=\.\<\>\{\}\[\]\:\;\'\"\|\~\`\_\-\/\\])/g, "\\$1");
             return str.replace(new RegExp(from, "g"), to);
         },
         /**
@@ -4798,7 +4798,7 @@
                 data = {};
             }
             var rules = Object.entries(data).reduce(function(prev, [key, value]) {
-                var k = key.replace(/([\!\@\#\$\%\^\&\*\)\(\+\=\.\<\>\{\}\[\]\:\;\'\"\|\~\`\_\-])/g, "\\$1");
+                var k = key.replace(/([\!\@\#\$\%\^\&\*\)\(\+\=\.\<\>\{\}\[\]\:\;\'\"\|\~\`\_\-\/\\])/g, "\\$1");
                 prev.push([new RegExp(k, "g"), value]);
                 return prev;
             }, []);
@@ -5439,7 +5439,7 @@
             return exec(data, parse(query));
         },
         /**
-         * 
+         * deprecated
          * @param {String} str 
          * @returns 
          */

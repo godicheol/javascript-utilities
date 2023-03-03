@@ -12,12 +12,7 @@ var arr = [
 ];
 var res = arr.sort(utils.compare);
 // [
-//     false, true, 1,
-//     11, 13, "1",
-//     "12", "!", "!google",
-//     "#", "#google", "A",
-//     "a", "A", "a-1",
-//     "a-23", null, undefined
+//     false, true, 1, 11, 13, "1", "12", "!", "!google", "#", "#google", "A", "a", "A", "a-1", "a-23", null, undefined
 // ]
 ```
 

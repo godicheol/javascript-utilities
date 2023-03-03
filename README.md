@@ -2,8 +2,10 @@
 
 ### utils.compare(a, b)
 ```js
-var res = [null, "a2", 1, undefined, "a11", "2", "a1"].sort(utils.compare);
-// res === [1, '2', 'a1', 'a2', 'a11', null, undefined];
+var res = [
+    "A",undefined, "a-23", "#google", 11, "!", "a", true, null, false, "12", "!google", "a-1", "A", 13, "#", 1, "1"
+].sort(utils.compare);
+// [false, true, 1, 11, 13, "1", "12", "!", "!google", "#", "#google", "A", "a", "A", "a-1", "a-23", null, undefined]
 ```
 
 ### utils.reducePromises(array, function, initialValue)
@@ -15,7 +17,7 @@ utils.reducePromises([1,2,3,4,5], function(prev, curr, index) {
         }, 1000);
     });
 }, 0).then(function(res) {
-    // res === 15
+    // 15
 });
 ```
 
@@ -70,6 +72,6 @@ var query = {
 }
 
 var res = utils.execQuery(data, query);
-// res === true
+// true
 ```
 

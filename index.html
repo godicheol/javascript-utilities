@@ -355,7 +355,7 @@
             )
         })();
         
-        /* test */
+        /* execQuery */
         (function() {
             var data = {
                 id: 1,
@@ -411,7 +411,34 @@
             var res2 = utils.execQuery(data, query);
 
             console.log("utils.execQuery", res2);
+        })();
 
+        (function() {
+            var arr = [
+                "A",
+                undefined,
+                "a-23",
+                "#google",
+                11,
+                "!",
+                "a",
+                true,
+                null,
+                false,
+                "#not",
+                "12",
+                "!google",
+                "a-1",
+                "A",
+                13,
+                "#",
+                1,
+                "1"
+            ];
+
+            console.log(
+                arr.sort(utils.compare)
+            )
         })();
     </script>
 </body>

@@ -4422,11 +4422,100 @@
         },
         /**
          * 
+         * @param {String} a boolean, number, string, null, undefined
+         * @param {String} b boolean, number, string, null, undefined
+         * @returns 
+         */
+        compare: function(a, b) {
+            if (typeof(a) !== typeof(b)) {
+                if (typeof(a) === "undefined") {
+                    return 1;
+                }
+                if (typeof(b) === "undefined") {
+                    return -1;
+                }
+                if (typeof(a) === "object" && a === null) {
+                    return 1;
+                }
+                if (typeof(b) === "object" && b === null) {
+                    return -1;
+                }
+                if (typeof(a) === "string") {
+                    return 1;
+                }
+                if (typeof(b) === "string") {
+                    return -1;
+                }
+                if (typeof(a) === "number") {
+                    return 1;
+                }
+                if (typeof(b) === "number") {
+                    return -1;
+                }
+                if (typeof(a) === "boolean") {
+                    return 1;
+                }
+                if (typeof(b) === "boolean") {
+                    return -1;
+                }
+                // type error
+                var err = new Error('invalid argument type');
+                err.name = "TypeError";
+                throw err;
+            }
+            var isNumber = function(str) {
+                return !isNaN(parseFloat(str)) && isFinite(str);
+            }
+            var toNumber = function(str) {
+                return parseFloat(str);
+            }
+            var regexp = /([0-9]+)/;
+            var localeCompareLanguage = "en";
+            var localeCompareOptions = { sensitivity: "base" };
+            var type = typeof(a); // typeof(a) === typeof(b);
+            var i;
+            var l;
+            if (type === "undefined") {
+                return 0;
+            } else if (type === "object") {
+                // null
+                return 0;
+            } else if (type === "string") {
+                a = a.split(regexp).filter(Boolean);
+                b = b.split(regexp).filter(Boolean);
+                i = 0;
+                l = Math.max(a.length, b.length);
+                while(i < l) {
+                    if (a[i] !== b[i]) {
+                        if (isNumber(a[i]) && isNumber(b[i])) {
+                            return  toNumber(a[i]) - toNumber(b[i]);
+                        }
+                        if (isNumber(a[i])) {
+                            return -1;
+                        }
+                        if (isNumber(b[i])) {
+                            return 1;
+                        }
+                        return a[i].localeCompare(b[i], localeCompareLanguage, localeCompareOptions);
+                    }
+                    i++;
+                }
+                return 0;
+            } else if (type === "number") {
+                return a - b;
+            } else if (type === "boolean") {
+                return a ? 1 : -1;
+            } else {
+                return 0;
+            }
+        },
+        /**
+         * deprecated
          * @param {String} a 
          * @param {String} b 
          * @returns 
          */
-        compare: function(a, b) {
+        compare2: function(a, b) {
             var aa = (typeof(a) !== "string") ? [a] : a.split(/(\d+|[\!\@\#\$\%\^\&\*\)\(\+\=\.\<\>\{\}\[\]\:\;\'\"\|\~\`\_\-\/\\]+)/).filter(Boolean);
             var bb = (typeof(b) !== "string") ? [b] : b.split(/(\d+|[\!\@\#\$\%\^\&\*\)\(\+\=\.\<\>\{\}\[\]\:\;\'\"\|\~\`\_\-\/\\]+)/).filter(Boolean);
             var i = 0;

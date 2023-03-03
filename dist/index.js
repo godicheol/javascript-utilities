@@ -4471,7 +4471,7 @@
             }
             var regexp = /([0-9]+)/;
             var localeCompareLanguage = "en";
-            var localeCompareOptions = { sensitivity: "base" };
+            var localeCompareOptions = {};
             var type = typeof(a); // typeof(a) === typeof(b);
             var i;
             var l;

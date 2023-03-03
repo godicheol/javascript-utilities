@@ -2,10 +2,23 @@
 
 ### utils.compare(a, b)
 ```js
-var res = [
-    "A",undefined, "a-23", "#google", 11, "!", "a", true, null, false, "12", "!google", "a-1", "A", 13, "#", 1, "1"
-].sort(utils.compare);
-// [false, true, 1, 11, 13, "1", "12", "!", "!google", "#", "#google", "A", "a", "A", "a-1", "a-23", null, undefined]
+var arr = [
+    "A", undefined, "a-23",
+    "#google", 11, "!",
+    "a", true, null,
+    false, "12", "!google",
+    "a-1", "A", 13,
+    "#", 1, "1"
+];
+var res = arr.sort(utils.compare);
+// [
+//     false, true, 1,
+//     11, 13, "1",
+//     "12", "!", "!google",
+//     "#", "#google", "A",
+//     "a", "A", "a-1",
+//     "a-23", null, undefined
+// ]
 ```
 
 ### utils.reducePromises(array, function, initialValue)

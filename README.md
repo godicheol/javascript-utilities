@@ -10,7 +10,12 @@ var arr = [
     "a-1", "A", 13,
     "#", 1, "1"
 ];
+
 var res = arr.sort(utils.compare);
+// utils.bubbleSort(arr, utils.compare);
+// utils.insertionSort(arr, utils.compare);
+// utils.mergeSort(arr, utils.compare);
+
 // [
 //     false, true, 1, 11, 13, "1", "12", "!", "!google", "#", "#google", "A", "a", "A", "a-1", "a-23", null, undefined
 // ]

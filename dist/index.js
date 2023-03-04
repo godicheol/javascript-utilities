@@ -5924,7 +5924,7 @@
             };
 
             var fileName, extension, mimeType, isDirectory, isFile;
-            fileName = str.split("\/").pop();
+            fileName = str.replace(/\/$/, "").split("\/").pop();
             if (/^[^.]{1,}\.[0-9A-Za-z.]{1,}$/.test(fileName)) {
                 extension = fileName.split("\.").slice(1).join("\.");
                 isFile = true;

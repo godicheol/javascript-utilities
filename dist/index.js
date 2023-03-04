@@ -5935,7 +5935,6 @@
             mimeType = extension ? (types[extension] ? types[extension] : null) : null;
             isFile = extension ? true : false;
             isDirectory = !isFile;
-
             if (extension) {
                 extension = "\."+extension;
             }

@@ -23,7 +23,7 @@ var res = arr.sort(utils.compare);
 
 ### utils.parsePath(path)
 ```js
-var path = "./fwe/gg/abc.com";
+var path = "./fwe/gg/abc.zip";
 var res = utils.parsePath(path);
 // {
 //     baseName: "abc",

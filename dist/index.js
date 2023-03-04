@@ -5924,19 +5924,20 @@
             };
 
             var fileName, extension, mimeType, isDirectory, isFile;
-
             fileName = str.split("\/").pop();
             if (/^[^.]{1,}\.[0-9A-Za-z.]{1,}$/.test(fileName)) {
                 extension = fileName.split("\.").slice(1).join("\.");
+                isFile = true;
+                isDirectory = false;
+                baseName = fileName.replace("\."+extension, "");
+                mimeType = types[extension] ? types[extension] : null;
+                extension = "\."+extension;
             } else {
                 extension = null;
-            }
-            baseName = extension ? fileName.replace("\."+extension, "") : fileName;
-            mimeType = extension ? (types[extension] ? types[extension] : null) : null;
-            isFile = extension ? true : false;
-            isDirectory = !isFile;
-            if (extension) {
-                extension = "\."+extension;
+                isFile = false;
+                isDirectory = true;
+                baseName = fileName;
+                mimeType = null;
             }
             return {
                 fileName: fileName,

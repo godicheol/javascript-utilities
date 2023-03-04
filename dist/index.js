@@ -5545,7 +5545,7 @@
         },
         /**
          * 
-         * @param {String} extstr
+         * @param {String} str
          * @returns 
          */
         getMimetype: function(str) {
@@ -5728,8 +5728,12 @@
                 'zip': 'application/zip'
             };
 
-            if (/\/{0,1}.+\..+$/.text(str)) {
-                return types=[str.split("\.").pop()];
+            if (typeof(str) === "string") {
+                if (/\/{0,1}.+\..+$/.text(str)) {
+                    return types[str.split("\.").pop()];
+                } else {
+                    return types[str];
+                }
             } else {
                 return undefined;
             }

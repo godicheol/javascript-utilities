@@ -5545,10 +5545,10 @@
         },
         /**
          * 
-         * @param {String} ext 
+         * @param {String} extstr
          * @returns 
          */
-        getMimetypeFromExtension: function(ext) {
+        getMimetype: function(str) {
             const types = {
                 'abs': 'audio/x-mpeg',
                 'ai': 'application/postscript',
@@ -5728,7 +5728,11 @@
                 'zip': 'application/zip'
             };
 
-            return types[ext];
+            if (/\/{0,1}.+\..+$/.text(str)) {
+                return types=[str.split("\.").pop()];
+            } else {
+                return undefined;
+            }
         },
 
 

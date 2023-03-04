@@ -21,17 +21,18 @@ var res = arr.sort(utils.compare);
 // ]
 ```
 
-### utils.reducePromises(array, function, initialValue)
+### utils.parsePath(path)
 ```js
-utils.reducePromises([1,2,3,4,5], function(prev, curr, index) {
-    return new Promise(function(resolve, reject) {
-        setTimeout(function() {
-            resolve(prev + curr);
-        }, 1000);
-    });
-}, 0).then(function(res) {
-    // 15
-});
+var path = "./fwe/gg/abc.com";
+var res = utils.parsePath(path);
+// {
+//     baseName: "abc",
+//     extension: ".zip",
+//     fileName: "abc.zip",
+//     isDirectory: false,
+//     isFile: true,
+//     mimeType: "application/zip"
+// }
 ```
 
 ### utils.execQuery(data, query)

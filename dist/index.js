@@ -5986,21 +5986,13 @@
         },
         /**
          * 
-         * @param {String} a 
-         * @param {String} b 
+         * @param {Array} array 
          * @returns 
          */
-        getDuplicatesInString: function(a, b) {
-            var len = Math.min(a.length, b.length);
-            var i = 0;
-            var res = "";
-            while(i < len) {
-                if (a[i] === b[i]) {
-                    res = res + a[i];
-                }
-                i++;
-            }
-            return res;
+        getDuplicatesInString: function(arr) {
+            return arr.filter(function(elem, i) {
+                return arr.indexOf(elem) === i; 
+            });
         },
         /**
          * 
@@ -6010,11 +6002,10 @@
         getUniquesInArray: function(arr) {
             var seen = {};
             var len = arr.length;
-            var i, a;
+            var i;
             while(i < len) {
-                a = arr[i];
-                if (!seen[a]) {
-                    seen[a] = true;
+                if (!seen[arr[i]]) {
+                    seen[arr[i]] = true;
                 }
                 i++;
             }

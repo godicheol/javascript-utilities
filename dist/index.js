@@ -5980,6 +5980,7 @@
                 if (a[i] === b[i]) {
                     res.push(a[i]);
                 }
+                i++;
             }
             return res;
         },

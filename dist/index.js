@@ -6002,6 +6002,46 @@
             }
             return res;
         },
+        /**
+         * 
+         * @param {Array} arr 
+         * @returns 
+         */
+        getUniquesInArray: function(arr) {
+            var seen = {};
+            var len = arr.length;
+            var i, a;
+            while(i < len) {
+                a = arr[i];
+                if (!seen[a]) {
+                    seen[a] = true;
+                }
+                i++;
+            }
+            return Object.keys(seen);
+        },
+        /**
+         * 
+         * @param {Array} arr 
+         * @returns 
+         */
+        getDuplicatedPath: function(arr) {
+            var i, j, items;
+            var res = arr.length > 0 ? arr.pop().split(/\/|\\+/) : [];
+            for (i = 0; i < arr.length; i++) {
+                items = arr.split(/\/|\\+/);
+                for (j = 0; j < items.length; j++) {
+                    if (res.length < j) {
+                        break;
+                    }
+                    if (res[j] !== items[j]) {
+                        res.pop();
+                        break;
+                    }
+                }
+            }
+            return res.length > 1 ? res.join("\/") : "\/";
+        },
 
 
         getCorner: function(imageData) {

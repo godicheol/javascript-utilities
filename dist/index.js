@@ -6027,23 +6027,27 @@
          */
         getDuplicatedPath: function(arr) {
             var i, j, items;
-            var res = arr.length > 0 ? arr.pop().split(/\/|\\+/) : [];
+            var seen = arr.length > 0 ? arr.pop().split(/\/|\\+/) : [];
             for (i = 0; i < arr.length; i++) {
                 items = arr[i].split(/\/|\\+/);
-                if (res.length > items.length) {
-                    res = res.slice(0, items.length);
+                if (seen.length > items.length) {
+                    seen = seen.slice(0, items.length);
                 }
                 for (j = 0; j < items.length; j++) {
-                    if (res.length < j) {
+                    if (seen.length < j) {
                         break;
                     }
-                    if (res[j] !== items[j]) {
-                        res.pop();
+                    if (seen[j] !== items[j]) {
+                        seen.pop();
                         break;
                     }
                 }
             }
-            return res.length < 1 ? "" : (res.length === 1 ? "\/" : res.join("\/"));
+            var res = seen.join("\/");
+            if (res.charAt(0) !== "\/") {
+                res = "\/"+res;
+            }
+            return res;
         },
 
 

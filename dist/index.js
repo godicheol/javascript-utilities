@@ -5972,7 +5972,7 @@
          * @param {Array} b 
          * @returns 
          */
-        getDuplicatesArray: function(a, b) {
+        getDuplicatesInArray: function(a, b) {
             var len = Math.min(a.length, b.length);
             var i = 0;
             var res = [];
@@ -5990,7 +5990,7 @@
          * @param {String} b 
          * @returns 
          */
-        getDuplicatesString: function(a, b) {
+        getDuplicatesInString: function(a, b) {
             var len = Math.min(a.length, b.length);
             var i = 0;
             var res = "";

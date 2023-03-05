@@ -5966,6 +5966,23 @@
                 return String.fromCharCode(ch.charCodeAt(0) - 0xfee0);
             });
         },
+        /**
+         * 
+         * @param {Array} a 
+         * @param {Array} b 
+         * @returns 
+         */
+        getDuplicates: function(a, b) {
+            var len = Math.min(a.length, b.length);
+            var i = 0;
+            var res = [];
+            while(i < len) {
+                if (a[i] === b[i]) {
+                    res.push(a[i]);
+                }
+            }
+            return res;
+        },
 
 
         getCorner: function(imageData) {

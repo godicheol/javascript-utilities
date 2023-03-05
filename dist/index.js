@@ -6029,7 +6029,10 @@
             var i, j, items;
             var res = arr.length > 0 ? arr.pop().split(/\/|\\+/) : [];
             for (i = 0; i < arr.length; i++) {
-                items = arr.split(/\/|\\+/);
+                items = arr[i].split(/\/|\\+/);
+                if (res.length > items.length) {
+                    res = res.slice(0, items.length);
+                }
                 for (j = 0; j < items.length; j++) {
                     if (res.length < j) {
                         break;

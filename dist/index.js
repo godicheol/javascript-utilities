@@ -6030,15 +6030,9 @@
             var seen = arr.length > 0 ? arr.pop().split(/\/|\\+/) : [];
             for (i = 0; i < arr.length; i++) {
                 items = arr[i].split(/\/|\\+/);
-                if (seen.length > items.length) {
-                    seen = seen.slice(0, items.length);
-                }
                 for (j = 0; j < items.length; j++) {
-                    if (seen.length < j) {
-                        break;
-                    }
-                    if (seen[j] !== items[j]) {
-                        seen.pop();
+                    if (seen.length < j || seen[j] !== items[j]) {
+                        seen = seen.slice(0, j);
                         break;
                     }
                 }

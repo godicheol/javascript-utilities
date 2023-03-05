@@ -6043,7 +6043,7 @@
                     }
                 }
             }
-            return res.length > 1 ? res.join("\/") : "\/";
+            return res.length < 1 ? "" : (res.length === 1 ? "\/" : res.join("\/"));
         },
 
 

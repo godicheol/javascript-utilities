@@ -5972,13 +5972,31 @@
          * @param {Array} b 
          * @returns 
          */
-        getDuplicates: function(a, b) {
+        getDuplicatesArray: function(a, b) {
             var len = Math.min(a.length, b.length);
             var i = 0;
             var res = [];
             while(i < len) {
                 if (a[i] === b[i]) {
                     res.push(a[i]);
+                }
+                i++;
+            }
+            return res;
+        },
+        /**
+         * 
+         * @param {String} a 
+         * @param {String} b 
+         * @returns 
+         */
+        getDuplicatesString: function(a, b) {
+            var len = Math.min(a.length, b.length);
+            var i = 0;
+            var res = "";
+            while(i < len) {
+                if (a[i] === b[i]) {
+                    res = res + a[i];
                 }
                 i++;
             }

@@ -5992,21 +5992,24 @@
          * @returns 
          */
         getDuplicatedValueWithIndex: function(arr) {
-            var res = arr.pop();
-            var i, j, a;
-            if (!res) {
+            var a = arr.pop();
+            var i, j, b;
+            if (!a) {
                 return [];
             }
             for (i = 0; i < arr.length; i++) {
-                a = arr[i];
+                b = arr[i];
+                if (a.length > b.length) {
+                    a = a.slice(0, b.length);
+                }
                 for (j = 0; j < a.length; j++) {
-                    if (res.length < j || res[j] !== a[j]) {
-                        res = res.slice(0, j);
+                    if (a[j] !== b[j]) {
+                        a = a.slice(0, j);
                         break;
                     }
                 }
             }
-            return res;
+            return a;
         },
         /**
          * 

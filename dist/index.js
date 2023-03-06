@@ -5971,7 +5971,7 @@
          * @param {Array} arr string[]
          * @returns 
          */
-        getDuplicatesInArray: function(arr) {
+        getDuplicatedString: function(arr) {
             var seen = {};
             var res = {};
             var len = arr.length;
@@ -5991,7 +5991,7 @@
          * @param {Array} arr array[]
          * @returns 
          */
-        getDuplicatedValueWithIndex: function(arr) {
+        getDuplicatedArray: function(arr) {
             var a = arr.pop();
             var i, j, b;
             if (!a) {
@@ -6016,7 +6016,7 @@
          * @param {Array} arr string[]
          * @returns 
          */
-        getUniquesInArray: function(arr) {
+        getUniqueString: function(arr) {
             var seen = {};
             var len = arr.length;
             var i;
@@ -6033,7 +6033,7 @@
          * @param {Array} arr 
          * @returns 
          */
-        getUniquesInArray2: function(arr) {
+        getUniqueString2: function(arr) {
             return arr.filter(function(elem, i) {
                 return arr.indexOf(elem) === i;
             });

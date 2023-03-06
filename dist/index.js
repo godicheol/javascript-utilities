@@ -5968,31 +5968,23 @@
         },
         /**
          * 
-         * @param {Array} a 
-         * @param {Array} b 
+         * @param {Array} arr 
          * @returns 
          */
-        getDuplicatesInArray: function(a, b) {
-            var len = Math.min(a.length, b.length);
-            var i = 0;
-            var res = [];
+        getDuplicatesInArray: function(arr) {
+            var seen = {};
+            var res = {};
+            var len = arr.length;
+            var i;
             while(i < len) {
-                if (a[i] === b[i]) {
-                    res.push(a[i]);
+                if (!seen[arr[i]]) {
+                    seen[arr[i]] = true;
+                } else {
+                    res[arr[i]] = true;
                 }
                 i++;
             }
-            return res;
-        },
-        /**
-         * 
-         * @param {Array} array 
-         * @returns 
-         */
-        getDuplicatesInString: function(arr) {
-            return arr.filter(function(elem, i) {
-                return arr.indexOf(elem) === i; 
-            });
+            return Object.keys(res);
         },
         /**
          * 
@@ -6010,6 +6002,16 @@
                 i++;
             }
             return Object.keys(seen);
+        },
+        /**
+         * 
+         * @param {Array} arr 
+         * @returns 
+         */
+        getUniquesInArray2: function(arr) {
+            return arr.filter(function(elem, i) {
+                return arr.indexOf(elem) === i;
+            });
         },
         /**
          * 

@@ -5968,7 +5968,7 @@
         },
         /**
          * 
-         * @param {Array} arr 
+         * @param {Array} arr string[]
          * @returns 
          */
         getDuplicatesInArray: function(arr) {
@@ -5988,7 +5988,29 @@
         },
         /**
          * 
-         * @param {Array} arr 
+         * @param {Array} arr array[]
+         * @returns 
+         */
+        getDuplicatedValueWithIndex: function(arr) {
+            var res = arr.pop();
+            var i, j, a;
+            if (!res) {
+                return [];
+            }
+            for (i = 0; i < arr.length; i++) {
+                a = arr[i];
+                for (j = 0; j < a.length; j++) {
+                    if (res.length < j || res[j] !== a[j]) {
+                        res = res.slice(0, j);
+                        break;
+                    }
+                }
+            }
+            return res;
+        },
+        /**
+         * 
+         * @param {Array} arr string[]
          * @returns 
          */
         getUniquesInArray: function(arr) {

@@ -5976,17 +5976,15 @@
 
             var fileName, extension, mimeType, isDirectory, isFile;
             fileName = str.replace(/\/$/, "").split("\/").pop();
-            if (/^[^.]{1,}\.[0-9A-Za-z.]{1,}$/.test(fileName)) {
+            isFile = /^[^.]{1,}\.[0-9A-Za-z.]{1,}$/.test(fileName);
+            isDirectory = !isFile;
+            if (isFile) {
                 extension = fileName.split("\.").slice(1).join("\.");
-                isFile = true;
-                isDirectory = false;
                 baseName = fileName.replace("\."+extension, "");
                 mimeType = types[extension] ? types[extension] : null;
                 extension = "\."+extension;
             } else {
                 extension = null;
-                isFile = false;
-                isDirectory = true;
                 baseName = fileName;
                 mimeType = null;
             }

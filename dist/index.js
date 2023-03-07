@@ -443,8 +443,6 @@
             if (typeof(any) === "object") {
                 if (Object.prototype.toString.call(any) === '[object Array]') {
                     return "array";
-                } else if (any instanceof Blob) {
-                    return "blob";
                 } else if (any instanceof RegExp) {
                     return "regexp";
                 } else if (any === null) {
@@ -5430,8 +5428,6 @@
                 if (typeof(any) === "object") {
                     if (Object.prototype.toString.call(any) === '[object Array]') {
                         return "array";
-                    } else if (any instanceof Blob) {
-                        return "blob";
                     } else if (any instanceof RegExp) {
                         return "regexp";
                     } else if (any === null) {

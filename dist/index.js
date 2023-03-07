@@ -153,7 +153,7 @@
          * @returns 
          */
         isFilePath: function(path) {
-            return typeof(path) === "string" && /^[^.]{1,}\.[0-9A-Za-z.]{1,}$/.test(path);
+            return typeof(path) === "string" && /^[^.]{1,}\.[0-9A-Za-z]{1,}$/.test(path);
         },
         /**
          * 

@@ -6125,26 +6125,116 @@
                 });
         },
 
-        hasSequenceNumber: function(arr) {
-            var _get = function(str) {
-                return str.split(/[^0-9.]+/)
-                    .filter(function(elem) {
-                        return !isNaN(parseFloat(elem)) && isFinite(elem);
-                    })
-                    .map(function(elem) {
-                        return parseFloat(elem);
-                    });
+        hasSequenceNumber: function(arr, options) {
+            if (!options) {
+                options = {};
+            }
+            if (typeof(options.unit) !== "number") {
+                options.unit = 1;
+            }
+            if (typeof(options.threshold) !== "number") {
+                options.threshold = 1;
             }
 
-            var _arr = arr.map(function(elem) {
-                return _get(elem);
-            });
+            // var UNIT = options.unit;
+            // var THRESHOLD = options.threshold;
+
+            // var _arr = arr.map(function(elem) {
+            //     return elem.split(/[^0-9.]+/)
+            //         .filter(function(e) {
+            //             return !isNaN(parseFloat(e)) && isFinite(e);
+            //         })
+            //         .map(function(e, i) {
+            //             return {
+            //                 index: i,
+            //                 value: parseFloat(e)
+            //             }
+            //         });
+            // });
+
+            // var getRight = function(arr) {
+            //     var len = Math.min(a.length, b.length);
+            //     var i = 0;
+            //     var offset = 0;
+            //     var x, y;
+            //     var res = initialString || "";
+            //     while(i < len) {
+            //         x = a[a.length - i];
+            //         y = b[b.length - i];
+            //         if (x === y) {
+            //             res = res + x;
+            //         }
+            //         i++;
+            //     }
+            //     return res;
+            // }
+
+            // var hasSeq = true;
+            // var left = "";
+            // var right = "";
+            // var min;
+            // var max;
+            // var prev;
+
+            // var i, j, a, v;
+            // for (i = 0; i < _arr.length; i++) {
+            //     a = _arr[i];
+            //     if (typeof(prev) === "undefined") {
+            //         prev = v;
+            //         continue;
+            //     }
+            //     for (j = 0; j < a.length; j++) {
+
+            //     }
+            // }
+
+
+
+        },
+        /**
+         * 
+         * @param {Array} arr string[]
+         * @returns 
+         */
+        getMatchedPrefix: function(arr) {
+            var i, j, a, b;
+            var res = arr[0] || "";
+            for (i = 1; i < arr.length; i++) {
+                for (j = 0; j < res.length; j++) {
+                    a = res.charAt(j);
+                    b = arr[i].charAt(j);
+                    if (a !== b) {
+                        res = res.slice(0, j);
+                        break;
+                    }
+                }
+            }
+            return res;
+        },
+        /**
+         * 
+         * @param {Array} arr string[]
+         * @returns 
+         */
+        getMatchedSuffix: function(arr) {
+            var i, j, a, b;
+            var res = arr[0] || "";
+            for (i = 1; i < arr.length; i++) {
+                for (j = 0; j < res.length; j++) {
+                    a = res.charAt(res.length - 1 - j);
+                    b = arr[i].charAt(arr[i].length - 1 - j);
+                    if (a !== b) {
+                        res = res.slice(res.length - j, res.length);
+                        break;
+                    }
+                }
+            }
+            return res;
         },
 
 
         getCorner: function(imageData) {
             // Harris Operator
-
         },
         convEnglishToKoreanKey: function(str) {
             var a = /r|s|e|f|a|q|t|d|w|c|z|x|v|g|R|E|Q|T|W/; // ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎㄲㄸㅃㅆㅉ

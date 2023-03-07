@@ -133,6 +133,38 @@
         },
         /**
          * 
+         * @param {Blob} blob 
+         * @returns 
+         */
+        isBlob: function(blob) {
+            return blob instanceof Blob;
+        },
+        /**
+         * 
+         * @param {File} file 
+         * @returns 
+         */
+        isFile: function(file) {
+            return file instanceof File;
+        },
+        /**
+         * 
+         * @param {String} path 
+         * @returns 
+         */
+        isFilePath: function(path) {
+            return typeof(path) === "string" && /^[^.]{1,}\.[0-9A-Za-z.]{1,}$/.test(path);
+        },
+        /**
+         * 
+         * @param {String} path 
+         * @returns 
+         */
+        isDirPath: function(path) {
+            return typeof(path) === "string" && /^[^.]*$/.test(path);
+        },
+        /**
+         * 
          * @param {Node} node 
          * @returns 
          */
@@ -1434,12 +1466,31 @@
          * 
          * @returns 
          */
-        genUuid4: function() {
+        genUuidv4: function() {
             return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
                 var r = Math.random() * 16 | 0,
                     v = c == 'x' ? r : (r & 0x3 | 0x8);
                 return v.toString(16);
             });
+        },
+        /**
+         * 
+         * @returns 
+         */
+        genId: function() {
+            var lut = [];
+            for (var i=0; i<256; i++) { lut[i] = (i<16?'0':'')+(i).toString(16); }
+            function e7() {
+                var d0 = Math.random()*0xffffffff|0;
+                var d1 = Math.random()*0xffffffff|0;
+                var d2 = Math.random()*0xffffffff|0;
+                var d3 = Math.random()*0xffffffff|0;
+                return lut[d0&0xff]+lut[d0>>8&0xff]+lut[d0>>16&0xff]+lut[d0>>24&0xff]+'-'+
+                lut[d1&0xff]+lut[d1>>8&0xff]+'-'+lut[d1>>16&0x0f|0x40]+lut[d1>>24&0xff]+'-'+
+                lut[d2&0x3f|0x80]+lut[d2>>8&0xff]+'-'+lut[d2>>16&0xff]+lut[d2>>24&0xff]+
+                lut[d3&0xff]+lut[d3>>8&0xff]+lut[d3>>16&0xff]+lut[d3>>24&0xff];
+            }
+            return e7();
         },
         /**
          * 

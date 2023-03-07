@@ -6110,6 +6110,36 @@
             }
             return res;
         },
+        /**
+         * 
+         * @param {String} str 
+         * @returns 
+         */
+        getNumbers: function(str) {
+            return str.split(/[^0-9.]+/)
+                .filter(function(elem) {
+                    return !isNaN(parseFloat(elem)) && isFinite(elem);
+                })
+                .map(function(elem) {
+                    return parseFloat(elem);
+                });
+        },
+
+        hasSequenceNumber: function(arr) {
+            var _get = function(str) {
+                return str.split(/[^0-9.]+/)
+                    .filter(function(elem) {
+                        return !isNaN(parseFloat(elem)) && isFinite(elem);
+                    })
+                    .map(function(elem) {
+                        return parseFloat(elem);
+                    });
+            }
+
+            var _arr = arr.map(function(elem) {
+                return _get(elem);
+            });
+        },
 
 
         getCorner: function(imageData) {

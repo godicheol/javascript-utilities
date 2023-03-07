@@ -5979,7 +5979,7 @@
             isFile = /^[^.]{1,}\.[0-9A-Za-z.]{1,}$/.test(fileName);
             isDirectory = !isFile;
             if (isFile) {
-                extension = fileName.split("\.").slice(1).join("\.");
+                extension = fileName.split("\.").pop();
                 baseName = fileName.replace("\."+extension, "");
                 mimeType = types[extension] ? types[extension] : null;
                 extension = "\."+extension;

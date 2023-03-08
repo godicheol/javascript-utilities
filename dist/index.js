@@ -6111,8 +6111,8 @@
          * @param {String} str 
          * @returns 
          */
-        getNumbers: function(str) {
-            return str.split(/[^0-9.]+/)
+        getNumbersInString: function(str) {
+            return str.split(/[^0-9.]|[^0-9]\.|\.[^0-9]/)
                 .filter(function(elem) {
                     return !isNaN(parseFloat(elem)) && isFinite(elem);
                 })

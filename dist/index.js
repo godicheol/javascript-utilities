@@ -4683,10 +4683,22 @@
             return str.replace(/\\+/g, "/").replace(/\/+$/, "/").split(/\//);
         },
         /**
-         * @param {String} args
+         * 
+         * @param  {...String} args 
          * @returns 
          */
         joinPath: function(...args) {
+            return args.join("\/")
+                .replace(/\/+|\\+/g, "\/")
+                .replace(/\/\.\//g, "\/")
+                .replace(/\/[^\/]+\/\.\.\//g, "\/") || "\.";
+        },
+        /**
+         * deprecated
+         * @param {String} args
+         * @returns 
+         */
+        joinPath2: function(...args) {
             return args.reduce(function(prev, curr) {
                 return curr.replace(/\\+/g, "\/")
                     .replace(/\/+/g, "\/")
@@ -6131,22 +6143,25 @@
             if (typeof(options.threshold) !== "number") {
                 options.threshold = 1;
             }
+            var UNIT = options.unit;
+            var THRESHOLD = options.threshold;
+            var results = [];
+            var indexes = []
+            var prev = [];
 
-            // var UNIT = options.unit;
-            // var THRESHOLD = options.threshold;
+            var a = arr.map(function(elem) {
+                return elem.split(/[^0-9.]|[^0-9]\.|\.[^0-9]/)
+                    .filter(function(elem) {
+                        return !isNaN(parseFloat(elem)) && isFinite(elem);
+                    })
+                    .map(function(elem) {
+                        return parseFloat(elem);
+                    });
+            });
 
-            // var _arr = arr.map(function(elem) {
-            //     return elem.split(/[^0-9.]+/)
-            //         .filter(function(e) {
-            //             return !isNaN(parseFloat(e)) && isFinite(e);
-            //         })
-            //         .map(function(e, i) {
-            //             return {
-            //                 index: i,
-            //                 value: parseFloat(e)
-            //             }
-            //         });
-            // });
+            // [[1,2,3], [4,5,6]]
+
+            prev = a.pop();
 
             // var getRight = function(arr) {
             //     var len = Math.min(a.length, b.length);
@@ -6226,6 +6241,105 @@
                 }
             }
             return res;
+        },
+        MyArchive: function(initialFiles) {
+            var IS_DIR = 0;
+            var IS_FILE = 1;
+            this.files = initialFiles || [];
+            this.compress = function(iterator) {
+                var chunks = [], 
+                    tree = [],
+                    iterators = [[tree, iterator]], 
+                    offset = 0; // size
+                
+                for (var [dir, iterator] of iterators) {
+                    for (var item of iterator) {
+                        if (item instanceof File) {
+                            chunks.push(item);
+                            dir.push([
+                                IS_FILE,
+                                item.name,
+                                offset,
+                                item.size
+                            ]);
+                            offset += item.size;
+                        } else {
+                            var directory = [IS_DIR, item.name];
+                            dir.push(folder);
+                            iterators.push([directory, item.children]); 
+                        }
+                    }
+                }
+
+                var json = JSON.stringify(tree);
+                // push central directory
+                chunks.push(json);
+
+                // push 4 bytes describing how large the central directory is.
+                // This allows us to create a maximum of 4 GiB large central directory
+                // and should be well enough for keeping information about the hole archive
+                chunks.push(new Uint32Array([json.length]))
+
+                // smash everything together into one large file
+                return new File(chunks, 'myfiles.archive')
+            }
+
+            this.decompress = function(blob, centralDir) {
+                var tree = [];
+                var iterators = [[tree, centralDir]];
+
+                for (var [dir, iterator] of iterators) {
+                    for (var [type, name, ...item] of iterator) {
+                        if (type === IS_FILE) {
+                            var [start, size] = item;
+                            dir.push(new File([blob.slice(start, start + size)], name));
+                        } else {
+                            var folder = { name: name, children: [] };
+                            var iterator = item;
+                            dir.push(dir);
+                            iterators.push([folder.children, iterator]);
+                        }
+                    }
+                }
+
+                return tree;
+            }
+
+            this.readCentralDir = async function(blob) {
+                // Figure out how large the central dir is
+                var size = new DataView(await blob.slice(-4).arrayBuffer()).getUint32(0, true);
+                // Get the hole central dir part
+                var jsonPart = blob.slice(blob.size - size - 4, blob.size - 4);
+                // Parse the central dir part
+                return new Response(jsonPart).json();
+            }
+
+            /*
+                ### Usage
+
+                // create some dummy files
+                const sample = new File(['abc'], 'sample.txt')
+                const xyz = new File(['xyz'], 'xyz.txt')
+                const helloWorld = new File(['hello world'], 'hello.txt')
+
+                const tree = [
+                sample, 
+                { name: 'Sub Folder', children: [ xyz ] },
+                helloWorld
+                ]
+
+                // pack everything together
+                const archive = pack(tree)
+
+                // Unpacking
+                // The only part that isn't synchronous is where you have to read the central directory from the file
+                const centralDir = await readCentralDir(archive)
+                const tree = unpack(archive, centralDir)
+                const helloWorld = tree[2]
+                // using one of the newer blob reading methods
+                console.log(await helloWorld.text())
+            */
+
         },
 
 

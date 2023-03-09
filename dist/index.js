@@ -4690,8 +4690,17 @@
         joinPath: function(...args) {
             return args.join("\/")
                 .replace(/\/+|\\+/g, "\/")
-                .replace(/\/\.\//g, "\/")
-                .replace(/\/[^\/]+\/\.\.\//g, "\/") || "\.";
+                .split("\/")
+                .reduce(function(prev, curr) {
+                    if (curr === "\." && prev.length > 0) {
+                        return prev;
+                    } else if (curr === "\.\." && prev.length > 0) {
+                        prev.pop();
+                    } else {
+                        prev.push(curr);
+                    }
+                    return prev;
+                }, []).join("\/") || "\.";
         },
         /**
          * deprecated

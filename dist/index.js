@@ -4680,7 +4680,7 @@
          * @returns 
          */
         splitPath: function(str) {
-            return str.replace(/\\+/g, "/").replace(/\/+$/, "/").split(/\//);
+            return str.replace(/\/+|\\+/g, "\/").split(/\//);
         },
         /**
          * 
@@ -4701,6 +4701,41 @@
                     }
                     return prev;
                 }, []).join("\/") || "\.";
+        },
+        /**
+         * parse(...String), join(...String)
+         */
+        path: {
+            /**
+             * @param  {...String} arguments 
+             * @returns 
+             */
+            parse: function() {
+                return arguments.join("\/")
+                    .replace(/\/+|\\+/g, "\/")
+                    .replace(/\/$/, "")
+                    .split("\/");
+            },
+            /**
+             * @param  {...String} arguments 
+             * @returns 
+             */
+            join: function() {
+                return arguments.join("\/")
+                    .replace(/\/+|\\+/g, "\/")
+                    .replace(/\/$/, "")
+                    .split("\/")
+                    .reduce(function(prev, curr) {
+                        if (curr === "\." && prev.length > 0) {
+                            return prev;
+                        } else if (curr === "\.\." && prev.length > 0) {
+                            prev.pop();
+                        } else {
+                            prev.push(curr);
+                        }
+                        return prev;
+                    }, []).join("\/") || "\.";
+            },
         },
         /**
          * deprecated

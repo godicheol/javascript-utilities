@@ -11,7 +11,6 @@
         root.utils = factory();
     }
 })(this, function() {
-    // strict mode
     'use strict';
     return {
         /**
@@ -20,7 +19,7 @@
          * @param {Number} m 
          * @returns
          */
-        mod: function(n, m) {
+        modulo: function(n, m) {
             return ((n % m) + m) % m;
         },
         /**
@@ -42,120 +41,31 @@
         },
         /**
          * 
-         * @param {String} str 
-         * @param {String} sep 
-         * @param {Function} func 
-         * @returns 
-         */
-        split: function(str, sep, func) {
-            var arr = str.split(sep);
-            var i = arr.length - 1;
-            if (typeof(func) === "function") {
-                while(i > -1) {
-                    if (!func(arr[i])) {
-                        arr.splice(i, 1);
-                    }
-                    i--;
-                }
-            }
-            return arr;
-        },
-        /**
-         * 
-         * @param {Number} num 
          * @param {Number} min 
          * @param {Number} max 
+         * @param {Number} value 
          * @returns 
          */
-        ratio: function(num, min, max) {
-            return num / (max - min);
+        between: function(min, max, value) {
+            return Math.min(max, Math.max(min, value));
         },
         /**
          * 
-         * @param {Array} arr 
+         * @param {Number} value 
+         * @param {Number} minSrc 
+         * @param {Number} maxSrc 
+         * @param {Number} minDst 
+         * @param {Number} maxDst 
          * @returns 
          */
-        array: function(arr) {
-            if (typeof(arr) !== "object" || Object.prototype.toString.call(arr) !== '[object Array]') {
-                throw new Error("invalid argument type");
+        map: function(value, minSrc, maxSrc, minDst, maxDst) {
+            if (value < minSrc) {
+                value = minSrc;
             }
-            return {
-                /**
-                 * 
-                 * @param {Function} func 
-                 */
-                map: function(func) {
-                    var len = arr.length;
-                    var i = 0;
-                    while(i < len) {
-                        arr[i] = func(arr[i]);
-                        i++;
-                    }
-                    return this;
-                },
-                /**
-                 * 
-                 * @param {Any} value 
-                 * @param {Number} index 
-                 * @returns 
-                 */
-                add: function(value, index) {
-                    arr.splice(index, 0, value);
-                    return this;
-                },
-                /**
-                 * 
-                 * @param {Function} func 
-                 * @returns 
-                 */
-                remove: function(func) {
-                    var i = arr.length - 1;
-                    while(i > -1) {
-                        if (func(arr[i])) {
-                            arr.splice(i, 1);
-                        }
-                        i--;
-                    }
-                    return this;
-                },
-                /**
-                 * 
-                 * @returns
-                 */
-                type: function() {
-                    var getType = function(arg) {
-                        if (typeof(arg) === "object") {
-                            if (Object.prototype.toString.call(arg) === '[object Array]') {
-                                return "array";
-                            } else if (arg instanceof RegExp) {
-                                return "regexp";
-                            } else if (arg === null) {
-                                return "null";
-                            } else {
-                                return "object";
-                            }
-                        } else if (typeof(arg) === "number") {
-                            if (isNaN(arg)) {
-                                return "NaN";
-                            } else {
-                                return "number";
-                            }
-                        } else {
-                            return typeof(arg);
-                        }
-                    }
-                    var type = getType(arr[0]);
-                    var len = arr.length;
-                    var i = 1;
-                    while(i < len) {
-                        if (type !== getType(arr[i])) {
-                            return "any";
-                        }
-                        i++;
-                    }
-                    return type;
-                },
+            if (value > maxSrc) {
+                value = maxSrc;
             }
+            return (value / (maxSrc - minSrc)) * (maxDst - minDst) + minDst;
         },
         /**
          * 
@@ -164,6 +74,14 @@
          */
         escape: function(str) {
             return str.replace(/([\!\@\#\$\%\^\&\*\)\(\+\=\.\<\>\{\}\[\]\:\;\'\"\|\~\`\_\-\/\\])/g, "\\$1");
+        },
+        /**
+         * 
+         * @param {Number} n 
+         * @returns 1, 0, -1
+         */
+        compose: function(n) {
+            return Math.sign(n);
         },
         /**
          * 
@@ -492,19 +410,7 @@
             if (typeof(str) === "object" && str instanceof RegExp) {
                 return str;
             } else if (typeof(str) === "string") {
-                var regexp;
-                var flags;
-                if (/^\/.*\/[dgimsuy]{0,7}$/.test(str)) {
-                    // "/string/g"
-                    regexp = str.replace(/^\/(.*)\/[dgimsuy]{0,7}$/, "$1");
-                    flags = str.replace(/^\/.*\/([dgimsuy]{0,7})$/, "$1");
-                } else {
-                    // string
-                    regexp = str;
-                    flags = undefined;
-                }
-                regexp = regexp.replace(/((?<!\/)[\!\@\#\$\%\^\&\*\)\(\+\=\.\<\>\{\}\[\]\:\;\'\"\|\~\`\_\-\/\\])/g, "\\$1");
-                return new RegExp(regexp, flags);
+                return new RegExp(str.replace(/^\/|\/[dgimsuy]{0,7}$/g, ""), str.replace(/.*\/([dgimsuy]{0,7})$/, "$1"));
             } else {
                 var err = new Error('invalid argument type');
                 err.name = "TypeError";

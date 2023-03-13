@@ -6623,7 +6623,7 @@
                 }
             }
             return JSON.stringify(obj, decycle(), space || 2)
-        }
+        },
 
 
         getCorner: function(imageData) {

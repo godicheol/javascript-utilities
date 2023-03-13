@@ -6604,6 +6604,26 @@
             */
 
         },
+        /**
+         * 
+         * @param {object} obj 
+         * @param {Number} space default 2
+         */
+        printCircularStructor: function(obj, space) {
+            function decycle() {
+                let seen = [];
+                return function(key, value) {
+                    if (typeof(value) == "object" && value !== null) {
+                        if (seen.indexOf(value) > -1) {
+                            return;
+                        }
+                        seen.push(value);
+                    }
+                    return value;
+                }
+            }
+            return JSON.stringify(obj, decycle(), space || 2)
+        }
 
 
         getCorner: function(imageData) {
